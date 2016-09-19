@@ -20,11 +20,11 @@ void sfs_print_atom( object o ) {
 			switch(o->this.number.numtype){
 		
 			case NUM_INTEGER:
-			printf("%d",o->this.num.this.integer);
+			printf("%d",o->this.number.this.integer);
 			break;
 	
 			case NUM_REAL:
-			printf("%lf",o->this.num.this.real);
+			printf("%lf",o->this.number.this.real);
 			break;
 
 			default:
@@ -60,13 +60,25 @@ void sfs_print_atom( object o ) {
 		default:
 		break;
 	}
-	
+	printf(" ");
     return;
 }
 
 void sfs_print_pair( object o ) {
+/* teste le car et le cdr */
+	if ((o->this.pair.car)->type == SFS_PAIR && ( (o->this.pair.cdr)->type == SFS_PAIR || (o->this.pair.cdr)->type == SFS_NIL) ){
 
-    return sfs_print( o );
+		printf("(");
+	}
+
+	sfs_print(o->this.pair.car);
+
+	if ((o->this.pair.car)->type != SFS_PAIR && (o->this.pair.cdr)->type == SFS_NIL){
+
+		printf(")");
+	}
+	
+	sfs_print(o->this.pair.cdr);
 }
 
 void sfs_print( object o ) {

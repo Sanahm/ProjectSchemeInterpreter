@@ -23,6 +23,8 @@ void sfs_printf( object );
 void sfs_print_atom( object );
 void sfs_print_pair( object );
 
+void sfs_print_first( object );
+
 #ifdef __cplusplus
 }
 #endif

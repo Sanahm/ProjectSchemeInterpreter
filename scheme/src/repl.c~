@@ -151,7 +151,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }*/
         printf( "==> " );
-	sfs_print(sexpr);
+	sfs_print_atom(sexpr);
         /*sfs_print( output );*/
         printf( "\n" );
     }

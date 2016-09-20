@@ -65,7 +65,7 @@ object make_string( string str ) {
 
     object t = make_object( SFS_STRING );
 	
-	if(t!=NULL){
+	if(t){
 		if(strcpy(t->this.string,str)==NULL){
 			return NULL;
 		}

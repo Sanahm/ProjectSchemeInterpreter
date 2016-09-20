@@ -86,6 +86,6 @@ void sfs_printf( object o ) {
 
 }
 void sfs_print( object o ) {
-	if( o->type == SFS_PAIR ) printf("(");
+	printf("(");
 	sfs_printf(o);
 }

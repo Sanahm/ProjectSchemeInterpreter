@@ -30,6 +30,7 @@ void sfs_print_atom( object o ) {
 			default:
 			break;
 			}
+		break;
 
 		case SFS_CHARACTER:
 		printf("%c",o->this.character);
@@ -43,9 +44,9 @@ void sfs_print_atom( object o ) {
 		printf("%s",o->this.symbol);
 		break;
 
-		case SFS_NIL:
+		/*case SFS_NIL:  gerer le nil (pas de parenthese)
 		printf("()");
-		break;
+		break;*/
 
 		case SFS_BOOLEAN:
 		if(o->this.boolean == VRAI){
@@ -66,7 +67,8 @@ void sfs_print_atom( object o ) {
 
 void sfs_print_pair( object o ) {
 /* teste le car et le cdr */
-	if ((o->this.pair.car)->type == SFS_PAIR && ( (o->this.pair.cdr)->type == SFS_PAIR || (o->this.pair.cdr)->type == SFS_NIL) ){
+
+	if ((o->this.pair.car)->type == SFS_PAIR  ){
 
 		printf("(");
 	}
@@ -90,4 +92,10 @@ void sfs_print( object o ) {
         sfs_print_atom( o );
     }
 
+}
+
+void sfs_print_first( object o ){
+
+	if( SFS_PAIR == o->type ) printf("(");
+	sfs_print( o );
 }

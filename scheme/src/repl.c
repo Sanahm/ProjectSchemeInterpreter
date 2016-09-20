@@ -35,8 +35,8 @@ object nil; object VRAI; object FAUX;
 void init_interpreter ( void ) {
 
     nil      = make_nil();
-	VRAI   = make_bool();
-	FAUX   = make_bool();
+    VRAI     = make_bool();
+    FAUX     = make_bool();
 
 }
 
@@ -121,12 +121,14 @@ int main ( int argc, char *argv[] ) {
         /* puis d'en lire une autre */
         /* METTRE EN COMMENTAIRE LES DEUX LIGNES SUIVANTES */
         /* POUR PASSER A L'INCREMENT 1 */
-        printf("%s\n", input );
-        continue;
+        /*printf("%s\n", input );*/
+        /*continue;*/
 
         here  = 0;
         sexpr = sfs_read( input, &here );
+	
         if ( NULL == sexpr ) {
+		printf("hgiug");
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
                 fclose( fp );
@@ -137,20 +139,20 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 
-        output = sfs_eval( sexpr );
+        /*output = sfs_eval( sexpr );
         if( NULL == output) {
-            /* si fichier alors on sort*/
+            /* si fichier alors on sort
             if (mode == SCRIPT) {
                 fclose( fp );
-                /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
+                /*macro ERROR_MSG : message d'erreur puis fin de programme ! 
                 ERROR_MSG("Error while evaluating input --- Aborts");
             }
-            /*sinon on rend la main à l'utilisateur*/
+            /*sinon on rend la main à l'utilisateur
             continue ;
-        }
-
+        }*/
         printf( "==> " );
-        sfs_print( output );
+	sfs_print_first(sexpr);
+        /*sfs_print( output );*/
         printf( "\n" );
     }
 

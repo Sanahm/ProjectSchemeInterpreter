@@ -151,11 +151,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }*/
         printf( "==> " );
-<<<<<<< HEAD
 	sfs_print(sexpr);
-=======
-	sfs_print_first(sexpr);
->>>>>>> 18e8face1001a435a0f25b3c7002f164bb4b553a
         /*sfs_print( output );*/
         printf( "\n" );
     }

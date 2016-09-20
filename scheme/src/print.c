@@ -19,7 +19,6 @@ void sfs_print_atom( object o ) {
 		case SFS_NUMBER:
 			switch(o->this.number.numtype){
 		
-<<<<<<< HEAD
 				case NUM_INTEGER:
 					printf("%d",o->this.number.this.integer);
 					break;
@@ -27,15 +26,6 @@ void sfs_print_atom( object o ) {
 				case NUM_REAL:
 					printf("%lf",o->this.number.this.real);
 					break;
-=======
-			case NUM_INTEGER:
-			printf("%d",o->this.number.this.integer);
-			break;
-	
-			case NUM_REAL:
-			printf("%lf",o->this.number.this.real);
-			break;
->>>>>>> 18e8face1001a435a0f25b3c7002f164bb4b553a
 
 				default:
 					break;
@@ -54,15 +44,9 @@ void sfs_print_atom( object o ) {
 			printf("%s",o->this.symbol);
 			break;
 
-<<<<<<< HEAD
 		case SFS_NIL:
 			printf("()");
 			break;
-=======
-		/*case SFS_NIL:  gerer le nil (pas de parenthese)
-		printf("()");
-		break;*/
->>>>>>> 18e8face1001a435a0f25b3c7002f164bb4b553a
 
 		case SFS_BOOLEAN:
 			if(o->this.boolean == VRAI){
@@ -77,7 +61,6 @@ void sfs_print_atom( object o ) {
 		default:
 			break;
 	}
-<<<<<<< HEAD
     /*printf(" ");*/
     return;
 }
@@ -91,28 +74,6 @@ void sfs_print_pair( object o) {
 	}
 	else printf(")");
     /*return sfs_print( o );*/
-=======
-	printf(" ");
-    return;
-}
-
-void sfs_print_pair( object o ) {
-/* teste le car et le cdr */
-
-	if ((o->this.pair.car)->type == SFS_PAIR  ){
-
-		printf("(");
-	}
-
-	sfs_print(o->this.pair.car);
-
-	if ((o->this.pair.car)->type != SFS_PAIR && (o->this.pair.cdr)->type == SFS_NIL){
-
-		printf(")");
-	}
-	
-	sfs_print(o->this.pair.cdr);
->>>>>>> 18e8face1001a435a0f25b3c7002f164bb4b553a
 }
 
 void sfs_printf( object o ) {
@@ -124,15 +85,7 @@ void sfs_printf( object o ) {
     }
 
 }
-<<<<<<< HEAD
 void sfs_print( object o ) {
 	if( o->type == SFS_PAIR ) printf("(");
 	sfs_printf(o);
-=======
-
-void sfs_print_first( object o ){
-
-	if( SFS_PAIR == o->type ) printf("(");
-	sfs_print( o );
->>>>>>> 18e8face1001a435a0f25b3c7002f164bb4b553a
 }

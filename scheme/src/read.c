@@ -322,12 +322,12 @@ object sfs_read_atom( char *input, uint *here ) {/*il faut compléter sfs_read_(
 	num u;
 	if( input[*here] == '"'){
 		(*here)++;		
-		while( *here < strlen(input) && input[*here] != '"' ){ /*doit on gerer les erreur depuis ici?*/
+		while( *here < strlen(input)-1 && input[*here] != '"' ){ /*-1 car on s'attend au moins à la fin a un ")*/
 			str[i] = input[*here];
 			i++;
 			(*here)++;
 		}
-		if(/**here < strlen(input) &&*/ input[*here] == '"' /*&& isspace(input[*here+1])*/){/*a coriger: decommenter!!!!!!*/
+		if( input[*here] == '"' && (isspace(input[*here+1]) || input[*here+1]==')') ){/*a coriger: decommenter!!!!!!*/
 			str[i] = '\0';
 			atom = make_string(str);
 			(*here)++; /* on passe au caractere suivant avant de retourner*/
@@ -335,25 +335,45 @@ object sfs_read_atom( char *input, uint *here ) {/*il faut compléter sfs_read_(
 		}
 		return atom;			
 	}
-	/*Est ce un nombre*/
+	/*Est ce un nombre ou un symbole +/-?*/
 	/*etant donne qu'un entier relatif commence par le symb +/- on fait d'une pierre 2 coups
 	on commence par tester si on a le symb +/- puis si derriere c'est un entier alors on lit un entier relatif sinon si c'est un espace on lit un symb
 	dans les autres cas on retourne une erreur*/
-	if(input[*here] =='+' || input[*here] =='-' || isdigit(input[*here])){ 
+	if( input[*here] =='+' || input[*here] =='-' || isdigit(input[*here]) ){ 
 		str[0] = input[*here];
 		(*here)++;i++;
-		if(/**here < strlen(input) &&*/ isspace(input[*here]) && !isdigit(input[*here-1])){/*a coriger: decommenter!!!!!!*/
+		if( *here < strlen(input) && isspace(input[*here]) && !isdigit(input[*here-1]) ){
+			/* ca veu dire qu'on lit un symbole +/-*/
 			str[1]='\0';
 			atom = make_symbol(str); /*teste si +/- est un symbol ou pas  ;; str[0] = input[*here-1]*/
-			printf("hhhhh\n");
 			return atom;
 		}
-		while( *here < strlen(input) && isdigit(input[*here])){
+		/*sinon on prend tous les digits apres le signe*/
+		while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tout les digits*/
 			str[i] = input[*here];
 			(*here)++; 
 			i++;
 		}
-		if( /**here < strlen(input) &&*/  isspace(input[*here]) || input[*here]==')' ||1){
+		/*Est ce un nombre reel a virgule?*/
+		if ( input[*here] == '.' ){/*on est en train de lire un float*/
+			str[i] = '.';
+			(*here)++;i++;
+			while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tout les digits*/
+				str[i] = input[*here];
+				(*here)++; 
+				i++;
+			}
+			if( isspace(input[*here]) || input[*here]==')' ){
+				str[i] = '\0';
+				u.numtype = NUM_REAL;/*et on lit un reel*/
+				u.this.real = strtod(str,NULL);
+				atom = make_number(u);
+				return atom;
+			}
+			return atom;			 
+		}
+		/*sinon c'est tout simplement n entier*/
+		if( isspace(input[*here]) || input[*here]==')' ){
 			str[i] = '\0';
 			u.numtype = NUM_INTEGER;
 			u.this.integer = atoi(str);
@@ -364,16 +384,16 @@ object sfs_read_atom( char *input, uint *here ) {/*il faut compléter sfs_read_(
 	}
 	
 	/*lire les symboles:
-	un symb peut etre un define, quote, a ,b ,A*/
+	un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
 	if(isalpha(input[*here]) || isspecial(input[*here])){ /* isspecial() à definir retourne 1 si (! % etc)*/
 		str[0] = input[*here];
 		(*here)++; i++;
-		while((isalpha(input[*here]) || isdigit(input[*here])) /*&& *here < strlen(input)*/){ /* ca c'est un symbol :irud, jdf*//*a coriger: decommenter!!!!!!*/
+		while((isalpha(input[*here]) || isdigit(input[*here])) && *here < strlen(input)){ /* ca c'est un symbol :irud, jdf*//*a coriger: decommenter!!!!!!*/
 			str[i] = input[*here];
 			(*here)++;
 			i++;
 		}
-		if(isspace(input[*here]) || input[*here]==')'||1){
+		if(isspace(input[*here]) || input[*here]==')'){
 			str[i] = '\0';
 			atom = make_symbol(str);
 			return atom;
@@ -388,25 +408,26 @@ object sfs_read_atom( char *input, uint *here ) {/*il faut compléter sfs_read_(
 		(*here)++;
 		if(input[*here] == '\\'){
 			(*here)++;
-			if(isalpha(input[*here]) /*&& isspace(input[*here+1])*/){/*a coriger: decommenter!!!!!!*/
+			if( isalpha(input[*here]) && isspace(input[*here+1]) ){/*a coriger: decommenter!!!!!!*/
 				atom = make_character(input[*here]);
 				(*here)++;
 				return atom;
 			}
-			while(isalpha(input[*here]) && *here < strlen(input)){ /*on recupère la chaine*/
+			while( isalpha(input[*here]) && *here < strlen(input) ){ /*on recupère la chaine*/
 				str[i] = input[*here];
 				(*here)++;
 				i++;
 			}
-			if(/*isspace(input[*here])||*/1){/*a coriger: decommenter!!!!!!*/
-				str[i] = '\0';printf("%s\n",str);
+			if( isspace(input[*here]) || input[*here] == ')' ){
+				str[i] = '\0';
 				if(!strcmp(str,"newline")) atom = make_character('\n'); /*allez cest bon */
 				if(!strcmp(str,"nl")) atom = make_character('\n'); /*on fait les 2 on est fort*/
 				if(!strcmp(str,"space")) atom = make_character(' ');
 				return atom;
-			}	
+			}
+			return atom;	
 		}
-		if(input[*here] == 't' || input[*here] == 'f'){
+		if( input[*here] == 't' || input[*here] == 'f' ){
 			atom = make_boolean(input[*here]);
 			(*here)++; /* on passe au caractere suivant avant de retourner*/
 			return atom;
@@ -421,30 +442,13 @@ object sfs_read_pair( char *stream, uint *i ) {
 	while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
 	pr->this.pair.car = sfs_read(stream,i);
 	while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
-	if(stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
+	if( stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
 	else {
-		/*if(!isspace(stream[*i+1])) return NULL;*//*a coriger: decommenter!!!!!!*/
+		if( *i < strlen(stream)-1 && !isspace(stream[*i+1]) ) return NULL;
 		pr->this.pair.cdr = make_nil();
 		(*i)++;
 	}
+	if( pr->this.pair.car == NULL || pr->this.pair.cdr == NULL) return NULL;
 	return pr;
 }
-	
-	/*if(stream[*i] != '('){
-		pr->this.pair.car = sfs_read_atom(stream,i);
-		(*i)++;
-		while(isspace(stream[*i])) *(i)++;
-		if(stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);	
-		else pr->this.pair.cdr = nil;
-	}
-	else{
-		(*i)++;
-		pr->this.pair.car = sfs_read_pair(stream,i);
-		while(isspace(stream[*i])) *(i)++; /*pour gerer les espaces
-		if(stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
-		else pr->this.pair.cdr = nil;
-	}
-	pair = sfs_read(stream,i)
-
-    return pair;*/
 

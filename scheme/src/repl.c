@@ -128,13 +128,13 @@ int main ( int argc, char *argv[] ) {
         sexpr = sfs_read( input, &here );
 	
         if ( NULL == sexpr ) {
-		printf("hgiug");
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
                 fclose( fp );
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Invalid S-expression --- Aborts");
             }
+	    ERROR_MSG("Invalid S-expression --- Aborts");
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }

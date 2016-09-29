@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 
 #include "object.h"
@@ -128,13 +129,13 @@ int main ( int argc, char *argv[] ) {
         sexpr = sfs_read( input, &here );
 	
         if ( NULL == sexpr ) {
-		printf("hgiug");
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
                 fclose( fp );
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Invalid S-expression --- Aborts");
             }
+	    WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }

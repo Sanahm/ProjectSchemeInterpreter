@@ -440,6 +440,7 @@ object sfs_read_atom( char *input, uint *here ) {
 	if(input[*here] == '\''){
 		int cpt = 0, j = 0; string strs = "( quote ";
 		(*here)++;
+		
 		if(input[*here] == '('){
 			cpt = 1;
 			while(*here < strlen(input) && cpt !=0){

@@ -96,11 +96,11 @@ void sfs_print( object o ) {
 	if( o->type == SFS_PAIR ){
 		printf("(");
 		/* d'après la convention on ne print pas le premier quote on appel sfs_printf directement pour le car du cdr de o et aussi pour eviter de printf le nil*/
-		if((((o->this.pair.car)->type == SFS_SYMBOL) && !strcmp((o->this.pair.car)->this.symbol,"quote"))) sfs_printf(o->this.pair.cdr->this.pair.car);
-		else{
+		/*if((((o->this.pair.car)->type == SFS_SYMBOL) && !strcmp((o->this.pair.car)->this.symbol,"quote"))) sfs_printf(o->this.pair.cdr->this.pair.car);
+		else{*/
 			
 			sfs_printf(o);
-		}
+		/*}*/
 	}
 	else sfs_printf(o);
 }

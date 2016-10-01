@@ -437,30 +437,57 @@ object sfs_read_atom( char *input, uint *here ) {
 			return atom;
 		}		
 	}
+
 	if(input[*here] == '\''){
-		int cpt = 0, j = 0; string strs = "( quote ";
+		int cpt = 0, j = 0, par=0; string strs = "( quote ";
 		(*here)++;
-		
-		if(input[*here] == '('){
+		i=0;
+		/*if(input[*here] == '('){
 			cpt = 1;
 			while(*here < strlen(input) && cpt !=0){
 				if(input[*here]==')') cpt--;
+				str[i] = input[*here];
+				(*here)++;
+				
 				if(input[*here]=='(') cpt++;
+				i++;
+			}
+			
+		}
+		else {*/
+			
+			cpt=1;
+							
+			while(*here < strlen(input) && cpt!=0 /*&& !isspace(input[*here]) && input[*here] != ')' && input[*here] != '('*/){
+
+				if( input[*here]=='(' && input[*here-1]=='\'' ){
+					par=1;
+					cpt--;
+				}
+				if(par){
+					if(input[*here]==')') cpt--;
+					if(input[*here]=='(') cpt++;	
+
+				}
+				else{
+					if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])){
+						
+						break;
+					}
+				}
+				
 				str[i] = input[*here];
 				(*here)++;
 				i++;
+
 			}
-		}
-		else {
-			while(*here < strlen(input) && !isspace(input[*here]) && input[*here] != ')' && input[*here]!='('){
-				str[i] = input[*here];
-				(*here)++;
-				i++;
-			}
-		}
+
+		/*}*/
+		
 		str[i] = ')';str[i+1] = '\0';			
 		
-		strcat(strs,str);		
+		strcat(strs,str);
+		
 		return sfs_read(strs, &j);;
 	}
 			

@@ -38,7 +38,7 @@ void sfs_print_atom( object o ) {
 		break;
 
 		case SFS_CHARACTER:
-			if(o->this.character == '\n') printf("#\\nl");
+			if(o->this.character == '\n') printf("#\\newline");
 			else if(o->this.character == ' ') printf("#\\space");
 			else printf("#\\%c",o->this.character);
 			break;

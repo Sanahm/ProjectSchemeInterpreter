@@ -330,7 +330,7 @@ object sfs_read_atom( char *input, uint *here ) {
 			i++;
 			(*here)++;
 		}
-		if( input[*here] == '"' && (isspace(input[*here+1]) || input[*here+1]==')' || input[*here+1]=='(' || *here == strlen(input)-1) ){
+		if( input[*here] == '"' /*&& (isspace(input[*here+1]) || input[*here+1]==')' || input[*here+1]=='(' || *here == strlen(input)-1) */){
 			str[i] = '\0';
 			atom = make_string(str);
 			(*here)++; /* on passe au caractere suivant avant de retourner*/
@@ -376,7 +376,7 @@ object sfs_read_atom( char *input, uint *here ) {
 			return atom;			 
 		}
 		/*sinon c'est tout simplement un entier*/
-		if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='('||*here == strlen(input)){
+		if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='('||*here == strlen(input) || input[*here]=='\"'){
 			str[i] = '\0';
 			u.numtype = NUM_INTEGER;
 			u.this.integer = strtol(str,NULL,10);

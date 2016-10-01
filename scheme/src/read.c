@@ -323,14 +323,18 @@ object sfs_read_atom( char *input, uint *here ) {
 	/*Est ce une chaine de charactere?*/		
 	if( input[*here] == '"'){
 		(*here)++;		
-		while( *here < strlen(input)-1 && input[*here] != '"' ){ /*-1 car on s'attend au moins à la fin a un ")*/
-			/*if(input[*here] =='\\'){str[i] = '\\'; str[i+1] = input[*here+1];}
-			if(input[*here] =='\"'){str[i] = '\"'; str[i+1] = input[*here+1];}*/
+		while( *here < strlen(input) && input[*here] != '"' ){
+			if(input[*here] =='\\' && input[*here+1] =='"' && isspace(input[*here+2])){
+				str[i] = '\\'; str[i+1] = '"';
+				*here += 2;
+				i += 2;
+				continue;
+			}
 			str[i] = input[*here];
 			i++;
 			(*here)++;
 		}
-		if( input[*here] == '"' /*&& (isspace(input[*here+1]) || input[*here+1]==')' || input[*here+1]=='(' || *here == strlen(input)-1) */){
+		if( input[*here] == '"' && ((isspace(input[*here+1]) || input[*here+1]== ')' || input[*here+1]=='(' || *here == strlen(input)-1) || input[*here+1] == '"') ){
 			str[i] = '\0';
 			atom = make_string(str);
 			(*here)++; /* on passe au caractere suivant avant de retourner*/
@@ -346,13 +350,13 @@ object sfs_read_atom( char *input, uint *here ) {
 		str[0] = input[*here];
 		(*here)++;i++;
 		if( *here <= strlen(input) && (isspace(input[*here])||input[*here]==')' || input[*here]=='(' || *here == strlen(input)) && !isdigit(input[*here-1]) ){
-			/* ca veu dire qu'on lit un symbole +/-*/
+			/* ca veut dire qu'on lit un symbole +/-*/
 			str[1]='\0';
 			atom = make_symbol(str); /*teste si +/- est un symbol ou pas  ;; str[0] = input[*here-1]*/
 			return atom;
 		}
 		/*sinon on prend tous les digits apres le signe*/
-		while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tout les digits*/
+		while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tous les digits*/
 			str[i] = input[*here];
 			(*here)++; 
 			i++;
@@ -361,7 +365,7 @@ object sfs_read_atom( char *input, uint *here ) {
 		if ( input[*here] == '.' ){/*on est en train de lire un float*/
 			str[i] = '.';
 			(*here)++;i++;
-			while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tout les digits*/
+			while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tous les digits*/
 				str[i] = input[*here];
 				(*here)++; 
 				i++;
@@ -388,10 +392,10 @@ object sfs_read_atom( char *input, uint *here ) {
 	
 	/*lire les symboles:
 	un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
-	if(isalpha(input[*here]) || isspecial(input[*here])){ /* isspecial() à definir retourne 1 si (! % etc)*/
+	if(isalpha(input[*here]) || isspecial(input[*here])){ /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
 		str[0] = input[*here];
 		(*here)++; i++;
-		while((isalpha(input[*here]) || isdigit(input[*here]) || isspecial(input[*here])) && *here < strlen(input)){ /* ca c'est un symbol :irud, jdf*/
+		while((isalpha(input[*here]) || isdigit(input[*here]) || isspecial(input[*here])) && *here < strlen(input)){ /* ca c'est un symbol :$irud, %jdf*/
 			str[i] = input[*here];
 			(*here)++;
 			i++;
@@ -431,7 +435,7 @@ object sfs_read_atom( char *input, uint *here ) {
 			}
 			return atom;	
 		}
-		if( (input[*here] == 't' || input[*here] == 'f') && (isspace(input[*here+1]) || input[*here+1]==')' || input[*here]=='(' || *here == strlen(input)-1) ){/*isspace or ')'*/
+		if( (input[*here] == 't' || input[*here] == 'f') && (isspace(input[*here+1]) || input[*here+1]==')' || input[*here]=='(' || *here == strlen(input)-1) ){
 			atom = make_boolean(input[*here]);
 			(*here)++; /* on passe au caractere suivant avant de retourner*/
 			return atom;
@@ -439,51 +443,36 @@ object sfs_read_atom( char *input, uint *here ) {
 	}
 
 	if(input[*here] == '\''){
-		int cpt = 0, j = 0, par=0; string strs = "( quote ";
+		int cpt = 0, par=0; string strs = "( quote "; uint j = 0;
 		(*here)++;
 		i=0;
-		/*if(input[*here] == '('){
-			cpt = 1;
-			while(*here < strlen(input) && cpt !=0){
-				if(input[*here]==')') cpt--;
-				str[i] = input[*here];
-				(*here)++;
-				
-				if(input[*here]=='(') cpt++;
-				i++;
-			}
 			
-		}
-		else {*/
-			
-			cpt=1;
-							
-			while(*here < strlen(input) && cpt!=0 /*&& !isspace(input[*here]) && input[*here] != ')' && input[*here] != '('*/){
-
-				if( input[*here]=='(' && input[*here-1]=='\'' ){
-					par=1;
-					cpt--;
-				}
-				if(par){
-					if(input[*here]==')') cpt--;
-					if(input[*here]=='(') cpt++;	
-
-				}
-				else{
-					if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])){
+		cpt=1;
 						
-						break;
-					}
-				}
-				
-				str[i] = input[*here];
-				(*here)++;
-				i++;
+		while(*here < strlen(input) && cpt!=0 ){
+
+			if( input[*here]=='(' && input[*here-1]=='\'' ){
+				par=1;
+				cpt--;
+			}
+			if(par){
+				if(input[*here]==')') cpt--;
+				if(input[*here]=='(') cpt++;	
 
 			}
+			else{
+				if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])){
+					
+					break;
+				}
+			}
+			
+			str[i] = input[*here];
+			(*here)++;
+			i++;
 
-		/*}*/
-		
+		}
+	
 		str[i] = ')';str[i+1] = '\0';			
 		
 		strcat(strs,str);

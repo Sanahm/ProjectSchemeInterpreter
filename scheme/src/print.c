@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <math.h>
 #include "print.h"
 
 #include <stdio.h>

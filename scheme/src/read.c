@@ -19,8 +19,8 @@
 #include "read.h"
 
 int isspecial(char c) {
-	return (c==':'|| (c>='<' && c <='@')||(c>= '-' && c<='/')|| c=='*'|| c=='+'|| c=='&'|| c=='%'||c=='$'|| c=='!'|| c=='~'|| c=='^'|| c=='_'); 
-} 
+    return (c==':'|| (c>='<' && c <='@')||(c>= '-' && c<='/')|| c=='*'|| c=='+'|| c=='&'|| c=='%'||c=='$'|| c=='!'|| c=='~'|| c=='^'|| c=='_');
+}
 
 void flip( uint *i ) {
 
@@ -77,7 +77,7 @@ char* first_usefull_char(char* line) {
  * Les parentheses dans des chaines et les caracteres Scheme #\( et #\)
  * ne sont pas comptes.
  *
- * Si le compte devient zéro et que 
+ * Si le compte devient zéro et que
  *        - la ligne est fini, la fonction retourne S_OK
  * 				- la ligne n'est pas fini la fonction retourne S_KO
  *
@@ -173,7 +173,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
             }
         }
 
-        /* si la ligne est inutile 
+        /* si la ligne est inutile
         	=> on va directement à la prochaine iteration */
         if (first_usefull_char(chunk) == NULL) {
             continue;
@@ -300,9 +300,9 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 
     while( isspace(input[*here]) && *here < strlen(input)) (*here)++;
     if ( input[*here] == '(' ) {
-	(*here)++;
-	while( isspace(input[*here]) && *here < strlen(input)) (*here)++;
-        if ( input[(*here)] == ')' ){
+        (*here)++;
+        while( isspace(input[*here]) && *here < strlen(input)) (*here)++;
+        if ( input[(*here)] == ')' ) {
             (*here)++;
             return nil;
         }
@@ -317,184 +317,192 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 
 object sfs_read_atom( char *input, uint *here ) {
 
-	object atom = NULL; string str;
-	int i = 0;
-	num u;
-	/*Est ce une chaine de charactere?*/		
-	if( input[*here] == '"'){
-		(*here)++;		
-		while( *here < strlen(input) && input[*here] != '"' ){
-			if(input[*here] =='\\' && input[*here+1] =='"' && isspace(input[*here+2])){
-				str[i] = '\\'; str[i+1] = '"';
-				*here += 2;
-				i += 2;
-				continue;
-			}
-			str[i] = input[*here];
-			i++;
-			(*here)++;
-		}
-		if( input[*here] == '"' && ((isspace(input[*here+1]) || input[*here+1]== ')' || input[*here+1]=='(' || *here == strlen(input)-1) || input[*here+1] == '"') ){
-			str[i] = '\0';
-			atom = make_string(str);
-			(*here)++; /* on passe au caractere suivant avant de retourner*/
-			return atom;
-		}
-		return atom;			
-	}
-	/*Est ce un nombre ou un symbole +/-?*/
-	/*etant donne qu'un entier relatif commence par le symb +/- on fait d'une pierre 2 coups
-	on commence par tester si on a le symb +/- puis si derriere c'est un entier alors on lit un entier relatif sinon si c'est un espace on lit un symb
-	dans les autres cas on retourne une erreur*/
-	if( input[*here] =='+' || input[*here] =='-' || isdigit(input[*here]) ){ 
-		str[0] = input[*here];
-		(*here)++;i++;
-		if( *here <= strlen(input) && (isspace(input[*here])||input[*here]==')' || input[*here]=='(' || *here == strlen(input)) && !isdigit(input[*here-1]) ){
-			/* ca veut dire qu'on lit un symbole +/-*/
-			str[1]='\0';
-			atom = make_symbol(str); /*teste si +/- est un symbol ou pas  ;; str[0] = input[*here-1]*/
-			return atom;
-		}
-		/*sinon on prend tous les digits apres le signe*/
-		while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tous les digits*/
-			str[i] = input[*here];
-			(*here)++; 
-			i++;
-		}
-		/*Est ce un nombre reel a virgule?*/
-		if ( input[*here] == '.' ){/*on est en train de lire un float*/
-			str[i] = '.';
-			(*here)++;i++;
-			while( *here < strlen(input) && isdigit(input[*here]) ){/*on prend tous les digits*/
-				str[i] = input[*here];
-				(*here)++; 
-				i++;
-			}
-			if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here == strlen(input)){
-				str[i] = '\0';
-				u.numtype = NUM_REAL;/*et on lit un reel*/
-				u.this.real = strtod(str,NULL);
-				atom = make_number(u);
-				return atom;
-			}
-			return atom;			 
-		}
-		/*sinon c'est tout simplement un entier*/
-		if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='('||*here == strlen(input) || input[*here]=='\"'){
-			str[i] = '\0';
-			u.numtype = NUM_INTEGER;
-			u.this.integer = strtol(str,NULL,10);
-			atom = make_number(u);
-			return atom;
-		}
-		return atom;			
-	}
-	
-	/*lire les symboles:
-	un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
-	if(isalpha(input[*here]) || isspecial(input[*here])){ /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
-		str[0] = input[*here];
-		(*here)++; i++;
-		while((isalpha(input[*here]) || isdigit(input[*here]) || isspecial(input[*here])) && *here < strlen(input)){ /* ca c'est un symbol :$irud, %jdf*/
-			str[i] = input[*here];
-			(*here)++;
-			i++;
-		}
-		if(isspace(input[*here]) || input[*here]==')' || input[*here]=='(' || *here == strlen(input)){
-			str[i] = '\0';
-			atom = make_symbol(str);
-			return atom;
-		}
-		return atom;
-		
-	}
-	
-	/*lire les booleans + newline et space et character*/
-	if(input[*here] == '#'){
-		/*2 cas se presentent*/
-		(*here)++;
-		if(input[*here] == '\\'){
-			(*here)++;
-			if( isspace(input[*here+1]) || input[*here+1] == ')' || input[*here]=='(' || *here == strlen(input)-1 ){
-				atom = make_character(input[*here]);
-				(*here)++;
-				return atom;
-			}
-			/*soit on lit newline ou space*/
-			while( isalpha(input[*here]) && *here < strlen(input) ){ /*on recupère la chaine*/
-				str[i] = input[*here];
-				(*here)++;
-				i++;
-			}
-			if( isspace(input[*here]) || input[*here] == ')' || input[*here]=='(' || *here == strlen(input)){
-				str[i] = '\0';
-				if(!strcmp(str,"newline")) atom = make_character('\n'); /*allez cest bon */
-				if(!strcmp(str,"nl")) atom = make_character('\n'); /*on fait les 2 on est fort*/
-				if(!strcmp(str,"space")) atom = make_character(' ');
-				return atom;
-			}
-			return atom;	
-		}
-		if( (input[*here] == 't' || input[*here] == 'f') && (isspace(input[*here+1]) || input[*here+1]==')' || input[*here]=='(' || *here == strlen(input)-1) ){
-			atom = make_boolean(input[*here]);
-			(*here)++; /* on passe au caractere suivant avant de retourner*/
-			return atom;
-		}		
-	}
+    object atom = NULL;
+    string str;
+    int i = 0;
+    num u;
+    /*Est ce une chaine de charactere?*/
+    if( input[*here] == '"') {
+        (*here)++;
+        while( *here < strlen(input) && input[*here] != '"' ) {
+            if(input[*here] =='\\' && input[*here+1] =='"' && isspace(input[*here+2])) {
+                str[i] = '\\';
+                str[i+1] = '"';
+                *here += 2;
+                i += 2;
+                continue;
+            }
+            str[i] = input[*here];
+            i++;
+            (*here)++;
+        }
+        if( input[*here] == '"' && ((isspace(input[*here+1]) || input[*here+1]== ')' || input[*here+1]=='(' || *here == strlen(input)-1) || input[*here+1] == '"') ) {
+            str[i] = '\0';
+            atom = make_string(str);
+            (*here)++; /* on passe au caractere suivant avant de retourner*/
+            return atom;
+        }
+        return atom;
+    }
+    /*Est ce un nombre ou un symbole +/-?*/
+    /*etant donne qu'un entier relatif commence par le symb +/- on fait d'une pierre 2 coups
+    on commence par tester si on a le symb +/- puis si derriere c'est un entier alors on lit un entier relatif sinon si c'est un espace on lit un symb
+    dans les autres cas on retourne une erreur*/
+    if( input[*here] =='+' || input[*here] =='-' || isdigit(input[*here]) ) {
+        str[0] = input[*here];
+        (*here)++;
+        i++;
+        if( *here <= strlen(input) && (isspace(input[*here])||input[*here]==')' || input[*here]=='(' || *here == strlen(input)) && !isdigit(input[*here-1]) ) {
+            /* ca veut dire qu'on lit un symbole +/-*/
+            str[1]='\0';
+            atom = make_symbol(str); /*teste si +/- est un symbol ou pas  ;; str[0] = input[*here-1]*/
+            return atom;
+        }
+        /*sinon on prend tous les digits apres le signe*/
+        while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
+            str[i] = input[*here];
+            (*here)++;
+            i++;
+        }
+        /*Est ce un nombre reel a virgule?*/
+        if ( input[*here] == '.' ) { /*on est en train de lire un float*/
+            str[i] = '.';
+            (*here)++;
+            i++;
+            while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
+                str[i] = input[*here];
+                (*here)++;
+                i++;
+            }
+            if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here == strlen(input)) {
+                str[i] = '\0';
+                u.numtype = NUM_REAL;/*et on lit un reel*/
+                u.this.real = strtod(str,NULL);
+                atom = make_number(u);
+                return atom;
+            }
+            return atom;
+        }
+        /*sinon c'est tout simplement un entier*/
+        if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='('||*here == strlen(input) || input[*here]=='\"') {
+            str[i] = '\0';
+            u.numtype = NUM_INTEGER;
+            u.this.integer = strtol(str,NULL,10);
+            atom = make_number(u);
+            return atom;
+        }
+        return atom;
+    }
 
-	if(input[*here] == '\''){
-		int cpt = 0, par=0; string strs = "( quote "; uint j = 0;
-		(*here)++;
-		i=0;
-			
-		cpt=1;
-						
-		while(*here < strlen(input) && cpt!=0 ){
+    /*lire les symboles:
+    un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
+    if(isalpha(input[*here]) || isspecial(input[*here])) { /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
+        str[0] = input[*here];
+        (*here)++;
+        i++;
+        while((isalpha(input[*here]) || isdigit(input[*here]) || isspecial(input[*here])) && *here < strlen(input)) { /* ca c'est un symbol :$irud, %jdf*/
+            str[i] = input[*here];
+            (*here)++;
+            i++;
+        }
+        if(isspace(input[*here]) || input[*here]==')' || input[*here]=='(' || *here == strlen(input)) {
+            str[i] = '\0';
+            atom = make_symbol(str);
+            return atom;
+        }
+        return atom;
 
-			if( input[*here]=='(' && input[*here-1]=='\'' ){
-				par=1;
-				cpt--;
-			}
-			if(par){
-				if(input[*here]==')') cpt--;
-				if(input[*here]=='(') cpt++;	
+    }
 
-			}
-			else{
-				if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])){
-					
-					break;
-				}
-			}
-			
-			str[i] = input[*here];
-			(*here)++;
-			i++;
+    /*lire les booleans + newline et space et character*/
+    if(input[*here] == '#') {
+        /*2 cas se presentent*/
+        (*here)++;
+        if(input[*here] == '\\') {
+            (*here)++;
+            if( isspace(input[*here+1]) || input[*here+1] == ')' || input[*here]=='(' || *here == strlen(input)-1 ) {
+                atom = make_character(input[*here]);
+                (*here)++;
+                return atom;
+            }
+            /*soit on lit newline ou space*/
+            while( isalpha(input[*here]) && *here < strlen(input) ) { /*on recupère la chaine*/
+                str[i] = input[*here];
+                (*here)++;
+                i++;
+            }
+            if( isspace(input[*here]) || input[*here] == ')' || input[*here]=='(' || *here == strlen(input)) {
+                str[i] = '\0';
+                if(!strcmp(str,"newline")) atom = make_character('\n'); /*allez cest bon */
+                if(!strcmp(str,"nl")) atom = make_character('\n'); /*on fait les 2 on est fort*/
+                if(!strcmp(str,"space")) atom = make_character(' ');
+                return atom;
+            }
+            return atom;
+        }
+        if( (input[*here] == 't' || input[*here] == 'f') && (isspace(input[*here+1]) || input[*here+1]==')' || input[*here]=='(' || *here == strlen(input)-1) ) {
+            atom = make_boolean(input[*here]);
+            (*here)++; /* on passe au caractere suivant avant de retourner*/
+            return atom;
+        }
+    }
 
-		}
-	
-		str[i] = ')';str[i+1] = '\0';			
-		
-		strcat(strs,str);
-		
-		return sfs_read(strs, &j);;
-	}
-			
+    if(input[*here] == '\'') {
+        int cpt = 0, par=0;
+        string strs = "( quote ";
+        uint j = 0;
+        (*here)++;
+        i=0;
+
+        cpt=1;
+
+        while(*here < strlen(input) && cpt!=0 ) {
+
+            if( input[*here]=='(' && input[*here-1]=='\'' ) {
+                par=1;
+                cpt--;
+            }
+            if(par) {
+                if(input[*here]==')') cpt--;
+                if(input[*here]=='(') cpt++;
+
+            }
+            else {
+                if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])) {
+
+                    break;
+                }
+            }
+
+            str[i] = input[*here];
+            (*here)++;
+            i++;
+
+        }
+
+        str[i] = ')';
+        str[i+1] = '\0';
+
+        strcat(strs,str);
+
+        return sfs_read(strs, &j);;
+    }
+
     return atom;
 }
 
 object sfs_read_pair( char *stream, uint *i ) {
-	
-	object pr = make_pair();
-	while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
-	pr->this.pair.car = sfs_read(stream,i);
-	while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
-	if( stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
-	else {
-		pr->this.pair.cdr = nil;
-		(*i)++;
-	}
-	if( pr->this.pair.car == NULL || pr->this.pair.cdr == NULL) return NULL;
-	return pr;
+
+    object pr = make_pair();
+    while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
+    pr->this.pair.car = sfs_read(stream,i);
+    while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
+    if( stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
+    else {
+        pr->this.pair.cdr = nil;
+        (*i)++;
+    }
+    if( pr->this.pair.car == NULL || pr->this.pair.cdr == NULL) return NULL;
+    return pr;
 }
 

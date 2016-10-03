@@ -31,7 +31,9 @@ void usage_error( char *command ) {
 }
 
 
-object nil; object VRAI; object FAUX;
+object nil;
+object VRAI;
+object FAUX;
 
 void init_interpreter ( void ) {
 
@@ -127,7 +129,7 @@ int main ( int argc, char *argv[] ) {
 
         here  = 0;
         sexpr = sfs_read( input, &here );
-	
+
         if ( NULL == sexpr ) {
             /* si fichier alors on sort*/
             if (mode == SCRIPT) {
@@ -135,7 +137,7 @@ int main ( int argc, char *argv[] ) {
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Invalid S-expression --- Aborts");
             }
-	    WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
+            WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
@@ -151,10 +153,10 @@ int main ( int argc, char *argv[] ) {
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
-	
-	printf( "==> " );
-	
-	sfs_print(sexpr);
+
+        printf( "==> " );
+
+        sfs_print(sexpr);
         /*sfs_print( output );*/
         printf( "\n" );
     }

@@ -35,8 +35,8 @@ typedef struct object_t {
         }                pair;
 
         struct object_t *special;
-		struct object_t *nil; /*nil <--> empty_list*/
-		struct object_t *boolean;
+        struct object_t *nil; /*nil <--> empty_list*/
+        struct object_t *boolean;
 
     } this;
 
@@ -44,13 +44,13 @@ typedef struct object_t {
 
 
 object make_object( uint type );
-object make_nil( void ); 
-object make_number( num nbre ); 
+object make_nil( void );
+object make_number( num nbre );
 object make_character( char c );
 object make_pair( void );
-object make_boolean( char c); 
-object make_symbol( string symb ); 
-object make_string( string str ); 
+object make_boolean( char c);
+object make_symbol( string symb );
+object make_string( string str );
 
 #define SFS_NUMBER       0x00
 #define SFS_CHARACTER    0x01

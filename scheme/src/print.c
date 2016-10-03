@@ -30,7 +30,9 @@ void sfs_print_atom( object o ) {
 					break;
 		
 				case NUM_REAL:
-					printf("%lf",o->this.number.this.real);
+					if(o->this.number.this.real >= LONG_MAX) printf("+inf");
+					else if(o->this.number.this.real <= LONG_MIN) printf("-inf");					
+					else printf("%lf",o->this.number.this.real);
 					break;
 
 				default:
@@ -75,7 +77,6 @@ void sfs_print_atom( object o ) {
 
 void sfs_print_pair( object o) {
 	if((o->this.pair.car)->type == SFS_PAIR) printf("(");
-	/*if(!(((o->this.pair.car)->type == SFS_SYMBOL) && !strcmp((o->this.pair.car)->this.symbol,"quote")))*/
 	sfs_printf(o->this.pair.car);
 	if((o->this.pair.cdr)->type != SFS_NIL){
 		printf(" ");
@@ -96,12 +97,9 @@ void sfs_printf( object o ) {
 void sfs_print( object o ) {
 	if( o->type == SFS_PAIR ){
 		printf("(");
-		/* d'après la convention on ne print pas le premier quote on appel sfs_printf directement pour le car du cdr de o et aussi pour eviter de printf le nil*/
-		/*if((((o->this.pair.car)->type == SFS_SYMBOL) && !strcmp((o->this.pair.car)->this.symbol,"quote"))) sfs_printf(o->this.pair.cdr->this.pair.car);
-		else{*/
-			
-			sfs_printf(o);
-		/*}*/
+	
+		sfs_printf(o);
+
 	}
 	else sfs_printf(o);
 }

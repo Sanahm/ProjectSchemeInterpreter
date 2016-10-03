@@ -458,7 +458,7 @@ object sfs_read_atom( char *input, uint *here ) {
 
         while(*here < strlen(input) && cpt!=0 ) {
 
-            if( input[*here]=='(' && input[*here-1]=='\'' ) {
+            if( input[*here]=='(' && input[*here-1]=='\'' && par==0) {
                 par=1;
                 cpt--;
             }

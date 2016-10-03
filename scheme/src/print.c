@@ -30,9 +30,10 @@ void sfs_print_atom( object o ) {
             break;
 
         case NUM_REAL:
-            if(o->this.number.this.real >= LONG_MAX) printf("+inf");
+            /*if(o->this.number.this.real >= LONG_MAX) printf("+inf");
             else if(o->this.number.this.real <= LONG_MIN) printf("-inf");
-            else printf("%lf",o->this.number.this.real);
+            else*/
+            printf("%lf",o->this.number.this.real);
             break;
 
         default:

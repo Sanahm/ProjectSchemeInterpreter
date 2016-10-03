@@ -15,8 +15,7 @@
 object make_object( uint type ) {
 
     object t = sfs_malloc( sizeof( *t ) );
-
-    t->type = type;
+    if(t)t->type = type;
 
     return t;
 }
@@ -25,7 +24,7 @@ object make_nil( void ) {
 
     object t = make_object( SFS_NIL );
 
-    t->this.special = t;
+    if(t)t->this.special = t;
 
     return t;
 }
@@ -34,7 +33,7 @@ object make_bool( void ) {
 
     object t = make_object( SFS_BOOLEAN );
 
-    t->this.special = t;
+    if(t)t->this.special = t;
 
     return t;
 }
@@ -65,7 +64,7 @@ object make_string( string str ) {
 
     object t = make_object( SFS_STRING );
 
-    if(t!=NULL) {
+    if(t) {
         if(strcpy(t->this.string,str)==NULL) {
             return NULL;
         }

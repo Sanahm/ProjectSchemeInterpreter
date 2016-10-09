@@ -144,20 +144,20 @@ int main ( int argc, char *argv[] ) {
 
         output = sfs_eval( sexpr );
         if( NULL == output) {
-            /* si fichier alors on sort*/
+            /* si fichier alors on sort */
             if (mode == SCRIPT) {
                 fclose( fp );
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Error while evaluating input --- Aborts");
             }
+            WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
 
         printf( "==> " );
-
-        sfs_print(sexpr);
-        /*sfs_print( output );*/
+        /*sfs_print(sexpr);*/
+        sfs_print( output );
         printf( "\n" );
     }
 

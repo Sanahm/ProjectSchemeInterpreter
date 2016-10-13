@@ -388,7 +388,9 @@ object sfs_read_atom( char *input, uint *here ) {
             str[i] = '\0';
             u.numtype = NUM_INTEGER;
             u.this.integer = strtol(str,NULL,10);
-            atom = make_number(u);
+	    if(u.this.integer == LONG_MAX) atom = make_symbol("+inf");
+            else if(u.this.integer == LONG_MIN)  atom=  make_symbol("-inf");
+            else atom = make_number(u);
             return atom;
         }
         return atom;

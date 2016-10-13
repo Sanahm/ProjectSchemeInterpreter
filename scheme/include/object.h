@@ -37,6 +37,7 @@ typedef struct object_t {
         struct object_t *special;
         struct object_t *nil; /*nil <--> empty_list*/
         struct object_t *boolean;
+	struct object_t * *tab;
 
     } this;
 
@@ -45,12 +46,14 @@ typedef struct object_t {
 
 object make_object( uint type );
 object make_nil( void );
+object make_bool( void );
 object make_number( num nbre );
 object make_character( char c );
 object make_pair( void );
 object make_boolean( char c);
 object make_symbol( string symb );
 object make_string( string str );
+object make_env(void);
 
 #define SFS_NUMBER       0x00
 #define SFS_CHARACTER    0x01
@@ -59,11 +62,12 @@ object make_string( string str );
 #define SFS_NIL          0x04
 #define SFS_BOOLEAN      0x05
 #define SFS_SYMBOL       0x06
-
+#define SFS_TAB          0x20
 
 extern object nil;
 extern object VRAI;
 extern object FAUX;
+extern object environment;
 #ifdef __cplusplus
 }
 #endif

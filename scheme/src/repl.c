@@ -20,6 +20,7 @@
 #include "read.h"
 #include "eval.h"
 #include "print.h"
+#include "env.h"
 
 /* mode d'interaction avec l'interpreteur (exemple)*/
 typedef enum {INTERACTIF,SCRIPT} inter_mode;
@@ -34,6 +35,7 @@ void usage_error( char *command ) {
 object nil;
 object VRAI;
 object FAUX;
+object environment;
 
 void init_interpreter ( void ) {
 
@@ -41,6 +43,16 @@ void init_interpreter ( void ) {
     VRAI     = make_bool();
     FAUX     = make_bool();
 
+    environment = make_env();
+/*definition du top level*/
+    add_symbol_to_env( environment,make_symbol("quote"),nil );
+    add_symbol_to_env( environment,make_symbol("define"),nil );
+    add_symbol_to_env( environment,make_symbol("set"),nil );
+    add_symbol_to_env( environment,make_symbol("begin"),nil );
+    add_symbol_to_env( environment,make_symbol("if"),nil );
+    add_symbol_to_env( environment,make_symbol("and"),nil );
+    add_symbol_to_env( environment,make_symbol("or"),nil );
+/*toutes ces formes doivent être disponible au lancé de scheme, dans l'interpreteur*/
 }
 
 int main ( int argc, char *argv[] ) {
@@ -144,20 +156,20 @@ int main ( int argc, char *argv[] ) {
 
         output = sfs_eval( sexpr );
         if( NULL == output) {
-            /* si fichier alors on sort*/
+            /* si fichier alors on sort */
             if (mode == SCRIPT) {
                 fclose( fp );
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Error while evaluating input --- Aborts");
             }
+            WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
 
         printf( "==> " );
-
-        sfs_print(sexpr);
-        /*sfs_print( output );*/
+        /*sfs_print(sexpr);*/
+        sfs_print( output );
         printf( "\n" );
     }
 

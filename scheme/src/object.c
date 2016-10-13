@@ -38,16 +38,20 @@ object make_bool( void ) {
     return t;
 }
 
+/*object make_tab( void ) {
+    object t = make_object( SFS_TAB );
+    t->this.tab = sfs_malloc(sizeof(*(t->this.tab)));
+    return t;
+}*/
+
 object make_boolean(char c) {
 
-    object t = make_object( SFS_BOOLEAN );
     if(c == 't') {
-        t->this.boolean = VRAI;
+        return VRAI;
     }
     if(c == 'f') {
-        t->this.boolean = FAUX;
+        return FAUX;
     }
-    return t;
 }
 
 object make_number( num nbre ) {
@@ -99,12 +103,18 @@ object make_pair( void ) {
 
     object t = make_object( SFS_PAIR );
 
-    if(((t->this.pair).car = sfs_malloc(sizeof(*((t->this.pair).car)))) == NULL
-            ||((t->this.pair).cdr = sfs_malloc(sizeof(*((t->this.pair).cdr)))) == NULL) t = NULL ;
-
     return t;
 }
 
+object make_env(void){
+    object t = make_pair();
+    if(t){
+	t->this.pair.car = make_object(SFS_TAB);
+	t->this.pair.cdr = nil;
+	t->this.pair.car->this.tab = sfs_malloc(SFS_TAB);
+    }
+    return t;
+}
 
 
 

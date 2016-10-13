@@ -24,9 +24,7 @@ void sfs_print_atom( object o ) {
         switch(o->this.number.numtype) {
 
         case NUM_INTEGER:
-            if(o->this.number.this.integer == LONG_MAX) printf("+inf");
-            else if(o->this.number.this.integer == LONG_MIN) printf("-inf");
-            else printf("%lli",o->this.number.this.integer);
+            printf("%lli",o->this.number.this.integer);
             break;
 
         case NUM_REAL:

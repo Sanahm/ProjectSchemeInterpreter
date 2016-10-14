@@ -30,10 +30,13 @@ int isquote(char*str){
 	if(!strcasecmp("quote",str)) return 1;
 	return 0;
 }
+<<<<<<< HEAD
 int isbegin(char*str){
 	if(!strcasecmp("begin",str)) return 1;
 	return 0;
 }
+=======
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 int isdefine(char*str){
 	if(!strcasecmp("define",str)) return 1;
 	return 0;
@@ -89,10 +92,16 @@ object cdr(object o){
 object operation( object obj1,object obj2, char op ){
      num n;
      if(obj1 == NULL || obj2 == NULL) return NULL;
+<<<<<<< HEAD
      switch(op) {
 	    case '+':
 		if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) return obj1;
 		if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ) return obj2;
+=======
+     if(obj1->type != SFS_NUMBER && obj2->type != SFS_NUMBER) return NULL;
+     switch(op) {
+	    case '+':
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 		if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL){
 			n.numtype = NUM_REAL;
 			n.this.real = obj1->this.number.this.real + obj2->this.number.this.real;
@@ -114,8 +123,11 @@ object operation( object obj1,object obj2, char op ){
 			return make_number(n);
 		}
 	   case '-':
+<<<<<<< HEAD
 		if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) return obj1;
 		if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ) return obj2;
+=======
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 		if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL){
 			n.numtype = NUM_REAL;
 			n.this.real = obj1->this.number.this.real - obj2->this.number.this.real;
@@ -158,6 +170,7 @@ object operation( object obj1,object obj2, char op ){
 			return make_number(n);
 		}
 	   case '/':
+<<<<<<< HEAD
 		if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ){
 			if(obj1->type != SFS_SYMBOL){
 				n.numtype = NUM_REAL;
@@ -166,20 +179,32 @@ object operation( object obj1,object obj2, char op ){
 			}
 		}
 		if( obj1->this.number.numtype == NUM_REAL && (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real != 0)){
+=======
+		if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real!=0){
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 			n.numtype = NUM_REAL;
 			n.this.real = obj1->this.number.this.real / obj2->this.number.this.real;
 			return make_number(n);
 		}
+<<<<<<< HEAD
 		if( obj1->this.number.numtype == NUM_REAL && (obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer != 0)){
+=======
+		if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer!=0){
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 			n.numtype = NUM_REAL;
 			n.this.real = obj1->this.number.this.real / (double)obj2->this.number.this.integer;
 			return make_number(n);
 		}
+<<<<<<< HEAD
 		if( obj1->this.number.numtype == NUM_INTEGER && (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real !=0 )){
+=======
+		if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real!=0){
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 			n.numtype = NUM_REAL;
 			n.this.real = (double)obj1->this.number.this.integer / obj2->this.number.this.real;
 			return make_number(n);
 		}
+<<<<<<< HEAD
 		if( obj1->this.number.numtype == NUM_INTEGER && (obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer !=0 )){
 			n.numtype = NUM_REAL;
 			n.this.real = (double)obj1->this.number.this.integer / (double)obj2->this.number.this.integer;
@@ -192,6 +217,13 @@ object operation( object obj1,object obj2, char op ){
 				return make_symbol("-inf");
 		}
 
+=======
+		if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer!=0){
+			n.numtype = NUM_INTEGER;
+			n.this.integer = obj1->this.number.this.integer / obj2->this.number.this.integer;
+			return make_number(n);
+		}
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 	   case '<':
 		if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL){
 			if( obj1->this.number.this.real < obj2->this.number.this.real ) return VRAI;
@@ -267,6 +299,7 @@ object operation( object obj1,object obj2, char op ){
 }	
 
 object sfs_eval( object o ) {
+<<<<<<< HEAD
     object objres = NULL, obj = o;
     begin:
     switch(obj->type) {
@@ -287,52 +320,107 @@ object sfs_eval( object o ) {
 			if(isplus(car(obj)->this.symbol)){
 				objres = sfs_eval(car(cdr(obj)));
 				obj = cdr(cdr(obj));
+=======
+    object objres, obj = NULL;
+    switch(o->type) {
+	    case SFS_NUMBER:
+		return make_number(o->this.number);
+	    case SFS_CHARACTER:
+		return make_character(o->this.character);
+	    case SFS_STRING:
+	 	return make_string(o->this.string);
+	    case SFS_SYMBOL:
+		return make_symbol(o->this.symbol);
+	    case SFS_NIL:
+		return make_nil();
+	    case SFS_BOOLEAN:
+		return o;
+	    case SFS_PAIR:
+		if(car(o)->type == SFS_SYMBOL){
+			if(isplus(car(o)->this.symbol)){
+				objres = sfs_eval(car(cdr(o)));
+				obj = cdr(cdr(o));
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 				while( obj != nil){
 					objres = operation(objres,sfs_eval(car(obj)),'+');
 					obj = cdr(obj);
 				}
 				return objres;
 			}
+<<<<<<< HEAD
 			if(ismoins(car(obj)->this.symbol)){
 				objres = sfs_eval(car(cdr(obj)));
 				obj = cdr(cdr(obj));
+=======
+			if(ismoins(car(o)->this.symbol)){
+				objres = sfs_eval(car(cdr(o)));
+				obj = cdr(cdr(o));
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 				while( obj != nil){
 					objres = operation(objres,sfs_eval(car(obj)),'-');
 					obj = cdr(obj);
 				}
 				return objres;
 			}
+<<<<<<< HEAD
 			if(ismult(car(obj)->this.symbol)){
 				objres = sfs_eval(car(cdr(obj)));
 				obj = cdr(cdr(obj));
+=======
+			if(ismult(car(o)->this.symbol)){
+				objres = sfs_eval(car(cdr(o)));
+				obj = cdr(cdr(o));
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 				while( obj != nil){
 					objres = operation(objres,sfs_eval(car(obj)),'*');
 					obj = cdr(obj);
 				}
 				return objres;
 			}
+<<<<<<< HEAD
 			if(isdiv(car(obj)->this.symbol)){
 				objres = sfs_eval(car(cdr(obj)));
 				obj = cdr(cdr(obj));
 				while( obj != nil){
 					objres = operation(objres,sfs_eval(car(obj)),'/');
 					if(objres->type == SFS_SYMBOL && (!strcasecmp(objres->this.symbol,"+inf") || !strcasecmp(objres->this.symbol,"-inf")) ) break;
+=======
+			if(isdiv(car(o)->this.symbol)){
+				objres = sfs_eval(car(cdr(o)));
+				obj = cdr(cdr(o));
+				while( obj != nil){
+					objres = operation(objres,sfs_eval(car(obj)),'/');
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 					obj = cdr(obj);
 				}
 				return objres;
 			}
+<<<<<<< HEAD
 			if(isand(car(obj)->this.symbol)){
 				obj = cdr(obj);
 				while(obj != nil){
 					if( sfs_eval(car(obj)) == FAUX ) return FAUX;
+=======
+			if(isand(car(o)->this.symbol)){
+				obj = cdr(o);
+				while(obj != nil){
+					if( car(obj)->type == SFS_BOOLEAN && car(obj)->this.boolean == FAUX ) return FAUX;
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 					obj = cdr(obj);
 				}
 				return VRAI;
 			}
+<<<<<<< HEAD
 			if(isor(car(obj)->this.symbol)){
 				obj = cdr(obj);
 				while(obj != nil){
 					if( sfs_eval(car(obj)) == FAUX ){
+=======
+			if(isor(car(o)->this.symbol)){
+				obj = cdr(o);
+				while(obj != nil){
+					if( car(obj)->type == SFS_BOOLEAN && car(obj)->this.boolean == FAUX ){
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 						obj = cdr(obj);
 						continue;
 					}
@@ -340,6 +428,7 @@ object sfs_eval( object o ) {
 				}
 				return FAUX;
 			}
+<<<<<<< HEAD
 			if(isinf(car(obj)->this.symbol)){
 				return operation(sfs_eval(car(cdr(obj))) , sfs_eval(car(cdr(cdr(obj)))), '<');
 			}
@@ -374,6 +463,30 @@ object sfs_eval( object o ) {
 				return objres;
 			}
 								  
+=======
+			if(isinf(car(o)->this.symbol)){
+				return operation(sfs_eval(car(cdr(o))) , sfs_eval(car(cdr(cdr(o)))), '<');
+			}
+			if(issup(car(o)->this.symbol)){
+				return operation(sfs_eval(car(cdr(o))) , sfs_eval(car(cdr(cdr(o)))), '>');
+			}
+			if(isif(car(o)->this.symbol)){
+				obj = cdr(o);
+				begin:
+				if( sfs_eval(car(obj)) == VRAI ){
+					obj = cdr(obj);
+					if( obj != nil ) goto begin;
+					return;
+				}
+				if( sfs_eval(car(obj)) == FAUX ){
+					obj = cdr(cdr(obj));
+					if( cdr(cdr(cdr(o))) == nil ) return FAUX;
+					if( obj != nil ) goto begin;
+					return;					
+				}
+				return sfs_eval(car(obj));
+			}				  
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 		}
 
     default:
@@ -381,7 +494,11 @@ object sfs_eval( object o ) {
     }
     
 		
+<<<<<<< HEAD
     return objres;
+=======
+    return obj;
+>>>>>>> 6abfdeef7b7dba83c4d6fe3095b6c45f83410695
 }
 
 

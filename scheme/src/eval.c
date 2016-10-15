@@ -267,7 +267,7 @@ object operation( object obj1,object obj2, char op ){
 }	
 
 object sfs_eval( object o ) {
-    object objres = NULL, obj = o;
+    object objres = NULL, obj = o , env_incr=*penv;
     begin:
     switch(obj->type) {
 	    case SFS_NUMBER:
@@ -380,18 +380,25 @@ object sfs_eval( object o ) {
 				obj = cdr(obj);
 				if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == SFS_NIL) /*formulation du define correcte*/
 				{
-					if(is_symbol_in_env( *penv, car(obj)->this.symbol ) == nil){/*pas certain du nom de penv*/
-						set_symbol_value_in_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))));
-					}
+					if( set_symbol_value_in_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj)))) == nil){return;}/*pas certain du nom de penv*/
 					else{
 						add_symbol_to_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))) );
+						return;
 					}
 				}
 			}
-			if(!is_symbol_in_env(*penv , car(obj))  
-			{
-				
-}
+			if(isset(car(obj)->this.symbol){
+				obj = cdr(obj);
+				if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == SFS_NIL) /*formulation du set correcte*/
+				{
+					while(set_symbol_value_in_env( env_incr, car(obj)->this.symbol, sfs_eval(car(cdr(obj)))) == nil && cdr(env_incr) == nil]/*pas certain du nom de penv*/
+					{
+						env_incr=cdr(env_incr);
+					}
+					if(set_symbol_value_in_env( env_incr, car(obj)->this.symbol, sfs_eval(car(cdr(obj)))) == nil){
+					WARNING_MSG("The symbol %s can't be set (he doesn't exist) --- Aborts",car(obj)->this.symbol);}
+					return;
+				}
 								  
 		}
 		else{ /*le car d'un debut d'arbre ne peut pas etre une paire*/

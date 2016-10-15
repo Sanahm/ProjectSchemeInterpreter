@@ -39,7 +39,7 @@ int isdefine(char*str){
 	return 0;
 }
 int isset(char*str){
-	if(!strcasecmp("set",str)) return 1;
+	if(!strcasecmp("set!",str)) return 1;
 	return 0;
 }
 int isplus(char*str){
@@ -277,7 +277,7 @@ object sfs_eval( object o ) {
 	    case SFS_STRING:
 	 	return obj;
 	    case SFS_SYMBOL:
-		return obj;
+		return get_symbol_value(*penv,o);/*pas certain du nom de penv*/
 	    case SFS_NIL:
 		return obj;
 	    case SFS_BOOLEAN:

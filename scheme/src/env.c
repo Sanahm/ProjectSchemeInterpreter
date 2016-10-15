@@ -13,7 +13,7 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include"eval.h"
-#define A 31
+#define A 31 /*utilisé seulement dans la fonction de hachage (dangereux si A réutilisé)*/
 
 
 object research_symbol_in_obj( object o, object symb ){
@@ -22,7 +22,7 @@ object research_symbol_in_obj( object o, object symb ){
 		if( !strcasecmp(car(obj)->this.symbol,symb->this.symbol) ) return obj;
 		obj = cdr(obj);
 	}
-	return NULL;
+	return nil;
 }	
 
 
@@ -32,7 +32,7 @@ object is_symbol_in_env( object env, object symb ){
 
 object is_symbol_in_all_env( object env, object symb ){
 
-	if( car(env) == nil) return NULL;
+	if( car(env) == nil) return nil;
 	if( is_symbol_in_env( car(env), symb) ) return is_symbol_in_env( car(env), symb);
 	return is_symbol_in_all_env( cdr(env),symb );	
 }
@@ -62,7 +62,7 @@ void add_symbol_to_env( object env, object symb, object value ){
 		car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)]= obj;
 	}
 }
-int set_symbol_value_in_env( object env, object symb, object value){
+int set_symbol_value_in_env( object env, object symb, object value){/*renvoyer un objet plutot qu'un int*/
 
 	if(!is_symbol_in_env( env,symb )) return 0;
 	is_symbol_in_env( env,symb )->this.pair.cdr = value;

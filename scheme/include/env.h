@@ -13,7 +13,7 @@
 
 #include "object.h"
 
-object research_symbol_in_obj( object o, object symb );
+object research_symbol_in_obj( object o, object symb );/*recherche symbole dans une case de la table de hachage*/
 object is_symbol_in_env( object env, object symb );
 object is_symbol_in_all_env( object env, object symb );
 object get_symbol_value( object env, object symb);

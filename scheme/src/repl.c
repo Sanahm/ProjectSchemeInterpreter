@@ -47,12 +47,12 @@ void init_interpreter ( void ) {
 /*definition du top level*/
     add_symbol_to_env( environment,make_symbol("quote"),nil );
     add_symbol_to_env( environment,make_symbol("define"),nil );
-    add_symbol_to_env( environment,make_symbol("set"),nil );
+    add_symbol_to_env( environment,make_symbol("set!"),nil );
     add_symbol_to_env( environment,make_symbol("begin"),nil );
     add_symbol_to_env( environment,make_symbol("if"),nil );
     add_symbol_to_env( environment,make_symbol("and"),nil );
     add_symbol_to_env( environment,make_symbol("or"),nil );
-/*toutes ces formes doivent être disponible au lancé de scheme, dans l'interpreteur*/
+/*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 
 int main ( int argc, char *argv[] ) {
@@ -154,7 +154,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 
-        output = sfs_eval( sexpr );
+        output = sfs_eval( sexpr ); 
         if( NULL == output) {
             /* si fichier alors on sort */
             if (mode == SCRIPT) {

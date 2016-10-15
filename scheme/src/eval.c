@@ -373,7 +373,29 @@ object sfs_eval( object o ) {
 				}
 				return objres;
 			}
+			if(isquote(car(obj)->this.symbol)){
+				return cdr(obj);
+			}
+			if(isdefine(car(obj)->this.symbol)){
+				obj = cdr(obj);
+				if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == SFS_NIL) /*formulation du define correcte*/
+				{
+					if(is_symbol_in_env( *penv, car(obj)->this.symbol ) == nil){/*pas certain du nom de penv*/
+						set_symbol_value_in_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))));
+					}
+					else{
+						add_symbol_to_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))) );
+					}
+				}
+			}
+			if(!is_symbol_in_env(*penv , car(obj))  
+			{
+				
+}
 								  
+		}
+		else{ /*le car d'un debut d'arbre ne peut pas etre une paire*/
+			WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
 		}
 
     default:

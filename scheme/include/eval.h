@@ -35,7 +35,7 @@ int issupe(char*str);
 object car(object o);
 object cdr(object o);
 object operation( object obj1,object obj2, char op );
-object sfs_eval( object );
+object sfs_eval( object o);
 
 #ifdef __cplusplus
 }

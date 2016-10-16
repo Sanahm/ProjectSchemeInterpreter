@@ -18,8 +18,8 @@ object is_symbol_in_env( object env, object symb );
 object is_symbol_in_all_env( object env, object symb );
 object get_symbol_value( object env, object symb);
 int hachage(char*mot,int dim_tab_hach);
-void add_symbol_to_env( object env, object symb, object value );
-int set_symbol_value_in_env( object env, object symb, object value);
+object add_symbol_to_env( object env, object symb, object value );
+object set_symbol_value_in_env( object env, object symb, object value);
 void add_new_env(object* env);
 
 #endif

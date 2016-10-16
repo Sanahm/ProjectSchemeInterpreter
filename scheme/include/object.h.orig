@@ -37,7 +37,7 @@ typedef struct object_t {
         struct object_t *special;
         struct object_t *nil; /*nil <--> empty_list*/
         struct object_t *boolean;
-        struct object_t * *tab;
+	struct object_t * *tab;
 
     } this;
 

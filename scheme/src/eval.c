@@ -267,7 +267,7 @@ object operation( object obj1,object obj2, char op ) {
 }
 
 object sfs_eval( object o ) {
-    object objres = NULL, obj = o , env_incr=*penv;
+    object objres = NULL, obj = o , env_incr=environment;
 begin:
     switch(obj->type) {
     case SFS_NUMBER:
@@ -277,7 +277,7 @@ begin:
     case SFS_STRING:
         return obj;
     case SFS_SYMBOL:
-        return get_symbol_value(*penv,o);/*pas certain du nom de penv*/
+        return get_symbol_value(environment,o);
     case SFS_NIL:
         return obj;
     case SFS_BOOLEAN:
@@ -376,16 +376,17 @@ begin:
             if(isquote(car(obj)->this.symbol)) {
                 return cdr(obj);
             }
+		
             if(isdefine(car(obj)->this.symbol)) {
                 obj = cdr(obj);
-                if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == SFS_NIL) /*formulation du define correcte*/
+		
+                if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                 {
-                    if( is_symbol_in_env( *penv, car(obj)->this.symbol ) != nil) {
-                        return set_symbol_value_in_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))));/*pas certain du nom de penv*/
+                    if( is_symbol_in_env( environment, car(obj) ) != nil) {
+                        return set_symbol_value_in_env( environment, car(obj), sfs_eval(car(cdr(obj))));
                     }
                     else {
-                        return add_symbol_to_env( *penv, car(obj)->this.symbol, sfs_eval(car(cdr(obj))) );
-
+                        return add_symbol_to_env( environment, car(obj), sfs_eval(car(cdr(obj))) );
                     }
                 }
                 else {
@@ -395,17 +396,17 @@ begin:
             }
             if(isset(car(obj)->this.symbol)) {
                 obj = cdr(obj);
-                if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == SFS_NIL) /*formulation du set correcte*/
+                if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                 {
-                    while( is_symbol_in_env( env_incr, car(obj)->this.symbol ) == nil && cdr(env_incr) != nil )
+                    while( is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )
                     {
                         env_incr=cdr(env_incr);
                     }
-                    if(set_symbol_value_in_env( env_incr, car(obj)->this.symbol, sfs_eval(car(cdr(obj)))) == nil) {
+                    if(set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj)))) == nil) {
                         WARNING_MSG("The symbol %s can't be set (he doesn't exist) --- Aborts",car(obj)->this.symbol);
                         return nil;
                     }
-                    return set_symbol_value_in_env( env_incr, car(obj)->this.symbol, sfs_eval(car(cdr(obj))));
+                    return set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
                 }
                 else {
                     WARNING_MSG("Not a correct set! syntaxe --- Aborts");
@@ -414,6 +415,7 @@ begin:
             }
             else { /*le car d'un debut d'arbre ne peut pas etre une paire*/
                 WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
+		return obj;
             }
 
         default:

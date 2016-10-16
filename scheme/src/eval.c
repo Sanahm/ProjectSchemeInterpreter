@@ -402,11 +402,12 @@ begin:
                     {
                         env_incr=cdr(env_incr);
                     }
-                    if(set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj)))) == nil) {
+		objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
+                    if(objres == nil) {
                         WARNING_MSG("The symbol %s can't be set (he doesn't exist) --- Aborts",car(obj)->this.symbol);
                         return nil;
                     }
-                    return car(set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj)))));
+                    return car(objres);
                 }
                 else {
                     WARNING_MSG("Not a correct set! syntaxe --- Aborts");

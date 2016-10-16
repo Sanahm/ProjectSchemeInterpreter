@@ -88,7 +88,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     init_interpreter();
-
+	
     /*par defaut : mode shell interactif */
     fp = stdin;
     mode = INTERACTIF;

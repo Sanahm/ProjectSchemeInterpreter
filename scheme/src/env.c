@@ -17,10 +17,10 @@
 
 
 object research_symbol_in_obj( object o, object symb ) {
-    object obj = o;
+    object obj = car(o);
     while( obj != nil && obj != NULL ) {
         if( !strcasecmp(car(obj)->this.symbol,symb->this.symbol) ) return obj;
-        obj = cdr(obj);
+        obj = car(cdr(o));
     }
     return nil;
 }
@@ -33,7 +33,7 @@ object is_symbol_in_env( object env, object symb ) {
 object is_symbol_in_all_env( object env, object symb ) {
 
     if( car(env) == nil) return nil;
-    if( is_symbol_in_env( car(env), symb) ) return is_symbol_in_env( car(env), symb);
+    if( is_symbol_in_env( env, symb) ) return is_symbol_in_env( env, symb);
     return is_symbol_in_all_env( cdr(env),symb );
 }
 
@@ -60,7 +60,8 @@ object add_symbol_to_env( object env, object symb, object value ) {
         obj->this.pair.car->this.pair.car = symb;
         obj->this.pair.car->this.pair.cdr = value;
         obj->this.pair.cdr = car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)];
-        return car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)]= obj;
+        car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)]= obj;
+	return obj->this.pair.car;
     }
     return nil;
 }
@@ -72,9 +73,9 @@ object set_symbol_value_in_env( object env, object symb, object value) { /*renvo
 }
 
 void add_new_env(object* env) {
-    object obj = make_pair();
+    object obj = make_env();
     if(obj) {
-        obj->this.pair.car = make_env();
+        
         obj->this.pair.cdr = *env;
         *env = obj;
     }

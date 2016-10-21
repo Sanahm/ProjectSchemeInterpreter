@@ -278,7 +278,10 @@ begin:
         return obj;
     case SFS_SYMBOL:
     	if(!get_symbol_value(environment,obj)){
-    		REPORT_MSG(";ERROR: unbound variable: %s.\n",obj->this.symbol);
+    		REPORT_MSG(";ERROR: unbound variable: %s\n ;no previous definition.\n",obj->this.symbol);
+    		if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+    		else REPORT_MSG("; in scope environment\n");
+    		
     	}
         return get_symbol_value(environment,obj);
     case SFS_NIL:
@@ -326,8 +329,14 @@ begin:
                 return objres;
             }
             if(isand(car(obj)->this.symbol)) {
+            	objres = obj;
                 obj = cdr(obj);
                 while(obj != nil) {
+                	if( sfs_eval(car(obj)) == NULL ){
+                		REPORT_MSG("; in expression: ");
+                		sfs_print(objres); printf("\n");
+                		return NULL;
+                	}
                     if( sfs_eval(car(obj)) == FAUX ) return FAUX;
                     obj = cdr(obj);
                 }
@@ -336,6 +345,11 @@ begin:
             if(isor(car(obj)->this.symbol)) {
                 obj = cdr(obj);
                 while(obj != nil) {
+                	if( sfs_eval(car(obj)) == NULL ){
+                		REPORT_MSG("; in expression: ");
+                		sfs_print(objres); printf("\n");
+                		return NULL;
+                	}                
                     if( sfs_eval(car(obj)) == FAUX ) {
                         obj = cdr(obj);
                         continue;
@@ -344,15 +358,18 @@ begin:
                 }
                 return FAUX;
             }
+            
             if(isinf(car(obj)->this.symbol)) {
                 return operation(sfs_eval(car(cdr(obj))) , sfs_eval(car(cdr(cdr(obj)))), '<');
             }
+            
             if(issup(car(obj)->this.symbol)) {
                 return operation(sfs_eval(car(cdr(obj))) , sfs_eval(car(cdr(cdr(obj)))), '>');
             }
+            
             if(isif(car(obj)->this.symbol)) {
                 objres = obj; obj = cdr(obj);
-                if(obj==nil){
+                if(obj == nil || obj == NULL){
                     REPORT_MSG(";ERROR: if: missing predicat.\n; in expression : "); 
                     sfs_print(objres); printf("\n");
                     REPORT_MSG("; expected form : (if predicat consequence alternative).\n");           
@@ -370,15 +387,20 @@ begin:
                 }
 
                 else{
-                    if( car(cdr(cdr(obj))) != nil ) {
+                    if( car(cdr(cdr(obj))) != nil ) { /*on teste pour savoir si y'a la conséquence ou pas*/
                         obj = car(cdr(cdr(obj)));
                         goto begin;
                     } else return FAUX;
                 }
-                return NULL;
             }
+            
             if(isbegin(car(obj)->this.symbol)) {
-                objres = sfs_eval(car(cdr(obj)));
+                objres = obj;
+                if( cdr(obj) == nil || cdr(obj) == NULL ){
+                	REPORT_MSG("#<unspecified>\n");
+                	return NULL;
+                }
+                objres = sfs_eval(car(cdr(obj))); 
                 obj = cdr(cdr(obj));
                 while( obj != nil) {
                     objres = sfs_eval(car(obj));
@@ -387,11 +409,19 @@ begin:
                 return objres;
             }
             if(isquote(car(obj)->this.symbol)) {
+            	if( cdr(obj) == nil ){
+            		REPORT_MSG(";ERROR: quote: missing or extra expression ");
+            		sfs_print(obj); printf("\n");
+            		REPORT_MSG("; in expression: ");
+            		sfs_print(obj); printf("\n");
+					if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment\n");
+				}
                 return car(cdr(obj));
             }
 		
             if(isdefine(car(obj)->this.symbol)) {
-                obj = cdr(obj);
+                objres = obj; obj = cdr(obj); 
 		
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                 {
@@ -403,33 +433,46 @@ begin:
                     }
                 }
                 else {
-                    WARNING_MSG("Not a correct define syntaxe --- Aborts");
+            		REPORT_MSG(";ERROR: define: missing or extra expression ");
+            		sfs_print(objres); printf("\n");
+            		REPORT_MSG("; in expression: ");
+            		sfs_print(objres); printf("\n");
+					if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment\n");
                     return nil;
                 }
             }
             if(isset(car(obj)->this.symbol)) {
-                obj = cdr(obj);
+                objres= obj; obj = cdr(obj);
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                 {
                     while( is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )
                     {
                         env_incr=cdr(env_incr);
                     }
-		objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
-                    if(objres == nil) {
-                        WARNING_MSG("The symbol %s can't be set (he doesn't exist) --- Aborts",car(obj)->this.symbol);
-                        return nil;
+					objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
+					if(objres == nil) {
+						REPORT_MSG(";ERROR: unbound variable: %s\n ;no previous definition.\n",car(obj)->this.symbol);
+						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+						else REPORT_MSG("; in scope environment\n");      
+		                return nil;
                     }
                     return car(objres);
                 }
                 else {
-                    WARNING_MSG("Not a correct set! syntaxe --- Aborts");
+                    REPORT_MSG(";ERROR: set!: missing or extra expression ");
+		    		sfs_print(objres); printf("\n");
+		    		REPORT_MSG("; in expression: ");
+		    		sfs_print(objres); printf("\n");
+					if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment\n");
                     return nil;
                 }
-            }
-            else { /*le car d'un debut d'arbre ne peut pas etre une paire*/
-                WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
-		return nil;
+           }
+       }
+       else { /*le car d'un debut d'arbre ne peut pas etre une paire*/
+            WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
+			return nil;
             }
 
         default:
@@ -438,7 +481,7 @@ begin:
 
 
         return objres;
-    }
+    
 
 }
 

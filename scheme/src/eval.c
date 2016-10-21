@@ -267,7 +267,7 @@ object operation( object obj1,object obj2, char op ) {
 }
 
 object sfs_eval( object o ) {
-    object objres = NULL, obj = o , env_incr=environment;
+    object objres = NULL, obj = o , env_incr=environment;int i = 0;
 begin:
     switch(obj->type) {
     case SFS_NUMBER:
@@ -277,7 +277,10 @@ begin:
     case SFS_STRING:
         return obj;
     case SFS_SYMBOL:
-        return get_symbol_value(environment,o);
+    	if(!get_symbol_value(environment,obj)){
+    		REPORT_MSG(";ERROR: unbound variable: %s.\n",obj->this.symbol);
+    	}
+        return get_symbol_value(environment,obj);
     case SFS_NIL:
         return obj;
     case SFS_BOOLEAN:
@@ -285,6 +288,7 @@ begin:
     case SFS_PAIR:
         if(car(obj)->type == SFS_SYMBOL) {
             if(isplus(car(obj)->this.symbol)) {
+            	i = 1;
                 objres = sfs_eval(car(cdr(obj)));
                 obj = cdr(cdr(obj));
                 while( obj != nil) {
@@ -347,22 +351,31 @@ begin:
                 return operation(sfs_eval(car(cdr(obj))) , sfs_eval(car(cdr(cdr(obj)))), '>');
             }
             if(isif(car(obj)->this.symbol)) {
-                obj = cdr(obj);
-                if( sfs_eval(car(obj)) == VRAI ) {
-                    if( car(cdr(obj)) != nil ) {
+                objres = obj; obj = cdr(obj);
+                if(obj==nil){
+                    REPORT_MSG(";ERROR: if: missing predicat.\n; in expression : "); 
+                    sfs_print(objres); printf("\n");
+                    REPORT_MSG("; expected form : (if predicat consequence alternative).\n");           
+                	return NULL;
+                }
+                if( sfs_eval(car(obj)) != FAUX ) {
+                    if( car(cdr(obj)) != NULL && car(cdr(obj)) != nil ) {
                         obj = car(cdr(obj));
                         goto begin;
                     }
-                    return;
+                    REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
+                    sfs_print(objres); printf("\n");   
+                    REPORT_MSG("; expected form : (if predicat consequence alternative).\n");       
+                	return NULL;
                 }
 
-                if( sfs_eval(car(obj)) == FAUX ) {
+                else{
                     if( car(cdr(cdr(obj))) != nil ) {
                         obj = car(cdr(cdr(obj)));
                         goto begin;
                     } else return FAUX;
-                    return;
                 }
+                return NULL;
             }
             if(isbegin(car(obj)->this.symbol)) {
                 objres = sfs_eval(car(cdr(obj)));

@@ -21,6 +21,7 @@ extern "C" {
 #define FOR_ERRORS      0x00
 #define FOR_WARNINGS    0x01
 #define FOR_INFOS       0x02
+#define FOR_REPORTS     0x03
 
 #define STYLE_OFF       0x00
 #define STYLE_BOLD      0x01
@@ -41,18 +42,22 @@ extern "C" {
 #define STYLE_ERROR       STYLE_BLINK
 #define STYLE_WARNING     STYLE_BOLD
 #define STYLE_INFO        STYLE_BOLD
+#define STYLE_REPORT      STYLE_BOLD
 
 #define COLOR_ERROR       COLOR_RED
 #define COLOR_WARNING     COLOR_YELLOW
 #define COLOR_INFO        COLOR_GREEN
+#define COLOR_REPORT      COLOR_YELLOW
 
 #define STYLE(purpose)						\
   (purpose == FOR_ERRORS ? STYLE_ERROR :			\
-   (purpose == FOR_WARNINGS ? STYLE_WARNING : STYLE_INFO ))
+   (purpose == FOR_WARNINGS ? STYLE_WARNING :  \
+	(purpose == FOR_REPORTS ? STYLE_REPORT : STYLE_INFO )))
 
 #define COLOR(purpose)							\
   (purpose == FOR_ERRORS ? COLOR_ERROR :				\
-   (purpose == FOR_WARNINGS ? COLOR_WARNING : COLOR_INFO ))
+   (purpose == FOR_WARNINGS ? COLOR_WARNING : \
+    (purpose == FOR_REPORTS ? COLOR_REPORT : COLOR_INFO )))
 
 #define ON(stream) stream
 #define RESET_COLORS(on_stream)			\
@@ -79,6 +84,16 @@ extern "C" {
     SET_COLORS(FOR_WARNINGS, ON(stderr));				\
     fprintf( stderr, __VA_ARGS__ );					\
     fprintf( stderr, ".\n" );						\
+    RESET_COLORS(ON(stderr));						\
+} while( 0 )
+
+#define REPORT_MSG(...) do {						\
+    fprintf( stderr, "%c[%d;%dm", 0x1B, STYLE_BOLD, COLOR_BLUE );	\
+    /*fprintf( stderr, "[WARNING:: %s:%s:%d] ",				\
+	     __FILE__, __FUNCTION__, __LINE__ );*/			\
+    SET_COLORS(FOR_REPORTS, ON(stderr));				\
+    fprintf( stderr, __VA_ARGS__ );					\
+    /*fprintf( stderr, ".\n" );	*/					\
     RESET_COLORS(ON(stderr));						\
 } while( 0 )
 

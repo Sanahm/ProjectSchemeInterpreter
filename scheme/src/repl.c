@@ -45,13 +45,13 @@ void init_interpreter ( void ) {
 
     environment = make_env();
     /*definition du top level*/
-    add_symbol_to_env( environment,make_symbol("quote"),nil );
-    add_symbol_to_env( environment,make_symbol("define"),nil );
-    add_symbol_to_env( environment,make_symbol("set!"),nil );
-    add_symbol_to_env( environment,make_symbol("begin"),nil );
-    add_symbol_to_env( environment,make_symbol("if"),nil );
-    add_symbol_to_env( environment,make_symbol("and"),nil );
-    add_symbol_to_env( environment,make_symbol("or"),nil );
+    add_symbol_to_env( environment,make_symbol("quote"),make_symbol("quote") );
+    add_symbol_to_env( environment,make_symbol("define"),make_symbol("define") );
+    add_symbol_to_env( environment,make_symbol("set!"),make_symbol("set!") );
+    add_symbol_to_env( environment,make_symbol("begin"),make_symbol("begin") );
+    add_symbol_to_env( environment,make_symbol("if"),make_symbol("if") );
+    add_symbol_to_env( environment,make_symbol("and"),make_symbol("and") );
+    add_symbol_to_env( environment,make_symbol("or"),make_symbol("or") );
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 

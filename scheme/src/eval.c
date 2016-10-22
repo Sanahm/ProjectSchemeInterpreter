@@ -331,6 +331,7 @@ begin:
             if(isand(car(obj)->this.symbol)) {
             	objc = obj;
                 obj = cdr(obj);
+                if(obj == nil) return VRAI;
                 while(obj != nil) {
                 	objres = sfs_eval(car(obj));
                 	if( objres == NULL ){

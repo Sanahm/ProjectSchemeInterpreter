@@ -267,7 +267,7 @@ object operation( object obj1,object obj2, char op ) {
 }
 
 object sfs_eval( object o ) {
-    object objres = NULL, obj = o , env_incr=environment;int i = 0;
+    object objres,objc = NULL, obj = o , env_incr=environment;int i = 0;
 begin:
     switch(obj->type) {
     case SFS_NUMBER:
@@ -278,7 +278,7 @@ begin:
         return obj;
     case SFS_SYMBOL:
     	if(!get_symbol_value(environment,obj)){
-    		REPORT_MSG(";ERROR: unbound variable: %s\n ;no previous definition.\n",obj->this.symbol);
+    		REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
     		if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
     		else REPORT_MSG("; in scope environment\n");
     		
@@ -329,21 +329,22 @@ begin:
                 return objres;
             }
             if(isand(car(obj)->this.symbol)) {
-            	objres = obj;
+            	objc = obj;
                 obj = cdr(obj);
                 while(obj != nil) {
-                	if( sfs_eval(car(obj)) == NULL ){
+                	objres = sfs_eval(car(obj));
+                	if( objres == NULL ){
                 		REPORT_MSG("; in expression: ");
-                		sfs_print(objres); printf("\n");
+                		sfs_print(objc); printf("\n");
                 		return NULL;
                 	}
-                    if( sfs_eval(car(obj)) == FAUX ) return FAUX;
+                    if( objres == FAUX ) return FAUX;
                     obj = cdr(obj);
                 }
-                return VRAI;
+                return objres;
             }
             if(isor(car(obj)->this.symbol)) {
-                obj = cdr(obj);
+                objres = obj; obj = cdr(obj);
                 while(obj != nil) {
                 	if( sfs_eval(car(obj)) == NULL ){
                 		REPORT_MSG("; in expression: ");
@@ -354,7 +355,7 @@ begin:
                         obj = cdr(obj);
                         continue;
                     }
-                    return VRAI;
+                    return sfs_eval(car(obj));
                 }
                 return FAUX;
             }

@@ -470,7 +470,11 @@ begin:
                 }
            }
        }
-       else { /*le car d'un debut d'arbre ne peut pas etre une paire*/
+	if(car(obj)->type == SFS_PAIR){
+		obj->this.pair.car=sfs_eval(car(obj));
+		return sfs_eval(obj);
+	}
+       else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
             WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
 			return nil;
             }

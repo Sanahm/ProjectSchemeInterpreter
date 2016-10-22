@@ -112,7 +112,7 @@ object make_env(void) {
 	
         t->this.pair.car = make_object(SFS_TAB);
         t->this.pair.cdr = nil;
-        t->this.pair.car->this.tab = sfs_malloc(SFS_TAB);
+        t->this.pair.car->this.tab = (object) calloc(SFS_TAB,sizeof(*t->this.pair.car->this.tab));
     }
 	
     return t;

@@ -13,14 +13,15 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include"eval.h"
+#include<math.h>
 #define A 31 /*utilisé seulement dans la fonction de hachage (dangereux si A réutilisé)*/
 
 
 object research_symbol_in_obj( object o, object symb ) {
-    object obj = car(o);
+    object obj = o;
     while( obj != nil && obj != NULL ) {
-        if( !strcasecmp(car(obj)->this.symbol,symb->this.symbol) ) return obj;
-        obj = car(cdr(o));
+        if( !strcasecmp(car(car(obj))->this.symbol,symb->this.symbol) ) return car(obj);
+        obj = cdr(obj);
     }
     return nil;
 }
@@ -49,14 +50,13 @@ int hachage(char*mot,int dim_tab_hach) {
     for(i=taillemot-2; i>=0; i--) {
         h=h*A+tolower(mot[i]);
     }
-    return h%dim_tab_hach;
+    return abs(h)%dim_tab_hach;
 }
 
 object add_symbol_to_env( object env, object symb, object value ) {
     object obj = make_pair();
     if(obj) {
         obj->this.pair.car = make_pair();
-
         obj->this.pair.car->this.pair.car = symb;
         obj->this.pair.car->this.pair.cdr = value;
         obj->this.pair.cdr = car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)];

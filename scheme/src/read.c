@@ -219,10 +219,16 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                         }
                     }
                     break;
+
                 case '"':
-                    if ( i<2 || chunk[i-1] != '\\' ) {
+                    if ( i<2 || chunk[i-1] != '\\') {
                         if ( in_string == FALSE ) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
+                            	if( chunk[i-1] == '\'' ){
+                            		typeOfExpressionFound = STRING_ATOME;
+                            		in_string = TRUE;
+                            		break;
+                            	}
                                 WARNING_MSG("Parse error: invalid string after atom : '%s'", chunk+i);
                                 return S_KO;
                             }

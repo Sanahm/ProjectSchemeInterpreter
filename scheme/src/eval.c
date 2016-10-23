@@ -280,7 +280,7 @@ begin:
     	if(!get_symbol_value(environment,obj)){
     		REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
     		if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-    		else REPORT_MSG("; in scope environment\n");
+    		else REPORT_MSG("; in scope environment.\n");
     		
     	}
         return get_symbol_value(environment,obj);
@@ -342,21 +342,37 @@ begin:
                     if( objres == FAUX ) return FAUX;
                     obj = cdr(obj);
                 }
+                if( objres->type == SFS_SYMBOL ){
+                	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
+                	sfs_print(objc); printf("\n");
+                	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment.\n");
+					return NULL;
+				}
                 return objres;
             }
             if(isor(car(obj)->this.symbol)) {
-                objres = obj; obj = cdr(obj);
+                objc = obj; obj = cdr(obj);
                 while(obj != nil) {
-                	if( sfs_eval(car(obj)) == NULL ){
+                	objres = sfs_eval(car(obj));
+                	if( objres == NULL ){
                 		REPORT_MSG("; in expression: ");
-                		sfs_print(objres); printf("\n");
+                		sfs_print(objc); printf("\n");
                 		return NULL;
                 	}                
-                    if( sfs_eval(car(obj)) == FAUX ) {
+                    if( objres == FAUX ) {
                         obj = cdr(obj);
                         continue;
                     }
-                    return sfs_eval(car(obj));
+                    if( objres->type == SFS_SYMBOL ){
+                    	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
+                    	sfs_print(objc); printf("\n");
+                    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+    					else REPORT_MSG("; in scope environment.\n");
+    					return NULL;
+    				}
+                    	
+                    return objres;
                 }
                 return FAUX;
             }
@@ -370,10 +386,10 @@ begin:
             }
             
             if(isif(car(obj)->this.symbol)) {
-                objres = obj; obj = cdr(obj);
+                objc = obj; obj = cdr(obj);
                 if(obj == nil || obj == NULL){
                     REPORT_MSG(";ERROR: if: missing predicat.\n; in expression : "); 
-                    sfs_print(objres); printf("\n");
+                    sfs_print(objc); printf("\n");
                     REPORT_MSG("; expected form : (if predicat consequence alternative).\n");           
                 	return NULL;
                 }
@@ -383,7 +399,7 @@ begin:
                         goto begin;
                     }
                     REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
-                    sfs_print(objres); printf("\n");   
+                    sfs_print(objc); printf("\n");   
                     REPORT_MSG("; expected form : (if predicat consequence alternative).\n");       
                 	return NULL;
                 }
@@ -472,19 +488,20 @@ begin:
                 }
            }
        }
-	if(car(obj)->type == SFS_PAIR){
-		obj->this.pair.car=sfs_eval(car(obj));
-		
-		return sfs_eval(obj);
-	}
+	   if(car(obj)->type == SFS_PAIR){
+	   		objres = sfs_eval(car(obj));
+	   		if( objres == NULL || objres == nil) return NULL;
+	   		obj->this.pair.car = objres;
+			return sfs_eval(obj);
+	   }
        else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
             WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
 			return nil;
-            }
+       }
 
-        default:
-            break;
-        }
+       default:
+           break;
+    }
 
 
         return objres;

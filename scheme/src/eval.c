@@ -424,15 +424,18 @@ begin:
 		
             if(isdefine(car(obj)->this.symbol)) {
                 objres = obj; obj = cdr(obj); 
-		
+		if(obj == SFS_PAIR && car(obj)->type == SFS_PAIR)obj->this.pair.car=sfs_eval(car(obj));
+
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                 {
+			
                     if( is_symbol_in_env( environment, car(obj) ) != nil) {
                         return car(set_symbol_value_in_env( environment, car(obj), sfs_eval(car(cdr(obj)))));
                     }
                     else {
                         return car(add_symbol_to_env( environment, car(obj), sfs_eval(car(cdr(obj))) ));
                     }
+			
                 }
                 else {
             		REPORT_MSG(";ERROR: define: missing or extra expression ");
@@ -446,6 +449,7 @@ begin:
             }
             if(isset(car(obj)->this.symbol)) {
                 objres= obj; obj = cdr(obj);
+		if(obj == SFS_PAIR && car(obj)->type == SFS_PAIR)obj->this.pair.car=sfs_eval(car(obj));
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                 {
                     while( is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )

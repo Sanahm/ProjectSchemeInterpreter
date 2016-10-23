@@ -17,7 +17,6 @@ extern "C" {
 
 #include "number.h"
 
-
 typedef struct object_t {
 
     uint type;

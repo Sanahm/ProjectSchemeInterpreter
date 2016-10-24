@@ -532,15 +532,12 @@ begin:
 		            {
 						objres = sfs_eval(car(cdr(obj)));
 		                if( is_symbol_in_env( environment, car(obj) ) != nil) {	
-		              		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(objc))->this.symbol) ){
+		              		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
 		              			REPORT_MSG(";WARNING: redefining built-in syntax\n", sfs_eval(car(obj))->this.symbol );
 		              		}	        
 		                    return car(set_symbol_value_in_env( environment, car(obj), objres ));
 		                }
 		                else {
-		              		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(objc))->this.symbol) ){
-		              			REPORT_MSG(";WARNING: redefining built-in syntax\n", sfs_eval(car(obj))->this.symbol );
-		              		}
 		                    return car(add_symbol_to_env( environment, car(obj), objres ));
 		                }
 			

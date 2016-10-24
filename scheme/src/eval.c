@@ -267,7 +267,7 @@ object operation( object obj1,object obj2, char op ) {
 }
 
 object sfs_eval( object o ) {
-    object objres,objc = NULL, obj = o , env_incr=environment;int i = 0;
+    object objres,objc = NULL, obj = o , env_incr=environment;
 begin:
     switch(obj->type) {
     case SFS_NUMBER:
@@ -291,7 +291,6 @@ begin:
     case SFS_PAIR:
         if(car(obj)->type == SFS_SYMBOL) {
             if(isplus(car(obj)->this.symbol)) {
-            	i = 1;
                 objres = sfs_eval(car(cdr(obj)));
                 obj = cdr(cdr(obj));
                 while( obj != nil) {
@@ -439,32 +438,55 @@ begin:
             }
 		
             if(isdefine(car(obj)->this.symbol)) {
-                objres = obj; obj = cdr(obj); 
-		
+                objc= obj; obj = cdr(obj);
+				if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
+                	REPORT_MSG(";ERROR: define: bad formals\n; in expression : ");
+                	sfs_print(car(obj)); printf("\n");
+                	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment.\n");
+					return nil;
+				   	/*objres = sfs_eval(car(obj));
+	   				if( objres == NULL || objres == nil) return NULL;
+	   				obj->this.pair.car = objres;*/ /* ça c'est ce que j'avais modifie de ton programme avant pour eviter de copier nil ou null dans le car*/
+	   			}
+
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                 {
+					objres = sfs_eval(car(cdr(obj)));
                     if( is_symbol_in_env( environment, car(obj) ) != nil) {
-                        return car(set_symbol_value_in_env( environment, car(obj), sfs_eval(car(cdr(obj)))));
+                        return car(set_symbol_value_in_env( environment, car(obj), objres ));
                     }
                     else {
-                        return car(add_symbol_to_env( environment, car(obj), sfs_eval(car(cdr(obj))) ));
+                        return car(add_symbol_to_env( environment, car(obj), objres ));
                     }
+			
                 }
                 else {
             		REPORT_MSG(";ERROR: define: missing or extra expression ");
-            		sfs_print(objres); printf("\n");
+            		sfs_print(objc); printf("\n");
             		REPORT_MSG("; in expression: ");
-            		sfs_print(objres); printf("\n");
+            		sfs_print(objc); printf("\n");
 					if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment\n");
                     return nil;
                 }
             }
             if(isset(car(obj)->this.symbol)) {
-                objres= obj; obj = cdr(obj);
+                objc= obj; obj = cdr(obj);
+				if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
+	                REPORT_MSG(";ERROR: set!: bad formals\n; in expression : ");
+                	sfs_print(car(obj)); printf("\n");
+                	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment.\n");
+					return nil;
+				   	/*objres = sfs_eval(car(obj));
+	   				if( objres == NULL || objres == nil) return NULL;
+	   				obj->this.pair.car = objres;*/
+	   			}
+				
                 if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                 {
-                    while( is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )
+                    while( (object) is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )
                     {
                         env_incr=cdr(env_incr);
                     }
@@ -479,9 +501,9 @@ begin:
                 }
                 else {
                     REPORT_MSG(";ERROR: set!: missing or extra expression ");
-		    		sfs_print(objres); printf("\n");
+		    		sfs_print(objc); printf("\n");
 		    		REPORT_MSG("; in expression: ");
-		    		sfs_print(objres); printf("\n");
+		    		sfs_print(objc); printf("\n");
 					if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment\n");
                     return nil;

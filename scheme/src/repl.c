@@ -149,7 +149,7 @@ int main ( int argc, char *argv[] ) {
                 /*macro ERROR_MSG : message d'erreur puis fin de programme ! */
                 ERROR_MSG("Invalid S-expression --- Aborts");
             }
-            /*WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
+            WARNING_MSG("Invalid S-expression --- Aborts");/*c'est moi qui ai ajoute ca*/
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }

@@ -299,7 +299,7 @@ begin:
         
     case SFS_PAIR:
         if(car(obj)->type == SFS_SYMBOL) {
-            if(isplus(car(obj)->this.symbol)) {
+            /*if(isplus(car(obj)->this.symbol)) {
                 objres = sfs_eval(car(cdr(obj)));
                 obj = cdr(cdr(obj));
                 while( obj != nil) {
@@ -346,7 +346,7 @@ begin:
             
             if(issup(car(obj)->this.symbol)) {
                 return operation(sfs_eval(car(cdr(obj))) , sfs_eval(car(cdr(cdr(obj)))), '>');
-            }
+            }*/
             
             if(isand(car(obj)->this.symbol)) {
                 objc = obj;
@@ -493,6 +493,7 @@ begin:
 		        }
             }
             if(isquote(car(obj)->this.symbol)) {
+            	objc = obj;
             	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){            
 		        	if( cdr(obj) == nil ){
 		        		REPORT_MSG(";ERROR: quote: missing or extra expression ");
@@ -531,15 +532,18 @@ begin:
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
 		            {
 						objres = sfs_eval(car(cdr(obj)));
-		                if( is_symbol_in_env( environment, car(obj) ) != nil) {	
-		              		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
-		              			REPORT_MSG(";WARNING: redefining built-in syntax\n", sfs_eval(car(obj))->this.symbol );
-		              		}	        
-		                    return car(set_symbol_value_in_env( environment, car(obj), objres ));
-		                }
-		                else {
-		                    return car(add_symbol_to_env( environment, car(obj), objres ));
-		                }
+						if(objres != NULL && objres !=nil){
+				            if( is_symbol_in_env( environment, car(obj) ) != nil) {	
+				          		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
+				          			REPORT_MSG(";WARNING: redefining built-in syntax\n", sfs_eval(car(obj))->this.symbol );
+				          		}	        
+				                return car(set_symbol_value_in_env( environment, car(obj), objres ));
+				            }
+				            else {
+				                return car(add_symbol_to_env( environment, car(obj), objres ));
+				            }
+				        }
+				        return nil;
 			
 		            }
 		            else {
@@ -594,9 +598,11 @@ begin:
 			            	sfs_print(objc); printf("\n");
 			            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 							else REPORT_MSG("; in scope environment.\n");
-							return NULL;
+							return nil;
 						}
-						objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
+						objres = sfs_eval(car(cdr(obj)));
+						if(objres == nil || objres == NULL) return nil;
+						objres = set_symbol_value_in_env( env_incr, car(obj), objres);
 
 		                return car(objres);
 		            }
@@ -628,7 +634,7 @@ begin:
 	   }
        else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
             WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
-			return nil;
+			return NULL;
        }
 
        default:

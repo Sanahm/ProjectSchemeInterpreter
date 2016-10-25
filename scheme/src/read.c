@@ -224,7 +224,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                     if ( i<2 || chunk[i-1] != '\\') {
                         if ( in_string == FALSE ) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
-                            	if( chunk[i-1] == '\'' ){
+                            	if( chunk[i-1] == '\'' || isspace(chunk[i-1])){
                             		typeOfExpressionFound = STRING_ATOME;
                             		in_string = TRUE;
                             		break;
@@ -456,27 +456,33 @@ object sfs_read_atom( char *input, uint *here ) {
     }
 
     if(input[*here] == '\'') {
-        int cpt = 0, par=0;
+        int cpt = 0, par=0, gui = 1;
         string strs = "( quote ";
         uint j = 0;
         (*here)++;
         i=0;
 
         cpt=1;
-
+	    while( isspace(input[*here]) && *here < strlen(input)){
+	    	(*here)++;
+	    	j++;
+	    }
         while(*here < strlen(input) && cpt!=0 ) {
-
-            if( input[*here]=='(' && input[*here-1]=='\'' && par==0) {
+        	if( input[*here] == '\"'){
+        	 	if (input[*here-j-1] == '\'') gui = 1;
+        	 	if (input[*here-1] != '\\') gui--;
+        	}
+            if( input[*here]=='(' && input[*here-j-1]=='\'' && par==0) {
                 par=1;
                 cpt--;
             }
-            if(par) {
+            if(par && input[*here-1] !='\\') {
                 if(input[*here]==')') cpt--;
                 if(input[*here]=='(') cpt++;
 
             }
             else {
-                if(input[*here]==')' || input[*here]=='(' || isspace(input[*here])) {
+                if(input[*here]==')' || input[*here]=='(' || (isspace(input[*here]) && gui == 1)) {
 
                     break;
                 }
@@ -490,9 +496,8 @@ object sfs_read_atom( char *input, uint *here ) {
 
         str[i] = ')';
         str[i+1] = '\0';
-
         strcat(strs,str);
-
+		j = 0;
         return sfs_read(strs, &j);;
     }
 

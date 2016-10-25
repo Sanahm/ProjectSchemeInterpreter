@@ -14,6 +14,5 @@
 (set! 8 x)
 (set! 8 x)
 ==> ()
-(set! (or #t #f) 8)
-(set! (or #t #f) 8)
+(or #t #f)
 ==> ()

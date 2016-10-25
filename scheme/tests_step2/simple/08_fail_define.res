@@ -14,6 +14,5 @@
 (define 8 x)
 (define 8 x)
 ==> ()
-(define (or #t #f) 8)
-(define (or #t #f) 8)
+(or #t #f)
 ==> ()

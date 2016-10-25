@@ -68,8 +68,11 @@ object add_symbol_to_env( object env, object symb, object value ) {
 object set_symbol_value_in_env( object env, object symb, object value) { /*renvoyer un objet plutot qu'un int*/
 
     if(!is_symbol_in_env( env,symb )) return nil;
-    is_symbol_in_env( env,symb )->this.pair.cdr = value;
-    return is_symbol_in_env( env,symb );
+    if(value != NULL){
+		is_symbol_in_env( env,symb )->this.pair.cdr = value;
+		return is_symbol_in_env( env,symb );
+	}
+	return NULL;
 }
 
 void add_new_env(object* env) {

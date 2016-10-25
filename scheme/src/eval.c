@@ -578,17 +578,26 @@ begin:
 				
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
 		            {
-		                while( (object) is_symbol_in_env( env_incr, car(obj) ) == nil && cdr(env_incr) != nil )
+		                while( env_incr != nil && (object) is_symbol_in_env( env_incr, car(obj) ) == nil )
 		                {
 		                    env_incr=cdr(env_incr);
 		                }
-						objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
-						if(objres == nil) {
-							REPORT_MSG(";ERROR: unbound variable: %s\n ;no previous definition.\n",car(obj)->this.symbol);
+						if(env_incr == nil) {
+							REPORT_MSG(";ERROR: unbound variable: %s\n ; no previous definition.\n",car(obj)->this.symbol);
 							if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 							else REPORT_MSG("; in scope environment\n");      
 				            return nil;
 		                }
+		                objres = sfs_eval(car(obj));
+		                if( (objres != nil && objres != NULL) && (objres->type == SFS_SYMBOL) && (car(obj)->type == SFS_SYMBOL) && !strcasecmp(objres->this.symbol,car(obj)->this.symbol) ){
+			            	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
+			            	sfs_print(objc); printf("\n");
+			            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+							else REPORT_MSG("; in scope environment.\n");
+							return NULL;
+						}
+						objres = set_symbol_value_in_env( env_incr, car(obj), sfs_eval(car(cdr(obj))));
+
 		                return car(objres);
 		            }
 		            else {

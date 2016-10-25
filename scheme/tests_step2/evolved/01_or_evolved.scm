@@ -2,4 +2,4 @@
 ; TEST_RETURN_CODE=PASS
 ; TEST_COMMENT="simple or"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(or (and #t #f) (
+(or (and #t #f) (and 

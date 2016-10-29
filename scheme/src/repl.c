@@ -21,6 +21,7 @@
 #include "eval.h"
 #include "print.h"
 #include "env.h"
+#include "primitive.h"
 
 /* mode d'interaction avec l'interpreteur (exemple)*/
 typedef enum {INTERACTIF,SCRIPT} inter_mode;
@@ -52,6 +53,10 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("if"),make_symbol("if") );
     add_symbol_to_env( environment,make_symbol("and"),make_symbol("and") );
     add_symbol_to_env( environment,make_symbol("or"),make_symbol("or") );
+    add_symbol_to_env( environment,make_symbol("+"), make_primitive(plus_t) );
+    add_symbol_to_env( environment,make_symbol("-"), make_primitive(minus_t) );
+    add_symbol_to_env( environment,make_symbol("*"), make_primitive(mult_t) );
+    add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 

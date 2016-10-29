@@ -33,16 +33,16 @@ object make_bool( void ) {
 
     object t = make_object( SFS_BOOLEAN );
 
-    if(t)t->this.special = t;
+    if(t) t->this.special = t;
 
     return t;
 }
 
-/*object make_tab( void ) {
-    object t = make_object( SFS_TAB );
-    t->this.tab = sfs_malloc(sizeof(*(t->this.tab)));
-    return t;
-}*/
+object make_primitive( object*myfunction ) {
+    object t = make_object( SFS_PRIMITIVE );
+    if(t) t->this.primitive.function = myfunction;
+	return t;
+}
 
 object make_boolean(char c) {
 

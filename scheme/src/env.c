@@ -13,6 +13,7 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include"eval.h"
+#include"calcul.h"
 #include<math.h>
 #define A 31 /*utilisé seulement dans la fonction de hachage (dangereux si A réutilisé)*/
 
@@ -83,6 +84,24 @@ void add_new_env(object* env) {
         *env = obj;
     }
     /*si c'est null il faut faire un warning*/
+}
+
+void add_object_to_list(object* list,object obj){
+	object objc = make_pair();
+    if(obj) {
+		objc->this.pair.car = obj;
+		objc->this.pair.cdr = *list;
+		*list = objc;
+	}
+}
+void inverse_list(object*list){
+	object obj,objres = nil;
+	obj = *list;
+	while(obj != nil){
+		add_object_to_list(&objres,car(obj));
+		obj = cdr(obj);
+	}
+	*list = objres;
 }
 
 

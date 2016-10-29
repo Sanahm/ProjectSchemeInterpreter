@@ -108,7 +108,7 @@ typedef enum {
 } EXPRESSION_TYPE_T;
 
 uint  sfs_get_sexpr( char *input, FILE *fp ) {
-    int       parlevel = 0;
+    int       parlevel = 0 , gui = 0;
     uint      in_string = FALSE;
     uint      s = 0;
     char      k[BIGSTRING];
@@ -224,7 +224,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                     if ( i<2 || chunk[i-1] != '\\') {
                         if ( in_string == FALSE ) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
-                            	if( chunk[i-1] == '\'' || isspace(chunk[i-1])){
+                            	if( chunk[i-1] == '\'' || gui){
                             		typeOfExpressionFound = STRING_ATOME;
                             		in_string = TRUE;
                             		break;
@@ -247,7 +247,8 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                     break;
                 default:
                     if(in_string == FALSE) {
-                        if(isspace(chunk[i])) {
+                    	if(chunk[i] == '\'') gui = 1;
+                        if(isspace(chunk[i]) && !gui) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
                                 typeOfExpressionFound = FINISHED;
                             }
@@ -468,7 +469,7 @@ object sfs_read_atom( char *input, uint *here ) {
 	    	j++;
 	    }
         while(*here < strlen(input) && cpt!=0 ) {
-        	if( input[*here] == '\"'){
+        	if( input[*here] == '\"' ){
         	 	if (input[*here-j-1] == '\'') gui = 1;
         	 	if (input[*here-1] != '\\') gui--;
         	}
@@ -486,10 +487,16 @@ object sfs_read_atom( char *input, uint *here ) {
 
                     break;
                 }
-            }
+            }          
 
             str[i] = input[*here];
             (*here)++;
+            if(input[*here-1] =='\''){
+		   	    while( isspace(input[*here]) && *here < strlen(input)){
+					(*here)++;
+					j++;
+				}
+			}
             i++;
 
         }

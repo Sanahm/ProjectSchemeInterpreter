@@ -418,6 +418,22 @@ begin:
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
 		    objres = sfs_eval(car(objc));
 		    if(!objres) return objres;
+		    if(objres->type != SFS_PRIMITIVE) {
+		    	add_object_to_list(&STACK,car(objc));
+	       		REPORT_MSG(";ERROR: Wrong type to apply ");
+            	sfs_print(objres); printf("\n");
+	       		REPORT_MSG("; in expression: ");
+            	sfs_print(objc); printf("\n");            	
+            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+				else REPORT_MSG("; in scope environment.\n");
+				if(STACK != nil ){
+					inverse_list(&STACK);
+					print_stack(STACK);
+				}
+				init_stack();
+				return NULL;
+			}		    
+		    	
 		    objres = objres->this.primitive.function(list);
 		    if(!objres){
 		    	REPORT_MSG("; in expression: ");sfs_print(objc);printf("\n");

@@ -24,7 +24,7 @@ object plus_t( object list ){
 }
 
 object minus_t( object list ){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
+	/* on prend en paramètre une liste d'object dont il faut faire la soustraction */
     object objres,obj = NULL;int i =1;num n;
     n.numtype = NUM_INTEGER;
     n.this.integer = 0;
@@ -46,7 +46,7 @@ object minus_t( object list ){
 }
 
 object mult_t( object list ){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
+	/* on prend en paramètre une liste d'object dont il faut faire la multiplication */
     object objres,obj = NULL;int i =1;num n;
     n.numtype = NUM_INTEGER;
     n.this.integer = 1;
@@ -66,7 +66,7 @@ object mult_t( object list ){
 }
 
 object division_t( object list ){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
+	/* on prend en paramètre une liste d'object dont il faut faire la division */
     object objres,obj = NULL;int i =1;num n;
     n.numtype = NUM_INTEGER;
     n.this.integer = 1;
@@ -99,5 +99,54 @@ object division_t( object list ){
         i++;
     }
     return objres;
-}							
+}
+
+object quotient_t( object list ){
+	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
+	num n; object obj;
+    if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil) {
+	    REPORT_MSG(";ERROR: quotient: Wrong number of args given\n; expected only 2 args\n");
+    	return NULL;
+    }
+	obj = car(list);
+    if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
+    	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg1 ");   
+    	sfs_print(obj); printf("\n");
+		return NULL; 
+	}
+	obj = car(cdr(list));
+	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
+    	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg2 ");   
+    	sfs_print(obj); printf("\n");
+		return NULL; 
+	}
+	if( obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_INTEGER && obj->this.number.this.integer == 0 ){
+    	REPORT_MSG(";ERROR: quotient: numerical overflow ");   
+    	sfs_print(obj); printf("\n");
+		return NULL; 
+	}
+    n.numtype = NUM_INTEGER;
+    n.this.integer = ((object)car(list))->this.number.this.integer/obj->this.number.this.integer;
+    return make_number(n);
+}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						
 		

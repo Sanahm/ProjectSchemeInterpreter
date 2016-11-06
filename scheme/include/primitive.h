@@ -21,6 +21,7 @@ object plus_t( object list );
 object minus_t( object list );
 object mult_t( object list );
 object division_t( object list);
+object quotient_t( object list );
 
 #endif
 

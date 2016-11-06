@@ -23,5 +23,7 @@ object set_symbol_value_in_env( object env, object symb, object value);
 void add_new_env(object* env);
 void add_object_to_list(object* list,object obj);
 void inverse_list(object*list);
+void print_stack(object stack);
+void init_stack(void);
 
 #endif

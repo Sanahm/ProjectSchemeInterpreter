@@ -70,6 +70,7 @@ extern object nil;
 extern object VRAI;
 extern object FAUX;
 extern object environment;
+extern object STACK;
 #ifdef __cplusplus
 }
 #endif

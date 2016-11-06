@@ -16,14 +16,14 @@
 
 
 object sfs_eval( object o ) {
-    object list,objres,objc = NULL, obj = o , env_incr=environment;
+    object list,objres,objc = NULL, obj = o , env_incr = environment;
 begin:
     switch(obj->type) {
     
     case SFS_NUMBER:
         return obj;
         
-    case SFS_CHARACTER:
+    case SFS_CHARACTER:		
         return obj;
         
     case SFS_STRING:
@@ -33,11 +33,32 @@ begin:
     	objc = obj;
     	objres = get_symbol_value(environment,obj);
     	if(!objres){
+			add_object_to_list(&STACK,obj);
     		REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
     		if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
     		else REPORT_MSG("; in scope environment.\n");
-    		
-    	}  	
+			if(STACK != nil ){
+				inverse_list(&STACK);
+				print_stack(STACK);
+			}  
+			init_stack();
+			return NULL;		
+    	}
+    	
+        if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
+        	if( STACK != nil ){
+			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
+				sfs_print(car(STACK)); printf("\n");
+				if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+				else REPORT_MSG("; in scope environment.\n");
+				add_object_to_list(&STACK,obj);			
+				inverse_list(&STACK);
+				print_stack(STACK);
+			}
+			else REPORT_MSG("(#@keyword . #<primitive-macro! #<primitive-procedure %s>>)\n",obj->this.symbol);
+			init_stack();
+			return NULL;  
+		}
         return objres;
         
     case SFS_NIL:
@@ -51,25 +72,18 @@ begin:
                     
             if(isand(car(obj)->this.symbol)) {
                 objc = obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){            
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
             		objres = VRAI;
 		            while(cdr(obj) != nil) {
 		            	obj = cdr(obj);
 		            	objres = sfs_eval(car(obj));
-		            	if( objres == NULL ){ /*par mesure de sécurité*/
-		            		REPORT_MSG("; in expression: ");
-		            		sfs_print(objc); printf("\n");
+		            	if( objres == NULL ){ 
 		            		return NULL;
 		            	}
 		                if( objres == FAUX ) return FAUX;
 		            }
-		            if( (objres->type == SFS_SYMBOL) && (car(obj)->type == SFS_SYMBOL) && !strcasecmp(objres->this.symbol,car(obj)->this.symbol) ){ /*(or define) est une erreur par ex*/
-		            	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
-		            	sfs_print(objc); printf("\n");
-		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-						else REPORT_MSG("; in scope environment.\n");
-						return NULL;
-					}
 		            return objres;
 		        }
 		        else{
@@ -77,33 +91,30 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;		        
 		        }		        		        
             }
             
             if(isor(car(obj)->this.symbol)) {
                 objc = obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){ 
             		obj = cdr(obj);                
 		            while(obj != nil) {
 		            	objres = sfs_eval(car(obj));
 		            	if( objres == NULL ){
-		            		REPORT_MSG("; in expression: ");
-		            		sfs_print(objc); printf("\n");
 		            		return NULL;
 		            	}                
 		                if( objres == FAUX ) {
 		                    obj = cdr(obj);
 		                    continue;
-		                }
-		                if( (objres->type == SFS_SYMBOL) && (car(obj)->type == SFS_SYMBOL) && !strcasecmp(objres->this.symbol,car(obj)->this.symbol) ){
-		                	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
-		                	sfs_print(objc); printf("\n");
-		                	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-							else REPORT_MSG("; in scope environment.\n");
-							return NULL;
-						}
-		                	
+		                }		                	
 		                return objres;
 		            }
 		            return FAUX;
@@ -113,46 +124,62 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;		        
 		        }
             }
             
             if(isif(car(obj)->this.symbol)) {
             	objc = obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){ /*ca c'est la definition d'une bonne fonction if*/
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){  /*ca c'est la definition d'une bonne fonction if*/
 		            obj = cdr(obj);
 		            if(obj == nil || obj == NULL){
 		                REPORT_MSG(";ERROR: if: missing predicat.\n; in expression : "); 
 		                sfs_print(objc); printf("\n");
-		                REPORT_MSG("; expected form : (if predicat consequence alternative).\n");           
+		                REPORT_MSG("; expected form : (if predicat consequence alternative).\n");
+		                if(STACK != nil ){           
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
 		            	return NULL;
 		            }
-		            if( sfs_eval(car(obj)) != FAUX ) {
-		                if( car(cdr(obj)) != NULL && car(cdr(obj)) != nil ) {
+					objres = sfs_eval(car(obj));/*le predicat*/
+					if(objres == NULL) return NULL;
+		            if( objres != FAUX ) {
+		                if( car(cdr(obj)) != NULL && car(cdr(obj)) != nil ) {/*consequence?*/
 		                    obj = car(cdr(obj));
-		                    if( obj != NULL && obj->type == SFS_SYMBOL && sfs_eval(obj)->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,sfs_eval(obj)->this.symbol) ){
-							   	REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
-						    	sfs_print(objc); printf("\n");
-						    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-								else REPORT_MSG("; in scope environment.\n");
-								return NULL;
-							}	    
 		                    goto begin;
 		                }
 		                REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
 		                sfs_print(objc); printf("\n");   
 		                REPORT_MSG("; expected form : (if predicat consequence alternative).\n");       
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
 		            	return NULL;
 		            }
 
 		            else{
 		                if( car(cdr(cdr(obj))) != nil && car(cdr(cdr(obj))) != NULL ) { /*on teste pour savoir si y'a la conséquence ou pas*/
-		                    obj = car(cdr(cdr(obj)));
-		                    if( obj->type == SFS_SYMBOL && sfs_eval(obj)->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,sfs_eval(obj)->this.symbol) ){
+		                    obj = car(cdr(cdr(obj)));objres = sfs_eval(obj);
+		                    if( obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){
 							   	REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
 						    	sfs_print(objc); printf("\n");
 						    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 								else REPORT_MSG("; in scope environment.\n");
+								if(STACK != nil ){
+									inverse_list(&STACK);
+									print_stack(STACK);
+								}
+								init_stack();
 								return NULL;
 							}		                    
 		                    goto begin;
@@ -164,6 +191,11 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;
 				}
 		       		
@@ -171,7 +203,9 @@ begin:
             
             if(isbegin(car(obj)->this.symbol)) {
             	objc = obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){ 
 		            objres = obj;
 		            if( cdr(obj) == nil || cdr(obj) == NULL ){
 		            	REPORT_MSG("#<unspecified>\n");
@@ -190,12 +224,19 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;
 		        }
             }
             if(isquote(car(obj)->this.symbol)) {
             	objc = obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){            
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
 		        	if( cdr(obj) == nil ){
 		        		REPORT_MSG(";ERROR: quote: missing or extra expression ");
 		        		sfs_print(obj); printf("\n");
@@ -203,6 +244,11 @@ begin:
 		        		sfs_print(obj); printf("\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
 					}
 		            return car(cdr(obj));
 		        }
@@ -211,23 +257,32 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;
 		        }		       
             }
 		
             if(isdefine(car(obj)->this.symbol)) {
             	objc= obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){           
 		            obj = cdr(obj);
 					if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
 		            	REPORT_MSG(";ERROR: define: bad formals\n; in expression : ");
 		            	sfs_print(car(obj)); printf("\n");
 		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment.\n");
-						return nil;
-					   	/*objres = sfs_eval(car(obj));
-		   				if( objres == NULL || objres == nil) return NULL;
-		   				obj->this.pair.car = objres;*/ /* ça c'est ce que j'avais modifie de ton programme avant pour eviter de copier nil ou null dans le car*/
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
+						return NULL;
 		   			}
 
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
@@ -235,8 +290,9 @@ begin:
 						objres = sfs_eval(car(cdr(obj)));
 						if(objres != NULL && objres !=nil){
 				            if( is_symbol_in_env( environment, car(obj) ) != nil) {	
-				          		if( !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
-				          			REPORT_MSG(";WARNING: redefining built-in syntax\n", sfs_eval(car(obj))->this.symbol );
+				            	objc = get_symbol_value(environment,car(obj));
+				          		if( !strcasecmp(car(obj)->this.symbol,objc->this.symbol) ){
+				          			REPORT_MSG(";WARNING: redefining built-in syntax\n", car(obj)->this.symbol );
 				          		}	        
 				                return car(set_symbol_value_in_env( environment, car(obj), objres ));
 				            }
@@ -244,7 +300,7 @@ begin:
 				                return car(add_symbol_to_env( environment, car(obj), objres ));
 				            }
 				        }
-				        return nil;
+				        return NULL;
 			
 		            }
 		            else {
@@ -254,7 +310,12 @@ begin:
 		        		sfs_print(objc); printf("\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
-		                return nil;
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
+		                return NULL;
 		            }
 		        }
 		        else{
@@ -262,23 +323,32 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;
 		        }	
             }
             
             if(isset(car(obj)->this.symbol)) {
             	objc= obj;
-            	if( (sfs_eval(car(obj))->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,sfs_eval(car(obj))->this.symbol) ){
+				add_object_to_list(&STACK,obj);
+				objres = get_symbol_value(environment,car(obj));
+            	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
                 	obj = cdr(obj);
 					if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
 			            REPORT_MSG(";ERROR: set!: bad formals\n; in expression : ");
 		            	sfs_print(car(obj)); printf("\n");
 		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment.\n");
-						return nil;
-					   	/*objres = sfs_eval(car(obj));
-		   				if( objres == NULL || objres == nil) return NULL;
-		   				obj->this.pair.car = objres;*/
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
+						return NULL;
 		   			}
 				
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
@@ -291,18 +361,17 @@ begin:
 							REPORT_MSG(";ERROR: unbound variable: %s\n ; no previous definition.\n",car(obj)->this.symbol);
 							if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 							else REPORT_MSG("; in scope environment\n");      
-				            return nil;
+							if(STACK != nil ){
+								inverse_list(&STACK);
+								print_stack(STACK);
+							}
+							init_stack();
+				            return NULL;
 		                }
 		                objres = sfs_eval(car(obj));
-		                if( (objres != nil && objres != NULL) && (objres->type == SFS_SYMBOL) && (car(obj)->type == SFS_SYMBOL) && !strcasecmp(objres->this.symbol,car(obj)->this.symbol) ){
-			            	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression : ",objres->this.symbol);
-			            	sfs_print(objc); printf("\n");
-			            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-							else REPORT_MSG("; in scope environment.\n");
-							return nil;
-						}
+						if(!objres) return NULL;
 						objres = sfs_eval(car(cdr(obj)));
-						if(objres == nil || objres == NULL) return nil;
+						if(objres == nil || objres == NULL) return NULL;
 						objres = set_symbol_value_in_env( env_incr, car(obj), objres);
 
 		                return car(objres);
@@ -314,7 +383,12 @@ begin:
 						sfs_print(objc); printf("\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
-		                return nil;
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
+		                return NULL;
 		            }
 		         }
 		        else{
@@ -322,26 +396,39 @@ begin:
                 	sfs_print(objc); printf("\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
 					return NULL;
 		        }
 		        
            }
 		    /*les primitives*/
-		    objc = obj; list = nil;		
+			add_object_to_list(&STACK,obj);
+		    objc = obj; list = nil;
+		    objres = sfs_eval(car(objc));
+		    if(!objres) return objres;
 		    obj = cdr(obj);
 		    while(obj != nil){
 		    	objres = sfs_eval(car(obj));
 		    	if(!objres) return objres; /*qui est NULL*/
-		    	add_object_to_list(&list,sfs_eval(car(obj)));
+		    	add_object_to_list(&list,objres);
 		    	obj = cdr(obj);
 		    }
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-		    objres = sfs_eval(car(objc));
+		    
 		    objres = objres->this.primitive.function(list);
 		    if(!objres){
 		    	REPORT_MSG("; in expression: ");sfs_print(objc);printf("\n");
             	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 				else REPORT_MSG("; in scope environment.\n");
+				if(STACK != nil ){
+					inverse_list(&STACK);
+					print_stack(STACK);
+				}
+				init_stack();
 			}
 			return objres;
        }

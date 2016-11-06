@@ -1,4 +1,4 @@
-; TEST_RETURN_CODE=FAIL
+; TEST_RETURN_CODE=PASS
 ; TEST_COMMENT=fail_atom_and_pair
 
 '"une chaine"

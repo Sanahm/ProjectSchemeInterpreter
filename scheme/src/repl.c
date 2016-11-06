@@ -37,13 +37,15 @@ object nil;
 object VRAI;
 object FAUX;
 object environment;
+object STACK;
+
 
 void init_interpreter ( void ) {
 
     nil      = make_nil();
     VRAI     = make_bool();
     FAUX     = make_bool();
-
+	STACK    = nil;
     environment = make_env();
     /*definition du top level*/
     add_symbol_to_env( environment,make_symbol("quote"),make_symbol("quote") );
@@ -57,6 +59,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("-"), make_primitive(minus_t) );
     add_symbol_to_env( environment,make_symbol("*"), make_primitive(mult_t) );
     add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
+    add_symbol_to_env( environment,make_symbol("quotient"), make_primitive(quotient_t) );
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 
@@ -158,7 +161,7 @@ int main ( int argc, char *argv[] ) {
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
-
+		init_stack();
         output = sfs_eval( sexpr );
         if( NULL == output) {
             /* si fichier alors on sort */

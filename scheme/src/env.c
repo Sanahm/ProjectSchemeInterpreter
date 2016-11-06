@@ -104,6 +104,20 @@ void inverse_list(object*list){
 	*list = objres;
 }
 
+void print_stack(object stack){
+	object obj = stack; int i = 1;
+	REPORT_MSG(";STACK TRACE\n");
+	while(obj != nil ){
+		REPORT_MSG("%d; ",i);
+		sfs_print(car(obj));printf("\n");
+		obj = cdr(obj);
+		i++;
+	}
+}
+
+void init_stack(void){
+	STACK 	= nil;
+}
 
 
 

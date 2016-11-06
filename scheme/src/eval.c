@@ -408,8 +408,6 @@ begin:
 		    /*les primitives*/
 			add_object_to_list(&STACK,obj);
 		    objc = obj; list = nil;
-		    objres = sfs_eval(car(objc));
-		    if(!objres) return objres;
 		    obj = cdr(obj);
 		    while(obj != nil){
 		    	objres = sfs_eval(car(obj));
@@ -418,7 +416,8 @@ begin:
 		    	obj = cdr(obj);
 		    }
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-		    
+		    objres = sfs_eval(car(objc));
+		    if(!objres) return objres;
 		    objres = objres->this.primitive.function(list);
 		    if(!objres){
 		    	REPORT_MSG("; in expression: ");sfs_print(objc);printf("\n");

@@ -22,6 +22,13 @@ object minus_t( object list );
 object mult_t( object list );
 object division_t( object list);
 object quotient_t( object list );
+object remainder_t( object list );
+object inf_t( object list);
+object infe_t( object list);
+object sup_t( object list);
+object supe_t( object list);
+object ctoi_t( object list );
+object itoc_t( object list );
 
 #endif
 

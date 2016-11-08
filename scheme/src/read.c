@@ -325,7 +325,7 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 object sfs_read_atom( char *input, uint *here ) {
 
     object atom = NULL;
-    string str;
+    string str,strs;
     int i = 0;
     num u;
     /*Est ce une chaine de charactere?*/
@@ -385,6 +385,25 @@ object sfs_read_atom( char *input, uint *here ) {
                 str[i] = '\0';
                 u.numtype = NUM_REAL;/*et on lit un reel*/
                 u.this.real = strtod(str,NULL);
+                atom = make_number(u);
+                return atom;
+            }
+            return atom;
+        }
+        /*on es en train de lire un rationnel*/
+        if ( input[*here] == '/' ) { /*on est en train de lire un float*/
+        	str[i] = '\0';
+            (*here)++;
+            i = 0;
+            while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
+                strs[i] = input[*here];
+                (*here)++;
+                i++;
+            }
+            if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here == strlen(input)) {
+                strs[i] = '\0';
+                u.numtype = NUM_REAL;/*et on lit un reel*/
+                u.this.real = strtod(str,NULL)/strtod(strs,NULL);
                 atom = make_number(u);
                 return atom;
             }

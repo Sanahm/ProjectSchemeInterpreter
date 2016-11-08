@@ -405,6 +405,7 @@ begin:
 		        }
 		        
            }
+           primi:
 		    /*les primitives*/
 			add_object_to_list(&STACK,obj);
 		    objc = obj; list = nil;
@@ -449,10 +450,11 @@ begin:
        }
        
 	   if(car(obj)->type == SFS_PAIR){
-	   		objres = sfs_eval(car(obj));
+	   		goto primi;
+	   		/*objres = sfs_eval(car(obj));
 	   		if( objres == NULL || objres == nil) return NULL;
 	   		obj->this.pair.car = objres;
-			return sfs_eval(obj);
+			return sfs_eval(obj);*/
 	   }
        else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
             WARNING_MSG("Invalid S-expression for evaluation --- Aborts");

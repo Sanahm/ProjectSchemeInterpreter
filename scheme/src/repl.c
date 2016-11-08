@@ -55,11 +55,21 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("if"),make_symbol("if") );
     add_symbol_to_env( environment,make_symbol("and"),make_symbol("and") );
     add_symbol_to_env( environment,make_symbol("or"),make_symbol("or") );
+    add_symbol_to_env( environment,make_symbol("+inf"),make_symbol("+inf") );
+    add_symbol_to_env( environment,make_symbol("-inf"),make_symbol("-inf") );
     add_symbol_to_env( environment,make_symbol("+"), make_primitive(plus_t) );
     add_symbol_to_env( environment,make_symbol("-"), make_primitive(minus_t) );
     add_symbol_to_env( environment,make_symbol("*"), make_primitive(mult_t) );
     add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
     add_symbol_to_env( environment,make_symbol("quotient"), make_primitive(quotient_t) );
+    add_symbol_to_env( environment,make_symbol("remainder"), make_primitive(remainder_t) );
+    add_symbol_to_env( environment,make_symbol("<"), make_primitive(inf_t) );
+    add_symbol_to_env( environment,make_symbol("<="), make_primitive(infe_t) );
+    add_symbol_to_env( environment,make_symbol(">"), make_primitive(sup_t) );
+    add_symbol_to_env( environment,make_symbol(">="), make_primitive(supe_t) );
+    add_symbol_to_env( environment,make_symbol("char->integer"), make_primitive(ctoi_t) );
+    add_symbol_to_env( environment,make_symbol("integer->char"), make_primitive(itoc_t) );
+    
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 

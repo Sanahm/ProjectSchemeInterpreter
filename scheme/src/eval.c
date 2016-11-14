@@ -55,6 +55,7 @@ begin:
 				inverse_list(&STACK);
 				print_stack(STACK);
 			}
+			if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
 			else REPORT_MSG("(#@keyword . #<primitive-macro! #<primitive-procedure %s>>)\n",obj->this.symbol);
 			init_stack();
 			return NULL;  

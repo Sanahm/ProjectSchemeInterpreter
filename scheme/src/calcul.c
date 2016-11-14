@@ -32,39 +32,6 @@ int isset(char*str) {
     if(!strcasecmp("set!",str)) return 1;
     return 0;
 }
-int isplus(char*str) {
-    if(!strcasecmp("+",str)) return 1;
-    return 0;
-}
-int ismoins(char*str) {
-    if(!strcasecmp("-",str)) return 1;
-    return 0;
-}
-int ismult(char*str) {
-    if(!strcasecmp("*",str)) return 1;
-    return 0;
-}
-int isdiv(char*str) {
-    if(!strcasecmp("/",str)) return 1;
-    return 0;
-}
-int isinf(char*str) {
-    if(!strcasecmp("<",str)) return 1;
-    return 0;
-}
-int isinfe(char*str) {
-    if(!strcasecmp("<=",str)) return 1;
-    return 0;
-}
-int issup(char*str) {
-    if(!strcasecmp(">",str)) return 1;
-    return 0;
-}
-int issupe(char*str) {
-    if(!strcasecmp(">=",str)) return 1;
-    return 0;
-}
-
 
 object car(object o) {
     if( o == NULL ) return NULL;
@@ -76,6 +43,7 @@ object cdr(object o) {
     if( o->type == SFS_PAIR ) return o->this.pair.cdr;
     return NULL;
 }
+
 object operation( object obj1,object obj2, char*op ) {
     num n;
     if(obj1 == NULL || obj2 == NULL) return NULL;
@@ -180,6 +148,7 @@ object operation( object obj1,object obj2, char*op ) {
                 return make_symbol("+inf");
             if((obj1->this.number.numtype == NUM_INTEGER && obj1->this.number.this.integer < 0) || (obj1->this.number.numtype == NUM_REAL && obj1->this.number.this.real < 0))
                 return make_symbol("-inf");
+            return make_symbol("nan");
         }
 
     case '<':

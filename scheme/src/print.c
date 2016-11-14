@@ -17,7 +17,6 @@
 #include <stdio.h>
 
 void sfs_print_atom( object o ) {
-
     switch(o->type) {
 
     case SFS_NUMBER:
@@ -28,10 +27,7 @@ void sfs_print_atom( object o ) {
             break;
 
         case NUM_REAL:
-            /*if(o->this.number.this.real >= LONG_MAX) printf("+inf");
-            else if(o->this.number.this.real <= LONG_MIN) printf("-inf");
-            else*/
-            printf("%lf",o->this.number.this.real);
+         	printf("%.16G",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
             break;
 
         default:

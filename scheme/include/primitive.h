@@ -29,6 +29,11 @@ object sup_t( object list);
 object supe_t( object list);
 object ctoi_t( object list );
 object itoc_t( object list );
+object symbtostr_t( object list );
+object strtosymb_t( object list );
+object strtonum_t( object list );
+object numtostr_t( object list );
+object eqv_t( object list );
 
 #endif
 

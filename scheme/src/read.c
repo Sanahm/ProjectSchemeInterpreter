@@ -325,8 +325,8 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 object sfs_read_atom( char *input, uint *here ) {
 
     object atom = NULL;
-    string str,strs;
-    int i = 0;
+    string str,strs; char*endptr;
+    int j = 0,i = 0,h = 0;
     num u;
     /*Est ce une chaine de charactere?*/
     if( input[*here] == '"') {
@@ -355,7 +355,7 @@ object sfs_read_atom( char *input, uint *here ) {
     /*etant donne qu'un entier relatif commence par le symb +/- on fait d'une pierre 2 coups
     on commence par tester si on a le symb +/- puis si derriere c'est un entier alors on lit un entier relatif sinon si c'est un espace on lit un symb
     dans les autres cas on retourne une erreur*/
-    if( input[*here] =='+' || input[*here] =='-' || isdigit(input[*here]) ) {
+    if( input[*here] =='+' || input[*here] =='-' || input[*here] =='.' || isdigit(input[*here]) ) {
         str[0] = input[*here];
         (*here)++;
         i++;
@@ -367,31 +367,46 @@ object sfs_read_atom( char *input, uint *here ) {
         }
         /*sinon on prend tous les digits apres le signe*/
         while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
-            str[i] = input[*here];
+			str[i] = input[*here];
             (*here)++;
             i++;
         }
         /*Est ce un nombre reel a virgule?*/
-        if ( input[*here] == '.' ) { /*on est en train de lire un float*/
-            str[i] = '.';
+        if ( input[*here] == '.' || input[*here] == 'e' || input[*here] == 'E' || input[*here] == '#' || str[0] == '.' ) { /*on est en train de lire un float*/
+            str[i] = input[*here];
             (*here)++;
             i++;
-            while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
-                str[i] = input[*here];
+            while( *here < strlen(input) && (isdigit(input[*here]) || input[*here] == '#' || input[*here] == 'e'|| input[*here] == 'E' || input[*here] == '.')) { /*on prend tous les digits*/
+            	if( input[*here] == 'e' || input[*here] == 'E' ) j = i;
+            	if(input[*here] =='.') h = i;
+				str[i] = input[*here];
                 (*here)++;
                 i++;
             }
-            if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here == strlen(input)) {
-                str[i] = '\0';
+            str[i] = '\0';
+            if(!j) i = strlen(str)-1;
+            else i = j-1;
+			while(i > 0 && str[i] =='#'){ /*"15.2##" => 15.200*/
+				str[i] = '0';
+				i--;
+			}
+			if(h) i = h-1;
+			while(i > 0 && str[i] =='#'){ /*"15##.2" => 1500.200*/
+				str[i] = '0';
+				i--;
+			}
+            if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here >= strlen(input)) {               
                 u.numtype = NUM_REAL;/*et on lit un reel*/
-                u.this.real = strtod(str,NULL);
-                atom = make_number(u);
-                return atom;
+                u.this.real = strtod(str,&endptr);
+                if(!(endptr[0] != '\0' || (u.this.real == 0 && endptr == str))){
+                	atom = make_number(u);
+                	return atom;
+                }
             }
             return atom;
         }
-        /*on es en train de lire un rationnel*/
-        if ( input[*here] == '/' ) { /*on est en train de lire un float*/
+        /*on est en train de lire un rationnel*/
+        if ( input[*here] == '/' ) {
         	str[i] = '\0';
             (*here)++;
             i = 0;

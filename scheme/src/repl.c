@@ -69,7 +69,11 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol(">="), make_primitive(supe_t) );
     add_symbol_to_env( environment,make_symbol("char->integer"), make_primitive(ctoi_t) );
     add_symbol_to_env( environment,make_symbol("integer->char"), make_primitive(itoc_t) );
-    
+    add_symbol_to_env( environment,make_symbol("symbol->string"), make_primitive(symbtostr_t) );
+    add_symbol_to_env( environment,make_symbol("string->symbol"), make_primitive(strtosymb_t) );
+    add_symbol_to_env( environment,make_symbol("string->number"), make_primitive(strtonum_t) );
+    add_symbol_to_env( environment,make_symbol("number->string"), make_primitive(numtostr_t) );
+    add_symbol_to_env( environment,make_symbol("eqv?"), make_primitive(eqv_t) );
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 

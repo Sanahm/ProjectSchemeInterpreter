@@ -34,6 +34,14 @@ object strtosymb_t( object list );
 object strtonum_t( object list );
 object numtostr_t( object list );
 object eqv_t( object list );
+object isboolean_t( object  list);
+object isinteger_t( object list);
+object isreal_t(object list);
+object isnull_t(object list);
+object issymbol_t(object list);
+object ischar_t(object list);
+object isstring_t(object list);
+object ispair_t(object list);
 
 #endif
 

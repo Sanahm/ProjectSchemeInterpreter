@@ -347,7 +347,7 @@ object strtosymb_t( object list ){ /* symbol to string(symbtostr): retourne le c
 
 
 object strtonum_t( object list ){
-	num n; object obj1,obj2; char * endptr,*str; uint here = 0;
+	num n; object obj1,obj2; char * endptr,*str; uint here = 0;int i = 0;
     if(list == nil || (cdr(list) != nil && cdr(cdr(list)) != nil) ) {
 	    REPORT_MSG(";ERROR: string->number: Wrong number of args given\n; expected form (string->number str base*) default base is 10\n");
     	return NULL;
@@ -465,5 +465,76 @@ object eqv_t( object list ){
 }
 
 
-						
-		
+object isboolean_t( object  list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_BOOLEAN) return VRAI;
+	return FAUX;
+}
+
+object isinteger_t( object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_INTEGER) return VRAI;
+	return FAUX;
+}
+object isreal_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_REAL) return VRAI;
+	return FAUX;
+}
+object isnull_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj == nil) return VRAI;
+	return FAUX;
+}
+object issymbol_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_SYMBOL) return VRAI;
+	return FAUX;
+}
+object ischar_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_CHARACTER) return VRAI;
+	return FAUX;
+}
+object isstring_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_STRING) return VRAI;
+	return FAUX;
+}
+object ispair_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+    		return NULL;
+    	}
+	if(obj->type == SFS_PAIR) return VRAI;
+	return FAUX;
+}

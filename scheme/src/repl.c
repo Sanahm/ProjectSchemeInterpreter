@@ -73,7 +73,16 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("string->symbol"), make_primitive(strtosymb_t) );
     add_symbol_to_env( environment,make_symbol("string->number"), make_primitive(strtonum_t) );
     add_symbol_to_env( environment,make_symbol("number->string"), make_primitive(numtostr_t) );
-    add_symbol_to_env( environment,make_symbol("eqv?"), make_primitive(eqv_t) );
+    add_symbol_to_env( environment,make_symbol("boolean?"), make_primitive(isboolean_t) );
+    add_symbol_to_env( environment,make_symbol("integer?"), make_primitive(isinteger_t) );
+    add_symbol_to_env( environment,make_symbol("real?"), make_primitive(isreal_t) );
+    add_symbol_to_env( environment,make_symbol("null?"), make_primitive(isnull_t) );
+    add_symbol_to_env( environment,make_symbol("symbol?"), make_primitive(issymbol_t) );
+    add_symbol_to_env( environment,make_symbol("char?"), make_primitive(ischar_t) );
+    add_symbol_to_env( environment,make_symbol("string?"), make_primitive(isstring_t) );
+    add_symbol_to_env( environment,make_symbol("pair?"), make_primitive(ispair_t) );
+
+
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
 

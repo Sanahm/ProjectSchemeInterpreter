@@ -81,6 +81,14 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("char?"), make_primitive(ischar_t) );
     add_symbol_to_env( environment,make_symbol("string?"), make_primitive(isstring_t) );
     add_symbol_to_env( environment,make_symbol("pair?"), make_primitive(ispair_t) );
+    add_symbol_to_env( environment,make_symbol("cons"), make_primitive(cons_t) );
+    add_symbol_to_env( environment,make_symbol("car"), make_primitive(car_t) );
+    add_symbol_to_env( environment,make_symbol("cdr"), make_primitive(cdr_t) );
+    add_symbol_to_env( environment,make_symbol("set-car!"), make_primitive(set_car_t) );
+    add_symbol_to_env( environment,make_symbol("set-cdr!"), make_primitive(set_cdr_t) );
+    add_symbol_to_env( environment,make_symbol("list"), make_primitive(list_t) );
+    add_symbol_to_env( environment,make_symbol("list?"), make_primitive(islist_t) );
+
 
 
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/

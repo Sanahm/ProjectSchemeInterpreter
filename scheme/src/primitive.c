@@ -468,7 +468,7 @@ object eqv_t( object list ){
 object isboolean_t( object  list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: boolean?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_BOOLEAN) return VRAI;
@@ -478,7 +478,7 @@ object isboolean_t( object  list){
 object isinteger_t( object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: integer?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_INTEGER) return VRAI;
@@ -487,7 +487,7 @@ object isinteger_t( object list){
 object isreal_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: real?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_REAL) return VRAI;
@@ -496,7 +496,7 @@ object isreal_t(object list){
 object isnull_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: null?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj == nil) return VRAI;
@@ -505,7 +505,7 @@ object isnull_t(object list){
 object issymbol_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: symbol?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_SYMBOL) return VRAI;
@@ -514,7 +514,7 @@ object issymbol_t(object list){
 object ischar_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: char?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_CHARACTER) return VRAI;
@@ -523,7 +523,7 @@ object ischar_t(object list){
 object isstring_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: string?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_STRING) return VRAI;
@@ -532,9 +532,68 @@ object isstring_t(object list){
 object ispair_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: pair?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_PAIR) return VRAI;
+	return FAUX;
+}
+
+object cons_t( object list){
+	object obj;
+	if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
+	    REPORT_MSG(";ERROR: cons: Wrong number of args given\n; expected at only two args\n");
+    		return NULL;
+    }
+	obj=make_pair();
+	obj->this.pair.car=car(list);
+	obj->this.pair.cdr=car(cdr(list));
+	return obj;
+}
+	
+object car_t( object list){
+	
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: car: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+	if(((object) car(list))->type != SFS_PAIR){
+		REPORT_MSG(";ERROR: car: Wrong type of args given\n; expected at a pair\n");
+    		return NULL;
+    }
+	return car(car(list)); 
+}
+object cdr_t( object list){
+if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: cdr: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+if(((object) car(list))->type != SFS_PAIR){
+		REPORT_MSG(";ERROR: cdr: Wrong type of args given\n; expected at a pair\n");
+    		return NULL;
+    }
+	return cdr(car(list)); 
+}
+object set_car_t( object list){}
+object set_cdr_t( object list){}
+object list_t( object list){
+	if(list == nil){
+REPORT_MSG(";ERROR: list: Wrong number of args given\n; expected at least one arg\n");
+    		return NULL;
+}
+	return list;
+}
+object islist_t( object list ){
+	object obj=car(list);
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: list?: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+
+	while(cdr(obj) != NULL){
+		obj=cdr(obj);
+		
+}
+	if(obj == nil) return VRAI;
 	return FAUX;
 }

@@ -42,6 +42,13 @@ object issymbol_t(object list);
 object ischar_t(object list);
 object isstring_t(object list);
 object ispair_t(object list);
+object cons_t( object list);
+object car_t( object list);
+object cdr_t( object list);
+object set_car_t( object list);
+object set_cdr_t( object list);
+object list_t( object list);
+object islist_t( object list );
 
 #endif
 

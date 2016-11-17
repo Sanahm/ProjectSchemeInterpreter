@@ -207,8 +207,8 @@ int main ( int argc, char *argv[] ) {
         }
 
         printf( "==> " );
-        /*sfs_print(sexpr);*/
-        sfs_print( output );
+        /*sfs_print(stdout,sexpr);*/
+        sfs_print(stdout, output );
         printf( "\n" );
     }
 

@@ -48,7 +48,7 @@ begin:
         if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
         	if( STACK != nil ){
 			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
-				sfs_print(car(STACK)); printf("\n");
+				sfs_print(stderr,car(STACK)); fprintf( stderr,"\n");
 				if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 				else REPORT_MSG("; in scope environment.\n");
 				add_object_to_list(&STACK,obj);			
@@ -89,7 +89,7 @@ begin:
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; or: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -122,7 +122,7 @@ begin:
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; or: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -142,7 +142,7 @@ begin:
 		            obj = cdr(obj);
 		            if(obj == nil || obj == NULL){
 		                REPORT_MSG(";ERROR: if: missing predicat.\n; in expression : "); 
-		                sfs_print(objc); printf("\n");
+		                sfs_print(stderr,objc); fprintf( stderr,"\n");
 		                REPORT_MSG("; expected form : (if predicat consequence alternative).\n");
 		                if(STACK != nil ){           
 							inverse_list(&STACK);
@@ -158,7 +158,7 @@ begin:
 		                    goto begin;
 		                }
 		                REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
-		                sfs_print(objc); printf("\n");   
+		                sfs_print(stderr,objc); fprintf( stderr,"\n");   
 		                REPORT_MSG("; expected form : (if predicat consequence alternative).\n");       
 						if(STACK != nil ){
 							inverse_list(&STACK);
@@ -173,7 +173,7 @@ begin:
 		                    obj = car(cdr(cdr(obj)));objres = sfs_eval(obj);
 		                    if( obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){
 							   	REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
-						    	sfs_print(objc); printf("\n");
+						    	sfs_print(stderr,objc); fprintf( stderr,"\n");
 						    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 								else REPORT_MSG("; in scope environment.\n");
 								if(STACK != nil ){
@@ -189,7 +189,7 @@ begin:
 		        }
 		       	else{/*ca veut dire que le if a été redéfini*/
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; if: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -222,7 +222,7 @@ begin:
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; begin: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -240,9 +240,9 @@ begin:
             	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
 		        	if( cdr(obj) == nil ){
 		        		REPORT_MSG(";ERROR: quote: missing or extra expression ");
-		        		sfs_print(obj); printf("\n");
+		        		sfs_print(stderr,obj); fprintf( stderr,"\n");
 		        		REPORT_MSG("; in expression: ");
-		        		sfs_print(obj); printf("\n");
+		        		sfs_print(stderr,obj); fprintf( stderr,"\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
 						if(STACK != nil ){
@@ -255,7 +255,7 @@ begin:
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; quote: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -275,7 +275,7 @@ begin:
 		            obj = cdr(obj);
 					if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
 		            	REPORT_MSG(";ERROR: define: bad formals\n; in expression : ");
-		            	sfs_print(car(obj)); printf("\n");
+		            	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
 		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment.\n");
 						if(STACK != nil ){
@@ -306,9 +306,9 @@ begin:
 		            }
 		            else {
 		        		REPORT_MSG(";ERROR: define: missing or extra expression ");
-		        		sfs_print(objc); printf("\n");
+		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
 		        		REPORT_MSG("; in expression: ");
-		        		sfs_print(objc); printf("\n");
+		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
 						if(STACK != nil ){
@@ -321,7 +321,7 @@ begin:
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; define: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -341,7 +341,7 @@ begin:
                 	obj = cdr(obj);
 					if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
 			            REPORT_MSG(";ERROR: set!: bad formals\n; in expression : ");
-		            	sfs_print(car(obj)); printf("\n");
+		            	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
 		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment.\n");
 						if(STACK != nil ){
@@ -379,9 +379,9 @@ begin:
 		            }
 		            else {
 		                REPORT_MSG(";ERROR: set!: missing or extra expression ");
-						sfs_print(objc); printf("\n");
+						sfs_print(stderr,objc); fprintf( stderr,"\n");
 						REPORT_MSG("; in expression: ");
-						sfs_print(objc); printf("\n");
+						sfs_print(stderr,objc); fprintf( stderr,"\n");
 						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 						else REPORT_MSG("; in scope environment\n");
 						if(STACK != nil ){
@@ -394,7 +394,7 @@ begin:
 		         }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; set!: has been redifined.\n; in expression: ");
-                	sfs_print(objc); printf("\n");
+                	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 					else REPORT_MSG("; in scope environment.\n");
 					if(STACK != nil ){
@@ -423,9 +423,9 @@ begin:
 		    if(objres->type != SFS_PRIMITIVE) {
 		    	add_object_to_list(&STACK,car(objc));
 	       		REPORT_MSG(";ERROR: Wrong type to apply ");
-            	sfs_print(objres); printf("\n");
+            	sfs_print(stderr,objres); fprintf( stderr,"\n");
 	       		REPORT_MSG("; in expression: ");
-            	sfs_print(objc); printf("\n");            	
+            	sfs_print(stderr,objc); fprintf( stderr,"\n");            	
             	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 				else REPORT_MSG("; in scope environment.\n");
 				if(STACK != nil ){
@@ -438,7 +438,7 @@ begin:
 		    	
 		    objres = objres->this.primitive.function(list);
 		    if(!objres){
-		    	REPORT_MSG("; in expression: ");sfs_print(objc);printf("\n");
+		    	REPORT_MSG("; in expression: ");sfs_print(stderr,objc);fprintf( stderr,"\n");
             	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 				else REPORT_MSG("; in scope environment.\n");
 				if(STACK != nil ){

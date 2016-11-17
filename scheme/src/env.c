@@ -109,7 +109,7 @@ void print_stack(object stack){
 	REPORT_MSG(";STACK TRACE\n");
 	while(obj != nil ){
 		REPORT_MSG("%d; ",i);
-		sfs_print(car(obj));printf("\n");
+		sfs_print(stderr,car(obj));fprintf(stderr,"\n");
 		obj = cdr(obj);
 		i++;
 	}

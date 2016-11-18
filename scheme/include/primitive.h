@@ -23,17 +23,26 @@ object mult_t( object list );
 object division_t( object list);
 object quotient_t( object list );
 object remainder_t( object list );
+/*trigo*/
+object cos_t( object list );
+/************************/
+/*comparaison*/
 object inf_t( object list);
 object infe_t( object list);
 object sup_t( object list);
 object supe_t( object list);
+/************************/
+/*conversion de type*/
 object ctoi_t( object list );
 object itoc_t( object list );
 object symbtostr_t( object list );
 object strtosymb_t( object list );
 object strtonum_t( object list );
 object numtostr_t( object list );
+/***********************/
 object eqv_t( object list );
+object eq_t( object list );
+object equal_t( object list );
 object isboolean_t( object  list);
 object isinteger_t( object list);
 object isreal_t(object list);

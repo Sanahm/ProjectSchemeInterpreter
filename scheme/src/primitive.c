@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
+
 
 /*primitive: arithmétique entière*/
 object plus_t( object list ){
@@ -167,6 +167,29 @@ object remainder_t( object list ){
     n.this.integer = ((object)car(list))->this.number.this.integer/obj->this.number.this.integer;
     return make_number(n);
 }
+/*calculs trigonométriques*/
+object cos_t( object list ){ /* symbol to string(symbtostr): retourne le caractere ascii*/
+	object obj;num n;
+    if(list == nil || cdr(list) != nil) {
+	    REPORT_MSG(";ERROR: symbol->string: Wrong number of args given\n; expected one arg\n");
+    	return NULL;
+    }
+	obj = car(list);
+    if( obj->type != SFS_NUMBER ){
+    	REPORT_MSG(";ERROR: symbol->string: Wrong type to apply in arg1 ");   
+    	sfs_print(obj); printf("\n");
+		return NULL; 
+	}
+	n.numtype = NUM_REAL;
+	if(obj->this.number.numtype = NUM_REAL){
+		n.this.real = cos(obj->this.number.this.real);
+		return make_number(n);
+	}
+	else{
+		n.this.real = cos(obj->this.number.this.integer);
+		return make_number(n);
+	}
+}
 
 object inf_t( object list){
 	/* on prend en paramètre une liste d'object dont il faut faire la somme */
@@ -273,7 +296,7 @@ object supe_t( object list){
 }
 
 object ctoi_t( object list ){ /* char to int(ctoi): retourne le caractere ascii*/
-	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
+
 	num n; object obj;
     if(list == nil || cdr(list) != nil) {
 	    REPORT_MSG(";ERROR: char->integer: Wrong number of args given\n; expected one arg\n");
@@ -291,7 +314,7 @@ object ctoi_t( object list ){ /* char to int(ctoi): retourne le caractere ascii*
 }
 
 object itoc_t( object list ){ /* int to char(itoc): retourne le caractere ascii*/
-	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
+
 	object obj;
     if(list == nil || cdr(list) != nil) {
 	    REPORT_MSG(";ERROR: integer->char: Wrong number of args given\n; expected one arg\n");
@@ -387,7 +410,7 @@ object strtonum_t( object list ){
 }
 
 object numtostr_t( object list ){
-	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
+
 	object obj1,obj2; int res = 0;int taille = 0;num n; char* str,*strs;int i =0;
     if(list == nil || (cdr(list) != nil && cdr(cdr(list)) != nil) ) {
 	    REPORT_MSG(";ERROR: number->string: Wrong number of args given\n; expected form (string->number num base*) default base is 10\n");
@@ -418,13 +441,14 @@ object numtostr_t( object list ){
 		taille = log(obj1->this.number.this.integer)/log(obj2->this.number.this.integer)+1; /*nombre de bits utilisés pour coder res*/
 		str = calloc(taille,sizeof(*str));
 		strs = calloc(taille,sizeof(*strs));
+		strs[taille] = '\0';
 		i = taille -1;
 		while( res != 0 ){
 			if(res%obj2->this.number.this.integer < 10){
 				sprintf(str,"%d",res%obj2->this.number.this.integer);
 				strs[i] = str[0];
 			}
-			else strs[i] = 87+res;
+			else strs[i] = 87+res%obj2->this.number.this.integer;
 			res = res/obj2->this.number.this.integer;
 			i--;
 		}
@@ -435,9 +459,9 @@ object numtostr_t( object list ){
 
 }
 
-object eqv_t( object list ){
-	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
-	object obj,obj1,obj2;
+object equal_t( object list ){
+
+	object obj,obj1,obj2; object t = nil;
     if(list == nil || cdr(list) == nil) return VRAI;
     
 	obj1 = car(list); obj = cdr(list);
@@ -454,16 +478,137 @@ object eqv_t( object list ){
 			if( obj1->this.character != obj2->this.character ) return FAUX;
 		}
 		if( obj1->type == SFS_SYMBOL ){
-			if( strcasecmp(obj1->this.character,obj2->this.character) ) return FAUX;
+			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
 		}
-		if( obj1->type == SFS_BOOLEAN){
+		if( obj1->type == SFS_STRING ){
+			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
+		}
+		if( obj1->type == SFS_BOOLEAN ){
 			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
 		}
+		if( obj1->type == SFS_PAIR ){
+			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
+				add_object_to_list(&t,car(obj2));
+				add_object_to_list(&t,car(obj1));
+				if(t){
+					if(equal_t(t) == FAUX) return FAUX;
+					t = nil; /* on réinitialise*/
+				}
+				obj1 = cdr(obj1);
+				obj2 = cdr(obj2);
+			}
+			if((obj1 == nil && obj2 != nil) || (obj2 == nil && obj1 != nil)) return FAUX;
+			if((obj1 == NULL && obj2 != NULL) || (obj2 == NULL && obj1 != NULL)) return FAUX;
+			
+		}
+		obj1 = car(list);		
 		obj = cdr(obj);
 	}
 	return VRAI;
 }
 
+object eqv_t( object list ){
+	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
+	object obj,obj1,obj2; object t = nil;
+    if(list == nil || cdr(list) == nil) return VRAI;
+    
+	obj1 = car(list); obj = cdr(list);
+	while( obj != nil ){
+		obj2 = car(obj);
+		if( obj1->type != obj2->type) return FAUX;
+		 
+		if( obj1->type == SFS_NUMBER ){
+			if( obj1->this.number.numtype != obj1->this.number.numtype ) return FAUX; 
+			if( obj1->this.number.numtype == NUM_INTEGER && (obj1->this.number.this.integer != obj2->this.number.this.integer)) return FAUX;
+			if( obj1->this.number.numtype == NUM_REAL && (obj1->this.number.this.real != obj2->this.number.this.real)) return FAUX;
+		}
+		if( obj1->type == SFS_CHARACTER ){
+			if( obj1->this.character != obj2->this.character ) return FAUX;
+		}
+		if( obj1->type == SFS_SYMBOL ){
+			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
+		}
+		if( obj1->type == SFS_STRING ){
+			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
+		}
+		if( obj1->type == SFS_BOOLEAN ){
+			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
+		}
+		if( obj1->type == SFS_PAIR ){
+			if(&obj1 != &obj2) return make_symbol("unspecified");
+			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
+				if(car(obj1) != car(obj2)) return make_symbol("unspecified");
+				add_object_to_list(&t,car(obj2));
+				add_object_to_list(&t,car(obj1));
+				if(t){
+					if(equal_t(t) == FAUX) return FAUX;
+					t = nil; /* on réinitialise*/
+				}
+				obj1 = cdr(obj1);
+				obj2 = cdr(obj2);
+			}
+			if((obj1 == nil && obj2 != nil) || (obj2 == nil && obj1 != nil)) return FAUX;
+			if((obj1 == NULL && obj2 != NULL) || (obj2 == NULL && obj1 != NULL)) return FAUX;
+			
+		}
+		obj1 = car(list);		
+		obj = cdr(obj);
+	}
+	return VRAI;
+}
+
+object eq_t( object list ){
+	
+	object obj,obj1,obj2; object t = nil;
+    if(list == nil || cdr(list) == nil) return VRAI;
+    
+	obj1 = car(list); obj = cdr(list);
+	while( obj != nil ){
+		obj2 = car(obj);
+		if( obj1->type != obj2->type) return FAUX;
+		 
+		if( obj1->type == SFS_NUMBER ){
+			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if( obj1->this.number.numtype != obj1->this.number.numtype ) return FAUX; 
+			if( obj1->this.number.numtype == NUM_INTEGER && (obj1->this.number.this.integer != obj2->this.number.this.integer)) return FAUX;
+			if( obj1->this.number.numtype == NUM_REAL && (obj1->this.number.this.real != obj2->this.number.this.real)) return FAUX;
+		}
+		if( obj1->type == SFS_CHARACTER ){
+			if( obj1->this.character != obj2->this.character ) return FAUX;
+		}
+		if( obj1->type == SFS_SYMBOL ){
+			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
+		}
+		if( obj1->type == SFS_STRING ){
+			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
+		}
+		if( obj1->type == SFS_BOOLEAN ){
+			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
+		}
+		if( obj1->type == SFS_PAIR ){
+			if(&obj1 != &obj2) return make_symbol("unspecified");
+			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
+				if(car(obj1) != car(obj2)) return make_symbol("unspecified");
+				add_object_to_list(&t,car(obj2));
+				add_object_to_list(&t,car(obj1));
+				if(t){
+					if(equal_t(t) == FAUX) return FAUX;
+					t = nil; /* on réinitialise*/
+				}
+				obj1 = cdr(obj1);
+				obj2 = cdr(obj2);
+			}
+			if((obj1 == nil && obj2 != nil) || (obj2 == nil && obj1 != nil)) return FAUX;
+			if((obj1 == NULL && obj2 != NULL) || (obj2 == NULL && obj1 != NULL)) return FAUX;
+			
+		}
+		obj1 = car(list);		
+		obj = cdr(obj);
+	}
+	return VRAI;
+}
 
 object isboolean_t( object  list){
 	object obj=car(list);

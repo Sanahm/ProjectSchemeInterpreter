@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 
 
 #include "object.h"
@@ -22,7 +23,7 @@
 #include "print.h"
 #include "env.h"
 #include "primitive.h"
-
+# define M_PI		3.14159265358979323846	/* pi */
 /* mode d'interaction avec l'interpreteur (exemple)*/
 typedef enum {INTERACTIF,SCRIPT} inter_mode;
 
@@ -39,9 +40,9 @@ object FAUX;
 object environment;
 object STACK;
 
-
 void init_interpreter ( void ) {
-
+	num pi;
+	pi.numtype = NUM_REAL; pi.this.real = M_PI;
     nil      = make_nil();
     VRAI     = make_bool();
     FAUX     = make_bool();
@@ -57,12 +58,14 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("or"),make_symbol("or") );
     add_symbol_to_env( environment,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( environment,make_symbol("-inf"),make_symbol("-inf") );
+    add_symbol_to_env( environment,make_symbol("pi"),make_number(pi) );
     add_symbol_to_env( environment,make_symbol("+"), make_primitive(plus_t) );
     add_symbol_to_env( environment,make_symbol("-"), make_primitive(minus_t) );
     add_symbol_to_env( environment,make_symbol("*"), make_primitive(mult_t) );
     add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
     add_symbol_to_env( environment,make_symbol("quotient"), make_primitive(quotient_t) );
     add_symbol_to_env( environment,make_symbol("remainder"), make_primitive(remainder_t) );
+    add_symbol_to_env( environment,make_symbol("cos"), make_primitive(cos_t) );
     add_symbol_to_env( environment,make_symbol("<"), make_primitive(inf_t) );
     add_symbol_to_env( environment,make_symbol("<="), make_primitive(infe_t) );
     add_symbol_to_env( environment,make_symbol(">"), make_primitive(sup_t) );
@@ -73,6 +76,9 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("string->symbol"), make_primitive(strtosymb_t) );
     add_symbol_to_env( environment,make_symbol("string->number"), make_primitive(strtonum_t) );
     add_symbol_to_env( environment,make_symbol("number->string"), make_primitive(numtostr_t) );
+    add_symbol_to_env( environment,make_symbol("eqv?"), make_primitive(eqv_t) );
+    add_symbol_to_env( environment,make_symbol("eq?"), make_primitive(eq_t) );
+    add_symbol_to_env( environment,make_symbol("equal?"), make_primitive(equal_t) );
     add_symbol_to_env( environment,make_symbol("boolean?"), make_primitive(isboolean_t) );
     add_symbol_to_env( environment,make_symbol("integer?"), make_primitive(isinteger_t) );
     add_symbol_to_env( environment,make_symbol("real?"), make_primitive(isreal_t) );

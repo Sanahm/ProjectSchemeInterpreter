@@ -14,8 +14,7 @@
 #include<stdlib.h>
 #include"eval.h"
 #include"calcul.h"
-#include<math.h>
-#define A 31 /*utilisé seulement dans la fonction de hachage (dangereux si A réutilisé)*/
+#define A 31 /*utilisé seulement dans la fonction de hachage*/
 
 
 object research_symbol_in_obj( object o, object symb ) {

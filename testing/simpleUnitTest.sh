@@ -585,11 +585,9 @@ executeTest()
 	#runing the test in background
 	if [ $OPT_DISPLAY_PRG_DEBUG == $TRUE ] 
 	then
-		$EXE_PATH $test_file_name >"$out_file_name"  
-		sed -i -e "/^==> /!d" "$out_file_name"
+		$EXE_PATH $test_file_name >"$out_file_name"  &
 	else
-		$EXE_PATH $test_file_name >"$out_file_name" 2>/dev/null  
-		sed -i -e "/^==> /!d" "$out_file_name"
+		$EXE_PATH $test_file_name >"$out_file_name" 2>/dev/null  &
 	fi
 	
 	#$! contient le PID (process id) du dernier process lance en tache de fond
@@ -631,7 +629,8 @@ executeTest()
 	fi
 
 
-
+	#on vire les lignes qui n'ont que ==>	
+	sed -i -e "/^==> /!d" "$out_file_name"
 
 	# analyse output, by using diff	
 	echoOutputQuiet '**************************'

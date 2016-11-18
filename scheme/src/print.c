@@ -28,7 +28,7 @@ void sfs_print_atom(FILE *p, object o ) {
             break;
 
         case NUM_REAL:
-         	fprintf( p,"%lf",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
+         	fprintf( p,"%.16G",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
             break;
 
         default:

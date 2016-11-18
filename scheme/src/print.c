@@ -16,18 +16,19 @@
 
 #include <stdio.h>
 
-void sfs_print_atom( object o ) {
+void sfs_print_atom(FILE *p, object o ) {
+	
     switch(o->type) {
 
     case SFS_NUMBER:
         switch(o->this.number.numtype) {
 
         case NUM_INTEGER:
-            printf("%lli",o->this.number.this.integer);
+            fprintf(p,"%lli",o->this.number.this.integer);
             break;
 
         case NUM_REAL:
-         	printf("%.16G",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
+         	fprintf( p,"%lf",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
             break;
 
         default:
@@ -36,31 +37,31 @@ void sfs_print_atom( object o ) {
         break;
 
     case SFS_CHARACTER:
-        if(o->this.character == '\n') printf("#\\newline");
-        else if(o->this.character == ' ') printf("#\\space");
-        else printf("#\\%c",o->this.character);
+        if(o->this.character == '\n') fprintf( p,"#\\newline");
+        else if(o->this.character == ' ') fprintf( p,"#\\space");
+        else fprintf( p,"#\\%c",o->this.character);
         break;
 
     case SFS_STRING:
-        printf("\"%s\"",o->this.string);
+        fprintf( p,"\"%s\"",o->this.string);
         break;
 
     case SFS_SYMBOL:
-        printf("%s",o->this.symbol);
+        fprintf(p,"%s",o->this.symbol);
         break;
 
     case SFS_NIL:
-        printf("()");
+        fprintf( p,"()");
         break;
 
     case SFS_BOOLEAN:
         if(o->this.boolean == VRAI) {
 
-            printf("#t");
+            fprintf( p,"#t");
         }
         else {
 
-            printf("#f");
+            fprintf( p,"#f");
         }
 
     default:
@@ -70,31 +71,38 @@ void sfs_print_atom( object o ) {
     return;
 }
 
-void sfs_print_pair( object o) {
-    if((o->this.pair.car)->type == SFS_PAIR) printf("(");
-    sfs_printf(o->this.pair.car);
+void sfs_print_pair(FILE *p, object o) {
+
+    if((o->this.pair.car)->type == SFS_PAIR) fprintf( p,"(");
+    sfs_printf(p,o->this.pair.car);
+	
     if((o->this.pair.cdr)->type != SFS_NIL) {
-        printf(" ");
-        sfs_printf(o->this.pair.cdr);
+        fprintf( p," ");
+	if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,". ");
+        sfs_printf(p,o->this.pair.cdr);
+	if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,")");
     }
-    else printf(")");
+	
+    else fprintf( p,")");
 }
 
-void sfs_printf( object o ) {
+void sfs_printf(FILE *p, object o ) {
+
     if ( SFS_PAIR == o->type ) {
-        sfs_print_pair( o );
+        sfs_print_pair(p, o );
     }
     else {
-        sfs_print_atom( o );
+        sfs_print_atom(p, o );
     }
 
 }
-void sfs_print( object o ) {
-    if( o->type == SFS_PAIR ) {
-        printf("(");
+void sfs_print(FILE *p, object o ) {
 
-        sfs_printf(o);
+    if( o->type == SFS_PAIR ) {
+        fprintf( p,"(");
+
+        sfs_printf(p,o);
 
     }
-    else sfs_printf(o);
+    else sfs_printf(p,o);
 }

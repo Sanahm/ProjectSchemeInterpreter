@@ -20,7 +20,7 @@ object plus_t( object list ){
         objres = operation(objres,car(obj),"+");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: +: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -45,7 +45,7 @@ object minus_t( object list ){
         else objres = operation(objres,car(obj),"-");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: -: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -65,7 +65,7 @@ object mult_t( object list ){
         objres = operation(objres,car(obj),"*");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: *: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -89,7 +89,7 @@ object division_t( object list ){
 		objres = operation(objres,car(obj),"/");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: /: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
     	return objres;
@@ -101,7 +101,7 @@ object division_t( object list ){
         objres = operation(objres,car(obj),"/");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: /: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -120,18 +120,18 @@ object quotient_t( object list ){
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
     	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj = car(cdr(list));
 	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
     	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg2 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	if( obj->this.number.numtype == NUM_INTEGER && obj->this.number.this.integer == 0 ){
     	REPORT_MSG(";ERROR: quotient: numerical overflow ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
     n.numtype = NUM_INTEGER;
@@ -149,18 +149,18 @@ object remainder_t( object list ){
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
     	REPORT_MSG(";ERROR: remainder: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj = car(cdr(list));
 	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
     	REPORT_MSG(";ERROR: remainder: Wrong type to apply in arg2 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	if( obj->this.number.numtype == NUM_INTEGER && obj->this.number.this.integer == 0 ){
     	REPORT_MSG(";ERROR: remainder: numerical overflow ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
     n.numtype = NUM_INTEGER;
@@ -198,7 +198,7 @@ object inf_t( object list){
     objres = car(list);
     if( objres->type != SFS_NUMBER ){
     	REPORT_MSG(";ERROR: <: Wrong type to apply in arg%d ",i);
-    	sfs_print(objres); printf("\n");
+    	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
 	}
 	i++;
@@ -208,7 +208,7 @@ object inf_t( object list){
         if(objres == FAUX) return FAUX;
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: <: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -224,7 +224,7 @@ object infe_t( object list){
     objres = car(list);
     if( objres->type != SFS_NUMBER ){
     	REPORT_MSG(";ERROR: <=: Wrong type to apply in arg%d ",i);
-    	sfs_print(objres); printf("\n");
+    	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
 	}
 	i++;
@@ -234,7 +234,7 @@ object infe_t( object list){
         if(objres == FAUX) return FAUX;
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: <=: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -250,7 +250,7 @@ object sup_t( object list){
     objres = car(list);
     if( objres->type != SFS_NUMBER ){
     	REPORT_MSG(";ERROR: >: Wrong type to apply in arg%d ",i);
-    	sfs_print(objres); printf("\n");
+    	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
 	}
 	i++;
@@ -260,7 +260,7 @@ object sup_t( object list){
         if(objres == FAUX) return FAUX;
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: >: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -276,7 +276,7 @@ object supe_t( object list){
     objres = car(list);
     if( objres->type != SFS_NUMBER ){
     	REPORT_MSG(";ERROR: >=: Wrong type to apply in arg%d ",i);
-    	sfs_print(objres); printf("\n");
+    	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
 	}
 	i++;
@@ -286,7 +286,7 @@ object supe_t( object list){
         if(objres == FAUX) return FAUX;
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: >=: Wrong type to apply in arg%d ",i);
-        	sfs_print(car(obj)); printf("\n");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
         obj = cdr(obj);
@@ -305,7 +305,7 @@ object ctoi_t( object list ){ /* char to int(ctoi): retourne le caractere ascii*
 	obj = car(list);
     if( obj->type != SFS_CHARACTER ){    
     	REPORT_MSG(";ERROR: char->integer: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	n.numtype = NUM_INTEGER;
@@ -323,12 +323,12 @@ object itoc_t( object list ){ /* int to char(itoc): retourne le caractere ascii*
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){    
     	REPORT_MSG(";ERROR: integer->char: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
     if( (obj->this.number.this.integer < 32) || (obj->this.number.this.integer > 127) ){    
     	REPORT_MSG(";ERROR: integer->char: Argument out of range ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	return make_character(obj->this.number.this.integer);
@@ -344,7 +344,7 @@ object symbtostr_t( object list ){ /* symbol to string(symbtostr): retourne le c
 	obj = car(list);
     if( obj->type != SFS_SYMBOL ){
     	REPORT_MSG(";ERROR: symbol->string: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj->type = SFS_STRING;
@@ -360,7 +360,7 @@ object strtosymb_t( object list ){ /* symbol to string(symbtostr): retourne le c
 	obj = car(list);
     if( obj->type != SFS_STRING ){
     	REPORT_MSG(";ERROR: symbol->string: Wrong type to apply in arg1 ");   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj->type = SFS_SYMBOL;
@@ -378,14 +378,14 @@ object strtonum_t( object list ){
 	obj1 = car(list);
     if( obj1->type != SFS_STRING ){    
     	REPORT_MSG(";ERROR: string->number: Wrong type to apply in arg1 ");   
-    	sfs_print(obj1); printf("\n");
+    	sfs_print(stderr,obj1); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj2 = car(cdr(list));
 	if(obj2){
 		if( obj2->type != SFS_NUMBER || (obj2->type == SFS_NUMBER && obj2->this.number.numtype != NUM_INTEGER) ){
 			REPORT_MSG(";ERROR: string->number: Wrong type to apply in ");   
-			sfs_print(obj2); printf("\n");
+			sfs_print(stderr,obj2); fprintf( stderr,"\n");
 			return NULL; 
 		}
 		if( obj2->this.number.this.integer != 2 && obj2->this.number.this.integer != 8 && obj2->this.number.this.integer != 10 && obj2->this.number.this.integer != 16){
@@ -419,7 +419,7 @@ object numtostr_t( object list ){
 	obj1 = car(list);
     if( obj1->type != SFS_NUMBER){    
     	REPORT_MSG(";ERROR: number->string: Wrong type to apply in arg1 ");   
-    	sfs_print(obj1); printf("\n");
+    	sfs_print(stderr,obj1); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj2 = car(cdr(list));
@@ -430,7 +430,7 @@ object numtostr_t( object list ){
 	}
 	if( obj2->type != SFS_NUMBER || (obj2->type == SFS_NUMBER && obj2->this.number.numtype != NUM_INTEGER) ){
 		REPORT_MSG(";ERROR: number->string: Wrong type to apply in ");   
-		sfs_print(obj2); printf("\n");
+		sfs_print(stderr,obj2); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	if( obj2->this.number.this.integer != 2 && obj2->this.number.this.integer != 8 && obj2->this.number.this.integer != 10 && obj2->this.number.this.integer != 16){
@@ -445,7 +445,7 @@ object numtostr_t( object list ){
 		i = taille -1;
 		while( res != 0 ){
 			if(res%obj2->this.number.this.integer < 10){
-				sprintf(str,"%d",res%obj2->this.number.this.integer);
+				sprintf( str,"%d",res%obj2->this.number.this.integer);
 				strs[i] = str[0];
 			}
 			else strs[i] = 87+res%obj2->this.number.this.integer;
@@ -454,7 +454,7 @@ object numtostr_t( object list ){
 		}
 		return make_string(strs);
 	}
-	if(sprintf(str,"%.16G",obj1->this.number.this.real));
+	if(sprintf( str,"%.16G",obj1->this.number.this.real));
 	return make_string(str);
 
 }
@@ -613,7 +613,7 @@ object eq_t( object list ){
 object isboolean_t( object  list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: boolean?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_BOOLEAN) return VRAI;
@@ -623,7 +623,7 @@ object isboolean_t( object  list){
 object isinteger_t( object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: integer?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_INTEGER) return VRAI;
@@ -632,7 +632,7 @@ object isinteger_t( object list){
 object isreal_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: real?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_REAL) return VRAI;
@@ -641,7 +641,7 @@ object isreal_t(object list){
 object isnull_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: null?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj == nil) return VRAI;
@@ -650,7 +650,7 @@ object isnull_t(object list){
 object issymbol_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: symbol?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_SYMBOL) return VRAI;
@@ -659,7 +659,7 @@ object issymbol_t(object list){
 object ischar_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: char?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_CHARACTER) return VRAI;
@@ -668,7 +668,7 @@ object ischar_t(object list){
 object isstring_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: string?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_STRING) return VRAI;
@@ -677,9 +677,68 @@ object isstring_t(object list){
 object ispair_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){
-		REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at just one arg\n");
+		REPORT_MSG(";ERROR: pair?: Wrong number of args given\n; expected at only one arg\n");
     		return NULL;
     	}
 	if(obj->type == SFS_PAIR) return VRAI;
+	return FAUX;
+}
+
+object cons_t( object list){
+	object obj;
+	if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
+	    REPORT_MSG(";ERROR: cons: Wrong number of args given\n; expected at only two args\n");
+    		return NULL;
+    }
+	obj=make_pair();
+	obj->this.pair.car=car(list);
+	obj->this.pair.cdr=car(cdr(list));
+	return obj;
+}
+	
+object car_t( object list){
+	
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: car: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+	if(((object) car(list))->type != SFS_PAIR){
+		REPORT_MSG(";ERROR: car: Wrong type of args given\n; expected at a pair\n");
+    		return NULL;
+    }
+	return car(car(list)); 
+}
+object cdr_t( object list){
+if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: cdr: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+if(((object) car(list))->type != SFS_PAIR){
+		REPORT_MSG(";ERROR: cdr: Wrong type of args given\n; expected at a pair\n");
+    		return NULL;
+    }
+	return cdr(car(list)); 
+}
+object set_car_t( object list){}
+object set_cdr_t( object list){}
+object list_t( object list){
+	if(list == nil){
+REPORT_MSG(";ERROR: list: Wrong number of args given\n; expected at least one arg\n");
+    		return NULL;
+}
+	return list;
+}
+object islist_t( object list ){
+	object obj=car(list);
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: list?: Wrong number of args given\n; expected at only one arg\n");
+    		return NULL;
+    }
+
+	while(cdr(obj) != NULL){
+		obj=cdr(obj);
+		
+}
+	if(obj == nil) return VRAI;
 	return FAUX;
 }

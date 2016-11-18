@@ -3,8 +3,6 @@
 ; TEST_COMMENT="evolved redefine function fail"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(set! quote 8) ; ()
-(set! or 7) ; ()
 (define quote 8) ; quote
 quote ; 8
 (define if "string") ; if
@@ -21,10 +19,10 @@ begin ; "salut"
 set! ; 77
 (define define 42) ; define
 define ; 42
-'x ; (quote x)
 (if #t #t #f) ; ()
 (and #t #t #f) ; ()
 (or #f #f #t); ()
 (begin #t #t 8); ()
 (set! begin "marche pas"); ()
 (define x 5) ; ()
+

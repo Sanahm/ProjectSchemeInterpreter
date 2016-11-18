@@ -1,10 +1,9 @@
 ;;;; En tete pour script de test ;;;;;;;;;;
-; TEST_RETURN_CODE=PASS
+; TEST_RETURN_CODE=FAIL
 ; TEST_COMMENT="evolved redefine function"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(set! quote 8) ; ()
-(set! or 7) ; ()
+
 (define quote 8) ; quote
 quote ; 8
 (define if "string") ; if
@@ -21,3 +20,5 @@ begin ; "salut"
 set! ; 77
 (define define 42) ; define
 define ; 42
+(set! quote 8) ; 
+

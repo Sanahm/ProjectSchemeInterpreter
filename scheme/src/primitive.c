@@ -182,7 +182,7 @@ object cos_t( object list ){ /* symbol to string(symbtostr): retourne le caracte
 	}
 	n.numtype = NUM_REAL;
 	if(obj->this.number.numtype = NUM_REAL){
-		n.this.real = cos(obj->this.number.this.real);
+		n.this.real = cos((int)obj->this.number.this.real);
 		return make_number(n);
 	}
 	else{

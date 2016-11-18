@@ -44,18 +44,22 @@ begin:
 			init_stack();
 			return NULL;		
     	}
+    	if( objres->type == SFS_PRIMITIVE && STACK == nil){
+    		REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
+    		return NULL;
+    	}
     	
         if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
-        	if( STACK != nil ){
+        	if( STACK != nil && objres->type != SFS_PRIMITIVE){
 			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
 				sfs_print(stderr,car(STACK)); fprintf( stderr,"\n");
 				if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
 				else REPORT_MSG("; in scope environment.\n");
-				add_object_to_list(&STACK,obj);			
+				add_object_to_list(&STACK,obj);		
 				inverse_list(&STACK);
 				print_stack(STACK);
 			}
-			if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
+			else if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
 			else REPORT_MSG("(#@keyword . #<primitive-macro! #<primitive-procedure %s>>)\n",obj->this.symbol);
 			init_stack();
 			return NULL;  
@@ -292,7 +296,7 @@ begin:
 						if(objres != NULL && objres !=nil){
 				            if( is_symbol_in_env( environment, car(obj) ) != nil) {	
 				            	objc = get_symbol_value(environment,car(obj));
-				          		if( !strcasecmp(car(obj)->this.symbol,objc->this.symbol) ){
+				          		if( !strcasecmp(car(obj)->this.symbol,objc->this.symbol) || car(obj)->type == SFS_PRIMITIVE ){
 				          			REPORT_MSG(";WARNING: redefining built-in syntax\n", car(obj)->this.symbol );
 				          		}	        
 				                return car(set_symbol_value_in_env( environment, car(obj), objres ));

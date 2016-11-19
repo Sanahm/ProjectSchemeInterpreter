@@ -325,7 +325,7 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 object sfs_read_atom( char *input, uint *here ) {
 
     object atom = NULL;
-    string str,strs; char*endptr;
+    string str,strs; char*endptr; int herec = *here; /*une copie du here*/
     int j = 0,i = 0,h = 0;
     num u;
     /*Est ce une chaine de charactere?*/
@@ -406,7 +406,9 @@ object sfs_read_atom( char *input, uint *here ) {
                 	return atom;
                 }
             }
-            return atom;
+            *here = herec; i=0;
+            strcpy(str,""); /*on réinitialise et on laisse continuer*/
+            goto read_symbol;
         }
         /*on est en train de lire un rationnel*/
         if ( input[*here] == '/' ) {
@@ -421,11 +423,15 @@ object sfs_read_atom( char *input, uint *here ) {
             if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here == strlen(input)) {
                 strs[i] = '\0';
                 u.numtype = NUM_REAL;/*et on lit un reel*/
-                u.this.real = strtod(str,NULL)/strtod(strs,NULL);
-                atom = make_number(u);
-                return atom;
+                u.this.real = strtod(str,NULL)/strtod(strs,&endptr);
+                if(!(endptr[0] != '\0' || (strtod(strs,&endptr) == 0 && endptr == strs))){
+                	atom = make_number(u);
+                	return atom;
+                }
             }
-            return atom;
+            *here = herec; i=0;
+            strcpy(str,""); /*on réinitialise et on laisse continuer*/
+            goto read_symbol;
         }
         /*sinon c'est tout simplement un entier*/
         if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='('||*here == strlen(input) || input[*here]=='\"') {
@@ -437,12 +443,15 @@ object sfs_read_atom( char *input, uint *here ) {
             else atom = make_number(u);
             return atom;
         }
-        return atom;
+        *here = herec; i =0;
+        strcpy(str,""); /*on réinitialise et on laisse continuer*/
+        goto read_symbol;
     }
 
     /*lire les symboles:
     un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
-    if(isalpha(input[*here]) || isspecial(input[*here])) { /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
+    read_symbol:
+    if(isalpha(input[*here]) || isspecial(input[*here]) || isdigit(input[*here])) { /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
         str[0] = input[*here];
         (*here)++;
         i++;

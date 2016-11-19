@@ -24,7 +24,7 @@ object division_t( object list);
 object quotient_t( object list );
 object remainder_t( object list );
 /*trigo*/
-object trigo_t( object list, double (*pfunct)(double) );
+object trigo_t( object list, double (*pfunct)(double),char*name );
 object cos_t( object list );
 object sin_t( object list );
 object tan_t( object list );
@@ -43,7 +43,7 @@ object abs_t( object list );
 object sqrt_t( object list );
 int pgcd( long int a, long int b);
 int ppcm( long int a, long int b);
-object pgcdpcm_t( object list,int u, int (*pfunct)(int,int) );
+object pgcdpcm_t( object list,int u, int (*pfunct)(int,int),char*name );
 object pgcd_t( object list );
 object ppcm_t(object list);
 
@@ -51,6 +51,7 @@ object ppcm_t(object list);
 
 /************************/
 /*comparaison*/
+object cmp_t( object list, char*op);
 object inf_t( object list);
 object infe_t( object list);
 object sup_t( object list);

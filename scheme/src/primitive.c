@@ -165,19 +165,19 @@ object remainder_t( object list ){
 		return NULL; 
 	}
     n.numtype = NUM_INTEGER;
-    n.this.integer = ((object)car(list))->this.number.this.integer/obj->this.number.this.integer;
+    n.this.integer = ((object)car(list))->this.number.this.integer%obj->this.number.this.integer;
     return make_number(n);
 }
 /******************************calculs trigonométriques********************************/
-object trigo_t( object list, double (*pfunct)(double) ){ /* symbol to string(symbtostr): retourne le caractere ascii*/
+object trigo_t( object list, double (*pfunct)(double),char*name ){ /* symbol to string(symbtostr): retourne le caractere ascii*/
 	object obj;num n;
     if(list == nil || cdr(list) != nil) {
-	    REPORT_MSG(";ERROR: symbol->string: Wrong number of args given\n; expected one arg\n");
+	    REPORT_MSG(";ERROR: %s: Wrong number of args given\n; expected one arg\n",name);
     	return NULL;
     }
 	obj = car(list);
     if( obj->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: symbol->string: Wrong type in arg1 ");   
+    	REPORT_MSG(";ERROR: %s: Wrong type in arg1 ",name);   
     	sfs_print(obj); printf("\n");
 		return NULL; 
 	}
@@ -192,52 +192,52 @@ object trigo_t( object list, double (*pfunct)(double) ){ /* symbol to string(sym
 	}
 }
 object cos_t( object list ){
-	return trigo_t(list,cos);
+	return trigo_t(list,cos,"cos");
 }
 object sin_t( object list ){
-	return trigo_t(list,sin);
+	return trigo_t(list,sin,"sin");
 }
 object tan_t( object list ){
-	return trigo_t(list,tan);
+	return trigo_t(list,tan,"tan");
 }
 object cosh_t( object list ){
-	return trigo_t(list,cosh);
+	return trigo_t(list,cosh,"cosh");
 }
 object sinh_t( object list ){
-	return trigo_t(list,sinh);
+	return trigo_t(list,sinh,"sinh");
 }
 object tanh_t( object list ){
-	return trigo_t(list,tanh);
+	return trigo_t(list,tanh,"tanh");
 }
 object acos_t( object list ){
-	return trigo_t(list,acos);
+	return trigo_t(list,acos,"acos");
 }
 object asin_t( object list ){
-	return trigo_t(list,asin);
+	return trigo_t(list,asin,"asin");
 }
 object atan_t( object list ){
-	return trigo_t(list,atan);
+	return trigo_t(list,atan,"atan");
 }
 object exp_t( object list ){
-	return trigo_t(list,exp);
+	return trigo_t(list,exp,"exp");
 }
 object log_t( object list ){
-	return trigo_t(list,log);
+	return trigo_t(list,log,"log");
 }
 object log10_t( object list ){
-	return trigo_t(list,log10);
+	return trigo_t(list,log10,"log10");
 }
 object ceiling_t( object list ){
-	return trigo_t(list,ceil);
+	return trigo_t(list,ceil,"ceiling");
 }
 object floor_t( object list ){
-	return trigo_t(list,floor);
+	return trigo_t(list,floor,"floor");
 }
 object abs_t( object list ){
-	return trigo_t(list,fabs);
+	return trigo_t(list,fabs,"abs");
 }
 object sqrt_t( object list ){
-	return trigo_t(list,sqrt);
+	return trigo_t(list,sqrt,"sqrt");
 }
 int pgcd( long int a, long int b){ /* plus grand commun diviseur*/
 	int r = a%b;
@@ -249,23 +249,23 @@ int ppcm(  long int a, long int b) {
 	return (a*b)/pgcd(a,b);
 }
 
-object pgcdpcm_t( object list,int u, int (*pfunct)(int,int) ){
+object pgcdpcm_t( object list,int u, int (*pfunct)(int,int),char*name ){
 	num n; object obj;
 	n.numtype = NUM_INTEGER; n.this.integer =  u;
     if(list == nil) return make_number(n);
     if(cdr(list) == nil || cdr(cdr(list)) != nil) {
-	    REPORT_MSG(";ERROR: remainder: Wrong number of args given\n; expected only 2 args\n");
+	    REPORT_MSG(";ERROR: %s: Wrong number of args given\n; expected only 2 args\n",name);
     	return NULL;
     }
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
-    	REPORT_MSG(";ERROR: remainder: Wrong type in arg1 ");   
+    	REPORT_MSG(";ERROR: %s: Wrong type in arg1 ",name);  
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj = car(cdr(list));
 	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
-    	REPORT_MSG(";ERROR: remainder: Wrong type in arg2 ");   
+		REPORT_MSG(";ERROR: %s: Wrong type in arg2 ",name); 
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
@@ -274,30 +274,30 @@ object pgcdpcm_t( object list,int u, int (*pfunct)(int,int) ){
 }
 /*yes yes yes j'ai gagné des lignes youpiiii*/
 object pgcd_t(object list){
-	pgcdpcm_t(list,0,pgcd);
+	pgcdpcm_t(list,0,pgcd,"gcd");
 }
 object ppcm_t(object list){
-	pgcdpcm_t(list,1,ppcm);
+	pgcdpcm_t(list,1,ppcm,"lcm");
 }
 
 /******************************************************************************************/
-object inf_t( object list){
+object cmp_t( object list, char*op){
 	/* on prend en paramètre une liste d'object dont il faut faire la somme */
     object objres,obj = NULL;int i =1;
     if(list == nil) return VRAI;   
     objres = car(list);
     if( objres->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: <: Wrong type to apply in arg%d ",i);
+    	REPORT_MSG(";ERROR: %s: Wrong type to apply in arg%d ",op,i);
     	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
 	}
 	i++;
     obj = cdr(list);
 	while( obj != nil && objres != FAUX ){
-        objres = operation(car(list),car(obj),"<");
+        objres = operation(car(list),car(obj),op);
         if(objres == FAUX) return FAUX;
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: <: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: %s: Wrong type to apply in arg%d ",op,i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -305,84 +305,22 @@ object inf_t( object list){
         i++;
     }
     return VRAI;
+}
+
+object inf_t( object list){
+	return cmp_t(list,"<");
 }
 
 object infe_t( object list){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
-    object objres,obj = NULL;int i =1;
-    if(list == nil) return VRAI;  
-    objres = car(list);
-    if( objres->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: <=: Wrong type to apply in arg%d ",i);
-    	sfs_print(stderr,objres); fprintf( stderr,"\n");
-		return NULL;
-	}
-	i++;
-    obj = cdr(list);
-	while( obj != nil && objres != FAUX ){
-        objres = operation(car(list),car(obj),"<=");
-        if(objres == FAUX) return FAUX;
-        if(objres == NULL ){
-        	REPORT_MSG(";ERROR: <=: Wrong type to apply in arg%d ",i);
-        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
-    		return objres;
-    	}
-        obj = cdr(obj);
-        i++;
-    }
-    return VRAI;
+	return cmp_t(list,"<=");
 }
 
 object sup_t( object list){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
-    object objres,obj = NULL;int i =1;
-    if(list == nil) return VRAI;  
-    objres = car(list);
-    if( objres->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: >: Wrong type to apply in arg%d ",i);
-    	sfs_print(stderr,objres); fprintf( stderr,"\n");
-		return NULL;
-	}
-	i++;
-    obj = cdr(list);
-	while( obj != nil && objres != FAUX ){
-        objres = operation(car(list),car(obj),">");
-        if(objres == FAUX) return FAUX;
-        if(objres == NULL ){
-        	REPORT_MSG(";ERROR: >: Wrong type to apply in arg%d ",i);
-        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
-    		return objres;
-    	}
-        obj = cdr(obj);
-        i++;
-    }
-    return VRAI;
+	return cmp_t(list,">");
 }
 
 object supe_t( object list){
-	/* on prend en paramètre une liste d'object dont il faut faire la somme */
-    object objres,obj = NULL;int i =1;
-    if(list == nil) return VRAI;  
-    objres = car(list);
-    if( objres->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: >=: Wrong type to apply in arg%d ",i);
-    	sfs_print(stderr,objres); fprintf( stderr,"\n");
-		return NULL;
-	}
-	i++;
-    obj = cdr(list);
-	while( obj != nil && objres != FAUX ){
-        objres = operation(car(list),car(obj),">=");
-        if(objres == FAUX) return FAUX;
-        if(objres == NULL ){
-        	REPORT_MSG(";ERROR: >=: Wrong type to apply in arg%d ",i);
-        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
-    		return objres;
-    	}
-        obj = cdr(obj);
-        i++;
-    }
-    return VRAI;
+	return cmp_t(list,">=");
 }
 
 object ctoi_t( object list ){ /* char to int(ctoi): retourne le caractere ascii*/

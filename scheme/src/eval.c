@@ -16,7 +16,7 @@
 
 
 object sfs_eval( object o ) {
-    object list,objres,objc = NULL, obj = o , env_incr = environment;
+    object list,objres,objc = NULL, obj = o , env_incr = environment;static int i = 1;
 begin:
     switch(obj->type) {
     
@@ -44,7 +44,7 @@ begin:
 			init_stack();
 			return NULL;		
     	}
-    	if( objres->type == SFS_PRIMITIVE && STACK == nil){
+    	if( objres->type == SFS_PRIMITIVE && (STACK == nil || i)){
     		REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
     		return NULL;
     	}
@@ -74,7 +74,7 @@ begin:
         
     case SFS_PAIR:
         if(car(obj)->type == SFS_SYMBOL) {
-                    
+                
             if(isand(car(obj)->this.symbol)) {
                 objc = obj;
 				add_object_to_list(&STACK,obj);
@@ -157,7 +157,7 @@ begin:
 					objres = sfs_eval(car(obj));/*le predicat*/
 					if(objres == NULL) return NULL;
 		            if( objres != FAUX ) {
-		                if( car(cdr(obj)) != NULL && car(cdr(obj)) != nil ) {/*consequence?*/
+		                if( car(cdr(obj)) != NULL /*&& car(cdr(obj)) != nil */) {/*consequence?*/
 		                    obj = car(cdr(obj));
 		                    goto begin;
 		                }
@@ -422,7 +422,8 @@ begin:
 		    	obj = cdr(obj);
 		    }
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-		    objres = sfs_eval(car(objc));
+		    if(i) i = 0;
+		    objres = sfs_eval(car(objc));i = 1;
 		    if(!objres) return objres;
 		    if(objres->type != SFS_PRIMITIVE) {
 		    	add_object_to_list(&STACK,car(objc));
@@ -455,6 +456,7 @@ begin:
        }
        
 	   if(car(obj)->type == SFS_PAIR){
+	   		i = 0;
 	   		goto primi;
 	   		/*objres = sfs_eval(car(obj));
 	   		if( objres == NULL || objres == nil) return NULL;

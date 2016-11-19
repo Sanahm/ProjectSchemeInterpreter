@@ -308,7 +308,7 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
     while( isspace(input[*here]) && *here < strlen(input)) (*here)++;
     if ( input[*here] == '(' ) {
         (*here)++;
-        while( isspace(input[*here]) && *here < strlen(input)) (*here)++;
+        while( isspace(input[*here]) && *here < strlen(input) ) (*here)++;
         if ( input[(*here)] == ')' ) {
             (*here)++;
             return nil;
@@ -372,10 +372,12 @@ object sfs_read_atom( char *input, uint *here ) {
             i++;
         }
         /*Est ce un nombre reel a virgule?*/
-        if ( input[*here] == '.' || input[*here] == 'e' || input[*here] == 'E' || input[*here] == '#' || str[0] == '.' ) { /*on est en train de lire un float*/
-            str[i] = input[*here];
-            (*here)++;
-            i++;
+        if ( str[0] == '.' || input[*here] == '.' || input[*here] == 'e' || input[*here] == 'E' || input[*here] == '#' ) { /*on est en train de lire un float*/
+            if(*here < strlen(input) && str[0] != '.' ){ /*voir ça m'a fait souffrir*/
+            	str[i] = input[*here];
+            	(*here)++;
+            	i++;
+            }
             while( *here < strlen(input) && (isdigit(input[*here]) || input[*here] == '#' || input[*here] == 'e'|| input[*here] == 'E' || input[*here] == '.')) { /*on prend tous les digits*/
             	if( input[*here] == 'e' || input[*here] == 'E' ) j = i;
             	if(input[*here] =='.') h = i;
@@ -395,7 +397,8 @@ object sfs_read_atom( char *input, uint *here ) {
 				str[i] = '0';
 				i--;
 			}
-            if( isspace(input[*here]) || input[*here]==')'|| input[*here]=='(' || *here >= strlen(input)) {               
+			
+            if( *here >= strlen(input) || isspace(input[*here]) || input[*here]==')'|| input[*here]=='(') {               
                 u.numtype = NUM_REAL;/*et on lit un reel*/
                 u.this.real = strtod(str,&endptr);
                 if(!(endptr[0] != '\0' || (u.this.real == 0 && endptr == str))){
@@ -532,7 +535,6 @@ object sfs_read_atom( char *input, uint *here ) {
 				}
 			}
             i++;
-
         }
 
         str[i] = ')';

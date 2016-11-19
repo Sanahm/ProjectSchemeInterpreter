@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <math.h>
 
 
 /*primitive: arithmétique entière*/
@@ -19,7 +20,7 @@ object plus_t( object list ){
 	while( obj != nil ){
         objres = operation(objres,car(obj),"+");
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: +: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: +: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -44,7 +45,7 @@ object minus_t( object list ){
         if(i == 1) objres = operation(objres,car(obj),"+");
         else objres = operation(objres,car(obj),"-");
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: -: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: -: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -64,7 +65,7 @@ object mult_t( object list ){
 	while( obj != nil ){
         objres = operation(objres,car(obj),"*");
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: *: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: *: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -88,7 +89,7 @@ object division_t( object list ){
 	if(cdr(obj) == nil){
 		objres = operation(objres,car(obj),"/");
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: /: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: /: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -100,7 +101,7 @@ object division_t( object list ){
 	while( obj != nil ){
         objres = operation(objres,car(obj),"/");
         if(objres == NULL ){
-        	REPORT_MSG(";ERROR: /: Wrong type to apply in arg%d ",i);
+        	REPORT_MSG(";ERROR: /: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
@@ -119,13 +120,13 @@ object quotient_t( object list ){
     }
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
-    	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg1 ");   
+    	REPORT_MSG(";ERROR: quotient: Wrong type in arg1 ");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj = car(cdr(list));
 	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
-    	REPORT_MSG(";ERROR: quotient: Wrong type to apply in arg2 ");   
+    	REPORT_MSG(";ERROR: quotient: Wrong type in arg2 ");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
@@ -148,13 +149,13 @@ object remainder_t( object list ){
     }
 	obj = car(list);
     if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
-    	REPORT_MSG(";ERROR: remainder: Wrong type to apply in arg1 ");   
+    	REPORT_MSG(";ERROR: remainder: Wrong type in arg1 ");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
 	obj = car(cdr(list));
 	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
-    	REPORT_MSG(";ERROR: remainder: Wrong type to apply in arg2 ");   
+    	REPORT_MSG(";ERROR: remainder: Wrong type in arg2 ");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}
@@ -167,8 +168,8 @@ object remainder_t( object list ){
     n.this.integer = ((object)car(list))->this.number.this.integer/obj->this.number.this.integer;
     return make_number(n);
 }
-/*calculs trigonométriques*/
-object cos_t( object list ){ /* symbol to string(symbtostr): retourne le caractere ascii*/
+/******************************calculs trigonométriques********************************/
+object trigo_t( object list, double (*pfunct)(double) ){ /* symbol to string(symbtostr): retourne le caractere ascii*/
 	object obj;num n;
     if(list == nil || cdr(list) != nil) {
 	    REPORT_MSG(";ERROR: symbol->string: Wrong number of args given\n; expected one arg\n");
@@ -176,21 +177,110 @@ object cos_t( object list ){ /* symbol to string(symbtostr): retourne le caracte
     }
 	obj = car(list);
     if( obj->type != SFS_NUMBER ){
-    	REPORT_MSG(";ERROR: symbol->string: Wrong type to apply in arg1 ");   
+    	REPORT_MSG(";ERROR: symbol->string: Wrong type in arg1 ");   
     	sfs_print(obj); printf("\n");
 		return NULL; 
 	}
 	n.numtype = NUM_REAL;
-	if(obj->this.number.numtype = NUM_REAL){
-		n.this.real = cos((int)obj->this.number.this.real);
+	if(obj->this.number.numtype == NUM_REAL){
+		n.this.real = pfunct(obj->this.number.this.real);
 		return make_number(n);
 	}
 	else{
-		n.this.real = cos(obj->this.number.this.integer);
+		n.this.real = pfunct(obj->this.number.this.integer);
 		return make_number(n);
 	}
 }
+object cos_t( object list ){
+	return trigo_t(list,cos);
+}
+object sin_t( object list ){
+	return trigo_t(list,sin);
+}
+object tan_t( object list ){
+	return trigo_t(list,tan);
+}
+object cosh_t( object list ){
+	return trigo_t(list,cosh);
+}
+object sinh_t( object list ){
+	return trigo_t(list,sinh);
+}
+object tanh_t( object list ){
+	return trigo_t(list,tanh);
+}
+object acos_t( object list ){
+	return trigo_t(list,acos);
+}
+object asin_t( object list ){
+	return trigo_t(list,asin);
+}
+object atan_t( object list ){
+	return trigo_t(list,atan);
+}
+object exp_t( object list ){
+	return trigo_t(list,exp);
+}
+object log_t( object list ){
+	return trigo_t(list,log);
+}
+object log10_t( object list ){
+	return trigo_t(list,log10);
+}
+object ceiling_t( object list ){
+	return trigo_t(list,ceil);
+}
+object floor_t( object list ){
+	return trigo_t(list,floor);
+}
+object abs_t( object list ){
+	return trigo_t(list,fabs);
+}
+object sqrt_t( object list ){
+	return trigo_t(list,sqrt);
+}
+int pgcd( long int a, long int b){ /* plus grand commun diviseur*/
+	int r = a%b;
+	if(r == 0) return fabs(b);
+	return pgcd(b,r);
+}
+int ppcm(  long int a, long int b) {
+	if (a == 0 || b == 0) return 0;
+	return (a*b)/pgcd(a,b);
+}
 
+object pgcdpcm_t( object list,int u, int (*pfunct)(int,int) ){
+	num n; object obj;
+	n.numtype = NUM_INTEGER; n.this.integer =  u;
+    if(list == nil) return make_number(n);
+    if(cdr(list) == nil || cdr(cdr(list)) != nil) {
+	    REPORT_MSG(";ERROR: remainder: Wrong number of args given\n; expected only 2 args\n");
+    	return NULL;
+    }
+	obj = car(list);
+    if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER)){    
+    	REPORT_MSG(";ERROR: remainder: Wrong type in arg1 ");   
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
+		return NULL; 
+	}
+	obj = car(cdr(list));
+	if( obj->type != SFS_NUMBER || (obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER) ){
+    	REPORT_MSG(";ERROR: remainder: Wrong type in arg2 ");   
+    	sfs_print(stderr,obj); fprintf( stderr,"\n");
+		return NULL; 
+	}
+    n.this.integer = pfunct(((object)car(list))->this.number.this.integer,obj->this.number.this.integer);
+    return make_number(n);
+}
+/*yes yes yes j'ai gagné des lignes youpiiii*/
+object pgcd_t(object list){
+	pgcdpcm_t(list,0,pgcd);
+}
+object ppcm_t(object list){
+	pgcdpcm_t(list,1,ppcm);
+}
+
+/******************************************************************************************/
 object inf_t( object list){
 	/* on prend en paramètre une liste d'object dont il faut faire la somme */
     object objres,obj = NULL;int i =1;
@@ -327,7 +417,7 @@ object itoc_t( object list ){ /* int to char(itoc): retourne le caractere ascii*
 		return NULL; 
 	}
     if( (obj->this.number.this.integer < 32) || (obj->this.number.this.integer > 127) ){    
-    	REPORT_MSG(";ERROR: integer->char: Argument out of range ");   
+    	REPORT_MSG(";ERROR: integer->char: Argument out of range [32 127]");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}

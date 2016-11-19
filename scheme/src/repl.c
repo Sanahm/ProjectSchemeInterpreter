@@ -65,7 +65,27 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
     add_symbol_to_env( environment,make_symbol("quotient"), make_primitive(quotient_t) );
     add_symbol_to_env( environment,make_symbol("remainder"), make_primitive(remainder_t) );
+    /* calcul trigono et hyperbol et fonctions diverses*/
     add_symbol_to_env( environment,make_symbol("cos"), make_primitive(cos_t) );
+    add_symbol_to_env( environment,make_symbol("sin"), make_primitive(sin_t) );
+    add_symbol_to_env( environment,make_symbol("tan"), make_primitive(tan_t) );
+    add_symbol_to_env( environment,make_symbol("cosh"), make_primitive(cosh_t) );
+    add_symbol_to_env( environment,make_symbol("sinh"), make_primitive(sinh_t) );
+    add_symbol_to_env( environment,make_symbol("tanh"), make_primitive(tanh_t) );
+    add_symbol_to_env( environment,make_symbol("acos"), make_primitive(acos_t) );
+    add_symbol_to_env( environment,make_symbol("asin"), make_primitive(asin_t) );
+    add_symbol_to_env( environment,make_symbol("atan"), make_primitive(atan_t) );
+    add_symbol_to_env( environment,make_symbol("ceiling"), make_primitive(ceiling_t) ); /*entier le plus proche par les valeurs supérieures*/
+    add_symbol_to_env( environment,make_symbol("floor"), make_primitive(floor_t) ); /*entier le plus proche par les valeurs inférieures*/
+    add_symbol_to_env( environment,make_symbol("exp"), make_primitive(exp_t) );
+    add_symbol_to_env( environment,make_symbol("log"), make_primitive(log_t) );
+    add_symbol_to_env( environment,make_symbol("log10"), make_primitive(log10_t) );
+    add_symbol_to_env( environment,make_symbol("sqrt"), make_primitive(sqrt_t) );
+    add_symbol_to_env( environment,make_symbol("abs"), make_primitive(abs_t) );
+    add_symbol_to_env( environment,make_symbol("gcd"), make_primitive(pgcd_t) );
+    add_symbol_to_env( environment,make_symbol("lcm"), make_primitive(ppcm_t) );
+    
+    
     add_symbol_to_env( environment,make_symbol("<"), make_primitive(inf_t) );
     add_symbol_to_env( environment,make_symbol("<="), make_primitive(infe_t) );
     add_symbol_to_env( environment,make_symbol(">"), make_primitive(sup_t) );

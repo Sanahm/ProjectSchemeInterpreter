@@ -114,6 +114,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("set-cdr!"), make_primitive(set_cdr_t) );
     add_symbol_to_env( environment,make_symbol("list"), make_primitive(list_t) );
     add_symbol_to_env( environment,make_symbol("list?"), make_primitive(islist_t) );
+    add_symbol_to_env( environment,make_symbol("eval"), make_primitive(eval_t) );
 
 
 

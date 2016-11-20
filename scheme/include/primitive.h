@@ -83,6 +83,7 @@ object set_car_t( object list);
 object set_cdr_t( object list);
 object list_t( object list);
 object islist_t( object list );
+object eval_t( object list );
 
 #endif
 

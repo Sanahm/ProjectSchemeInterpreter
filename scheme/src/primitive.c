@@ -797,3 +797,12 @@ object islist_t( object list ){
 	if(obj == nil) return VRAI;
 	return FAUX;
 }
+
+object eval_t( object list){
+
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: list?: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+	return sfs_eval(car(list));
+}

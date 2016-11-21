@@ -355,7 +355,7 @@ object itoc_t( object list ){ /* int to char(itoc): retourne le caractere ascii*
 		return NULL; 
 	}
     if( (obj->this.number.this.integer < 32) || (obj->this.number.this.integer > 127) ){    
-    	REPORT_MSG(";ERROR: integer->char: Argument out of range [32 127]");   
+    	REPORT_MSG(";ERROR: integer->char: Argument out of range [32 127] ");   
     	sfs_print(stderr,obj); fprintf( stderr,"\n");
 		return NULL; 
 	}

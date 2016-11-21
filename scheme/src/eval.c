@@ -45,12 +45,14 @@ begin:
 			return NULL;		
     	}
     	if( objres->type == SFS_PRIMITIVE && (STACK == nil || i)){
+    		printf("%d\n",sizeof_stack(STACK));
     		REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
     		return NULL;
     	}
     	
         if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
-        	if( STACK != nil && objres->type != SFS_PRIMITIVE){
+        	if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
+        	else if( STACK != nil && objres->type != SFS_PRIMITIVE){
 			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
 				sfs_print(stderr,car(STACK)); fprintf( stderr,"\n");
 				if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -59,7 +61,6 @@ begin:
 				inverse_list(&STACK);
 				print_stack(STACK);
 			}
-			else if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
 			else REPORT_MSG("(#@keyword . #<primitive-macro! #<primitive-procedure %s>>)\n",obj->this.symbol);
 			init_stack();
 			return NULL;  
@@ -83,7 +84,9 @@ begin:
             		objres = VRAI;
 		            while(cdr(obj) != nil) {
 		            	obj = cdr(obj);
-		            	objres = sfs_eval(car(obj));
+				    	objres = get_symbol_value(environment, car(obj));
+				    	if(objres && objres->type == SFS_PRIMITIVE && cdr(obj) != nil ) i = 0;	
+		            	objres = sfs_eval(car(obj)); i = 1;
 		            	if( objres == NULL ){ 
 		            		return NULL;
 		            	}
@@ -157,8 +160,10 @@ begin:
 					objres = sfs_eval(car(obj));/*le predicat*/
 					if(objres == NULL) return NULL;
 		            if( objres != FAUX ) {
-		                if( car(cdr(obj)) != NULL /*&& car(cdr(obj)) != nil */) {/*consequence?*/
+		                if( car(cdr(obj)) != NULL /*&& car(cdr(obj)) != nil */) {/*consequence?*/		                
 		                    obj = car(cdr(obj));
+					    	objres = get_symbol_value(environment, obj);
+					    	if(objres && objres->type == SFS_PRIMITIVE && i) i = 1;				
 		                    goto begin;
 		                }
 		                REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
@@ -175,7 +180,7 @@ begin:
 		            else{
 		                if( car(cdr(cdr(obj))) != nil && car(cdr(cdr(obj))) != NULL ) { /*on teste pour savoir si y'a la conséquence ou pas*/
 		                    obj = car(cdr(cdr(obj)));objres = sfs_eval(obj);
-		                    if( obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){
+		                    if( obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){/*(if #f 1 define) ne doit pas passer*/
 							   	REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
 						    	sfs_print(stderr,objc); fprintf( stderr,"\n");
 						    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -186,7 +191,9 @@ begin:
 								}
 								init_stack();
 								return NULL;
-							}		                    
+							}
+					    	/*objres = get_symbol_value(environment, obj);
+					    	if(objres && objres->type == SFS_PRIMITIVE && i) i = 1;*/	                    
 		                    goto begin;
 		                } else return FAUX;
 		            }
@@ -216,10 +223,12 @@ begin:
 		            	REPORT_MSG("#<unspecified>\n");
 		            	return NULL;
 		            }
-		            objres = sfs_eval(car(cdr(obj))); 
-		            obj = cdr(cdr(obj));
+		            obj = cdr(obj);
 		            while( obj != nil && objres!=NULL) {
+		            	objres = get_symbol_value(environment, car(obj));
+		            	if(objres && objres->type == SFS_PRIMITIVE && cdr(obj)!=nil) i = 0;						
 		                objres = sfs_eval(car(obj));
+		                i =1;
 		                obj = cdr(obj);
 		            }
 		            return objres;
@@ -292,7 +301,10 @@ begin:
 
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
 		            {
+		            	objres = get_symbol_value(environment, car(cdr(obj)));
+		            	if(objres && objres->type == SFS_PRIMITIVE) i = 0;
 						objres = sfs_eval(car(cdr(obj)));
+						i =1;
 						if(objres != NULL && objres !=nil){
 				            if( is_symbol_in_env( environment, car(obj) ) != nil) {	
 				            	objc = get_symbol_value(environment,car(obj));

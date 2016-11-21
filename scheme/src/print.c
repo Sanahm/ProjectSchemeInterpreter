@@ -24,11 +24,13 @@ void sfs_print_atom(FILE *p, object o ) {
         switch(o->this.number.numtype) {
 
         case NUM_INTEGER:
-            fprintf(p,"%lli",o->this.number.this.integer);
+            /*if(o->this.number.this.integer == LONG_MAX) fprintf(p,"+inf");
+            else if(o->this.number.this.integer == LONG_MIN)  fprintf(p,"-inf");
+            else*/ fprintf(p,"%lli",o->this.number.this.integer);
             break;
 
         case NUM_REAL:
-         	fprintf( p,"%.16G",o->this.number.this.real); /*%.16G = on affiche au maximum 18 chiffres significatifs*/
+         	fprintf( p,"%.15G",o->this.number.this.real); /*%.16G = on affiche au maximum 16 chiffres significatifs*/
             break;
 
         default:

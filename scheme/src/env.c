@@ -103,6 +103,15 @@ void inverse_list(object*list){
 	*list = objres;
 }
 
+int sizeof_stack(object stack){
+	object obj = stack; int i = 0;
+	while(obj != nil ){
+		i++;
+		obj = cdr(obj);
+	}
+	return i;
+}	
+
 void print_stack(object stack){
 	object obj = stack; int i = 1;
 	REPORT_MSG(";STACK TRACE\n");

@@ -1,14 +1,9 @@
-;;;; En tete pour script de test ;;;;;;;;;;
-; TEST_RETURN_CODE=PASS
-; TEST_COMMENT="simple log"
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(log 9999999999999)
-(log -99999999999999)
-(log 1.0)
-(log -1.0)
-(log 1)
-(log -1)
-(log 0)
-(log 0.123)
-(log (exp 1))
+==> 29.9336062089225
+==> NAN
+==> 0
+==> NAN
+==> 0
+==> NAN
+==> -INF
+==> -2.09557092360972
+==> 1

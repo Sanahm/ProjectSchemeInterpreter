@@ -69,6 +69,7 @@ object mult_t( object list ){
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
+    	if(objres->type == SFS_SYMBOL && !strcasecmp(objres->this.symbol,"nan")) break;
         obj = cdr(obj);
         i++;
     }
@@ -105,6 +106,7 @@ object division_t( object list ){
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
+    	if(objres->type == SFS_SYMBOL && !strcasecmp(objres->this.symbol,"nan")) break;
         obj = cdr(obj);
         i++;
     }
@@ -286,7 +288,7 @@ object cmp_t( object list, char*op){
     object objres,obj = NULL;int i =1;
     if(list == nil) return VRAI;   
     objres = car(list);
-    if( objres->type != SFS_NUMBER ){
+    if( objres->type != SFS_NUMBER && objres->type != SFS_SYMBOL ){
     	REPORT_MSG(";ERROR: %s: Wrong type to apply in arg%d ",op,i);
     	sfs_print(stderr,objres); fprintf( stderr,"\n");
 		return NULL;
@@ -296,7 +298,7 @@ object cmp_t( object list, char*op){
 	while( obj != nil && objres != FAUX ){
         objres = operation(car(list),car(obj),op);
         if(objres == FAUX) return FAUX;
-        if(objres == NULL ){
+        if(objres == NULL){
         	REPORT_MSG(";ERROR: %s: Wrong type to apply in arg%d ",op,i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
@@ -482,7 +484,8 @@ object numtostr_t( object list ){
 		}
 		return make_string(strs);
 	}
-	if(sprintf( str,"%.16G",obj1->this.number.this.real));
+	str ="";
+	if(sprintf( str,"%.15G",obj1->this.number.this.real));
 	return make_string(str);
 
 }
@@ -557,16 +560,16 @@ object eqv_t( object list ){
 			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
 		}
 		if( obj1->type == SFS_STRING ){
-			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
 			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
 		}
 		if( obj1->type == SFS_BOOLEAN ){
 			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
 		}
 		if( obj1->type == SFS_PAIR ){
-			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
 			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
-				if(car(obj1) != car(obj2)) return make_symbol("unspecified");
+				if(car(obj1) != car(obj2)) return make_symbol("#<unspecified>");
 				add_object_to_list(&t,car(obj2));
 				add_object_to_list(&t,car(obj1));
 				if(t){
@@ -597,7 +600,7 @@ object eq_t( object list ){
 		if( obj1->type != obj2->type) return FAUX;
 		 
 		if( obj1->type == SFS_NUMBER ){
-			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
 			if( obj1->this.number.numtype != obj1->this.number.numtype ) return FAUX; 
 			if( obj1->this.number.numtype == NUM_INTEGER && (obj1->this.number.this.integer != obj2->this.number.this.integer)) return FAUX;
 			if( obj1->this.number.numtype == NUM_REAL && (obj1->this.number.this.real != obj2->this.number.this.real)) return FAUX;
@@ -609,16 +612,16 @@ object eq_t( object list ){
 			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
 		}
 		if( obj1->type == SFS_STRING ){
-			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
 			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
 		}
 		if( obj1->type == SFS_BOOLEAN ){
 			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
 		}
 		if( obj1->type == SFS_PAIR ){
-			if(&obj1 != &obj2) return make_symbol("unspecified");
+			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
 			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
-				if(car(obj1) != car(obj2)) return make_symbol("unspecified");
+				if(car(obj1) != car(obj2)) return make_symbol("#<unspecified>");
 				add_object_to_list(&t,car(obj2));
 				add_object_to_list(&t,car(obj1));
 				if(t){

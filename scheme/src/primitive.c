@@ -147,7 +147,10 @@ object quotient_t( object list ){
 }
 
 object interaction_env_t( object list ){
-	if(list!=nil ) return NULL;
+	if(list!=nil ){
+		REPORT_MSG(";ERROR: interaction-environment: Do not take any arg\n");
+		return NULL;
+	}
 	print_env(environment);
 	return list;
 }

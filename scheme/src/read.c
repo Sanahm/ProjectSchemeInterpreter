@@ -559,6 +559,7 @@ object sfs_read_atom( char *input, uint *here ) {
 object sfs_read_pair( char *stream, uint *i ) {
 
     object pr = make_pair();
+	if(stream[*i] < 0) return NULL;
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
     pr->this.pair.car = sfs_read(stream,i);
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/

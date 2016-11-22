@@ -485,7 +485,7 @@ begin:
     }
 
 
-        return objres;
+        return NULL;
     
 
 }

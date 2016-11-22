@@ -241,6 +241,15 @@ object abs_t( object list ){
 object sqrt_t( object list ){
 	return trigo_t(list,sqrt,"sqrt");
 }
+object round_t( object list ){
+	
+	if(((object) car(list))->type != SFS_NUMBER) return trigo_t(list,floor,"round");
+	if(((object) car(list))->this.number.numtype == NUM_INTEGER) return trigo_t(list,floor,"round");
+	else{
+		if((((object) car(list))->this.number.this.real - floor(((object) car(list))->this.number.this.real)) < 0.5) return trigo_t(list,floor,"round");
+		else return trigo_t(list,ceil,"round");
+}
+}
 int pgcd( long int a, long int b){ /* plus grand commun diviseur*/
 	int r = a%b;
 	if(r == 0) return fabs(b);

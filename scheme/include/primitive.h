@@ -41,6 +41,7 @@ object ceiling_t( object list );
 object floor_t( object list );
 object abs_t( object list );
 object sqrt_t( object list );
+object round_t( object list );
 int pgcd( long int a, long int b);
 int ppcm( long int a, long int b);
 object pgcdpcm_t( object list,int u, int (*pfunct)(int,int),char*name );

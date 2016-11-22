@@ -116,6 +116,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("list"), make_primitive(list_t) );
     add_symbol_to_env( environment,make_symbol("list?"), make_primitive(islist_t) );
     add_symbol_to_env( environment,make_symbol("eval"), make_primitive(eval_t) );
+    add_symbol_to_env( environment,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
 
 
 

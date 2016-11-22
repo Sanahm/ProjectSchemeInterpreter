@@ -112,6 +112,27 @@ int sizeof_stack(object stack){
 	return i;
 }	
 
+void print_env( object env ){
+	object obj2,obj1 = env;int i;
+	if(env == nil){
+		REPORT_MSG("lecture environnement terminee \n");
+		return 1;
+	}
+	for( i = 0; i< SFS_TAB; i++ ){
+		obj2 = car(obj1)->this.tab[i];
+		while(obj2 != nil && obj2 != NULL){
+			REPORT_MSG(">>> %s ------------------- ",car(car(obj2))->this.symbol);
+			init_stack(); 
+			sfs_eval(car(car(obj2)));fprintf(stderr,"\n");
+			obj2 = cdr(obj2);
+		}
+	}
+	print_env( cdr(obj1) );
+}
+	
+	
+	
+	
 void print_stack(object stack){
 	object obj = stack; int i = 1;
 	REPORT_MSG(";STACK TRACE\n");

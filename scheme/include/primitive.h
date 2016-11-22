@@ -23,6 +23,7 @@ object mult_t( object list );
 object division_t( object list);
 object quotient_t( object list );
 object remainder_t( object list );
+object interaction_env_t( object list );
 /*trigo*/
 object trigo_t( object list, double (*pfunct)(double),char*name );
 object cos_t( object list );

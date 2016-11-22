@@ -534,7 +534,7 @@ object sfs_read_atom( char *input, uint *here ) {
                     break;
                 }
             }          
-
+			if( str[i] <0 ) return NULL;
             str[i] = input[*here];
             (*here)++;
             if(input[*here-1] =='\''){

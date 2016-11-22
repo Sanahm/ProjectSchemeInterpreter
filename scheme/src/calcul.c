@@ -49,7 +49,11 @@ object operation( object obj1,object obj2, char*op ) {
     if(obj1 == NULL || obj2 == NULL) return NULL;
     switch(op[0]) {
     case '+':
-        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) return obj1;
+        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))){
+        	if(obj2->type != SFS_SYMBOL) return obj1;
+        	if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return obj1;
+        	return make_symbol("nan");
+        }
         if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ) return obj2;
         if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
             n.numtype = NUM_REAL;
@@ -72,7 +76,11 @@ object operation( object obj1,object obj2, char*op ) {
             return make_number(n);
         }
     case '-':
-        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) return obj1;
+        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))){
+        	if(obj2->type != SFS_SYMBOL) return obj1;
+        	if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return make_symbol("nan");
+        	return obj1;
+        }
         if(obj2->type == SFS_SYMBOL){
         	if (!strcasecmp(obj2->this.symbol,"+inf") ) return make_symbol("-inf");
         	else if(!strcasecmp(obj2->this.symbol,"-inf")) return make_symbol("+inf");

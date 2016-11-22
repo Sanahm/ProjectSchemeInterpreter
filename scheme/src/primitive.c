@@ -24,6 +24,7 @@ object plus_t( object list ){
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
+    	if(objres->type == SFS_SYMBOL && !strcasecmp(objres->this.symbol,"nan")) break;
         obj = cdr(obj);
         i++;
     }
@@ -40,15 +41,18 @@ object minus_t( object list ){
 	    REPORT_MSG(";ERROR: -: Wrong number of args given\n; expected at least one arg\n");
     	return NULL;
     }
+    /*if(cdr(list) == nil){*/
+    	
     obj = list;
 	while( obj != nil ){
-        if(i == 1) objres = operation(objres,car(obj),"+");
+        if(i == 1 && cdr(list) != nil) objres = operation(objres,car(obj),"+");
         else objres = operation(objres,car(obj),"-");
         if(objres == NULL ){
         	REPORT_MSG(";ERROR: -: Wrong type in arg%d ",i);
         	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
     		return objres;
     	}
+    	if(objres->type == SFS_SYMBOL && !strcasecmp(objres->this.symbol,"nan")) break;
         obj = cdr(obj);
         i++;
     }
@@ -141,6 +145,13 @@ object quotient_t( object list ){
     n.this.integer = ((object)car(list))->this.number.this.integer/obj->this.number.this.integer;
     return make_number(n);
 }
+
+object interaction_env_t( object list ){
+	if(list!=nil ) return NULL;
+	print_env(environment);
+	return list;
+}
+
 	
 object remainder_t( object list ){
 	/* on prend en paramètre une liste d'object dont il faut faire la division entière*/
@@ -178,9 +189,9 @@ object trigo_t( object list, double (*pfunct)(double),char*name ){ /* symbol to 
     	return NULL;
     }
 	obj = car(list);
-    if( obj->type != SFS_NUMBER ){
+    if( obj->type != SFS_NUMBER && obj->type != SFS_SYMBOL || (obj->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,"nan") )){
     	REPORT_MSG(";ERROR: %s: Wrong type in arg1 ",name);   
-    	sfs_print(obj); printf("\n");
+    	sfs_print(stderr,obj); printf("\n");
 		return NULL; 
 	}
 	n.numtype = NUM_REAL;
@@ -188,8 +199,13 @@ object trigo_t( object list, double (*pfunct)(double),char*name ){ /* symbol to 
 		n.this.real = pfunct(obj->this.number.this.real);
 		return make_number(n);
 	}
-	else{
+	else if(obj->this.number.numtype == NUM_INTEGER){
 		n.this.real = pfunct(obj->this.number.this.integer);
+		return make_number(n);
+	}
+	else{
+		if(!strcasecmp(obj->this.symbol,"+inf")) n.this.real =  pfunct(LONG_MAX);
+		if(!strcasecmp(obj->this.symbol,"-inf")) n.this.real =  pfunct(LONG_MIN);
 		return make_number(n);
 	}
 }
@@ -447,6 +463,7 @@ object numtostr_t( object list ){
     	return NULL;
     }
 	obj1 = car(list);
+	if( obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf") || !strcasecmp(obj1->this.symbol,"nan")) ) return obj1;
     if( obj1->type != SFS_NUMBER){    
     	REPORT_MSG(";ERROR: number->string: Wrong type to apply in arg1 ");   
     	sfs_print(stderr,obj1); fprintf( stderr,"\n");
@@ -484,7 +501,6 @@ object numtostr_t( object list ){
 		}
 		return make_string(strs);
 	}
-	str ="";
 	if(sprintf( str,"%.15G",obj1->this.number.this.real));
 	return make_string(str);
 

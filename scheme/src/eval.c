@@ -45,7 +45,6 @@ begin:
 			return NULL;		
     	}
     	if( objres->type == SFS_PRIMITIVE && (STACK == nil || i)){
-    		printf("%d\n",sizeof_stack(STACK));
     		REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
     		return NULL;
     	}
@@ -464,6 +463,7 @@ begin:
 				}
 				init_stack();
 			}
+			if(objres == list) return NULL;
 			return objres;
        }
        
@@ -485,7 +485,7 @@ begin:
     }
 
 
-        return objres;
+   return NULL;
     
 
 }

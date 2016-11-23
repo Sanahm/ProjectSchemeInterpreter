@@ -40,7 +40,7 @@ begin:
 			if(STACK != nil ){
 				inverse_list(&STACK);
 				print_stack(STACK);
-			}  
+			}
 			init_stack();
 			return NULL;		
     	}
@@ -49,7 +49,7 @@ begin:
     		return NULL;
     	}
     	
-        if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
+        if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) && objres == car(is_symbol_in_all_env(environment,obj)) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
         	if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
         	else if( STACK != nil && objres->type != SFS_PRIMITIVE){
 			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);

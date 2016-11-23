@@ -48,14 +48,21 @@ void init_interpreter ( void ) {
     FAUX     = make_bool();
 	STACK    = nil;
     environment = make_env();
+    object define_t = make_symbol("define");
+    object quote_t = make_symbol("quote");
+    object set_t = make_symbol("set!");
+    object begin_t = make_symbol("begin");
+    object if_t = make_symbol("if");
+    object and_t = make_symbol("and");
+    object or_t = make_symbol("or");
     /*definition du top level*/
-    add_symbol_to_env( environment,make_symbol("quote"),make_symbol("quote") );
-    add_symbol_to_env( environment,make_symbol("define"),make_symbol("define") );
-    add_symbol_to_env( environment,make_symbol("set!"),make_symbol("set!") );
-    add_symbol_to_env( environment,make_symbol("begin"),make_symbol("begin") );
-    add_symbol_to_env( environment,make_symbol("if"),make_symbol("if") );
-    add_symbol_to_env( environment,make_symbol("and"),make_symbol("and") );
-    add_symbol_to_env( environment,make_symbol("or"),make_symbol("or") );
+    add_symbol_to_env( environment,quote_t,quote_t );
+    add_symbol_to_env( environment,define_t,define_t );
+    add_symbol_to_env( environment,set_t,set_t );
+    add_symbol_to_env( environment,begin_t,begin_t );
+    add_symbol_to_env( environment,if_t,if_t );
+    add_symbol_to_env( environment,and_t,and_t );
+    add_symbol_to_env( environment,or_t,or_t );
     add_symbol_to_env( environment,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( environment,make_symbol("-inf"),make_symbol("-inf") );
     add_symbol_to_env( environment,make_symbol("pi"),make_number(pi) );

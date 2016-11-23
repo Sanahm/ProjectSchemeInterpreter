@@ -475,7 +475,10 @@ object numtostr_t( object list ){
     	return NULL;
     }
 	obj1 = car(list);
-	if( obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf") || !strcasecmp(obj1->this.symbol,"nan")) ) return obj1;
+	if( obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf") || !strcasecmp(obj1->this.symbol,"nan")) ){
+		obj1->type = SFS_STRING;
+		return obj1;
+	}
     if( obj1->type != SFS_NUMBER){    
     	REPORT_MSG(";ERROR: number->string: Wrong type to apply in arg1 ");   
     	sfs_print(stderr,obj1); fprintf( stderr,"\n");

@@ -115,7 +115,7 @@ int sizeof_stack(object stack){
 void print_env( object env ){
 	object objres,obj2,obj1 = env;int i;
 	if(env == nil){
-		REPORT_MSG("lecture environnement terminee \n");
+		
 		return 1;
 	}
 	for( i = 0; i< SFS_TAB; i++ ){

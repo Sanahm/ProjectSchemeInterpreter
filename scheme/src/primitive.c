@@ -152,7 +152,7 @@ object interaction_env_t( object list ){
 		return NULL;
 	}
 	print_env(environment);
-	return list;
+	return make_symbol("Reading environment complete");
 }
 
 	
@@ -194,7 +194,7 @@ object trigo_t( object list, double (*pfunct)(double),char*name ){ /* symbol to 
 	obj = car(list);
     if( obj->type != SFS_NUMBER && obj->type != SFS_SYMBOL || (obj->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,"nan") )){
     	REPORT_MSG(";ERROR: %s: Wrong type in arg1 ",name);   
-    	sfs_print(stderr,obj); printf("\n");
+    	sfs_print(stderr,obj); sprintf(stderr,"\n");
 		return NULL; 
 	}
 	n.numtype = NUM_REAL;
@@ -808,10 +808,7 @@ if(((object) car(list))->type != SFS_PAIR){
 
 }
 object list_t( object list){
-	if(list == nil){
-REPORT_MSG(";ERROR: list: Wrong number of args given\n; expected at least one arg\n");
-    		return NULL;
-}
+	
 	return list;
 }
 object islist_t( object list ){

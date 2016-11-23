@@ -463,7 +463,7 @@ begin:
 				}
 				init_stack();
 			}
-			if(objres == list) return NULL;
+			/*if(objres == list) return NULL;*/
 			return objres;
        }
        

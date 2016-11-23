@@ -24,7 +24,7 @@ void add_new_env(object* env);
 void add_object_to_list(object* list,object obj);
 void inverse_list(object*list);
 void print_stack(object stack);
-int sizeof_stack(object stack);
+int sizeof_list(object list);
 void init_stack(void);
 
 #endif

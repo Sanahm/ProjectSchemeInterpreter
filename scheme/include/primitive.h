@@ -86,6 +86,9 @@ object set_cdr_t( object list);
 object list_t( object list);
 object islist_t( object list );
 object eval_t( object list );
-
+object not_t(object list);
+object reverse_t(object list);
+object length_t(object list);
+object append_t(object list);
 #endif
 

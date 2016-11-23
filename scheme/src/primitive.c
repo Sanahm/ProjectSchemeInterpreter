@@ -2,6 +2,7 @@
 #include "object.h"
 #include "env.h"
 #include "read.h"
+#include "eval.h"
 #include<limits.h>
 #include <string.h>
 #include <stdint.h>
@@ -304,10 +305,10 @@ object pgcdpcm_t( object list,int u, int (*pfunct)(int,int),char*name ){
 }
 /*yes yes yes j'ai gagné des lignes youpiiii*/
 object pgcd_t(object list){
-	pgcdpcm_t(list,0,pgcd,"gcd");
+	return pgcdpcm_t(list,0,pgcd,"gcd");
 }
 object ppcm_t(object list){
-	pgcdpcm_t(list,1,ppcm,"lcm");
+	return pgcdpcm_t(list,1,ppcm,"lcm");
 }
 
 /******************************************************************************************/
@@ -672,12 +673,80 @@ object eq_t( object list ){
 	return VRAI;
 }
 
+object not_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: not: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+	if(obj == FAUX) return VRAI;
+	return FAUX;
+}
+
+object reverse_t(object list){
+	object obj=car(list);
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: reverse: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+    if(obj->type != SFS_PAIR && obj != nil){
+		REPORT_MSG(";ERROR: reverse:Wrong type in arg1 ");
+		sfs_print(stderr,obj);fprintf(stderr,"\n");
+		return NULL;
+	}
+	inverse_list(&obj);
+	return obj;
+}
+
+object length_t(object list){
+	object obj=car(list); num n;
+	n.numtype = NUM_INTEGER;
+	if(cdr(list) != nil){
+		REPORT_MSG(";ERROR: length: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+    if(obj->type != SFS_PAIR && obj != nil){
+		REPORT_MSG(";ERROR: not:Wrong type in arg1 ");
+		sfs_print(stderr,obj);fprintf(stderr,"\n");
+		return NULL;
+	}
+	n.this.integer = sizeof_list(obj);
+	return make_number(n);
+}
+
+object append_t(object list){
+	object obj,obj2, obj1=car(list);
+	if(list == nil) return nil;
+	if(obj1->type != SFS_PAIR && obj1 != nil){
+		REPORT_MSG(";ERROR: not:Wrong type in arg1 ");
+		sfs_print(stderr,obj1);fprintf(stderr,"\n");
+		return NULL;
+	}
+	obj2 = cdr(list);
+	while(obj2 != nil && obj2 != NULL){
+		obj = car(obj2);
+		if(obj->type != SFS_PAIR && obj != nil){
+			REPORT_MSG(";ERROR: not:Wrong type in arg1 ");
+			sfs_print(stderr,obj2);fprintf(stderr,"\n");
+			return NULL;
+		}
+		obj = obj1;
+		while(cdr(obj) != nil && obj != NULL){
+			obj = cdr(obj);
+		}
+		obj->this.pair.cdr = car(obj2);
+		obj2 = cdr(obj2);
+	}
+	return obj1;	
+}
+
+
 object isboolean_t( object  list){
 	object obj=car(list);
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: boolean?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_BOOLEAN) return VRAI;
 	return FAUX;
 }
@@ -687,7 +756,7 @@ object isinteger_t( object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: integer?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_NUMBER && obj->this.number.numtype == NUM_INTEGER) return VRAI;
 	return FAUX;
 }
@@ -705,7 +774,7 @@ object isnull_t(object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: null?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj == nil) return VRAI;
 	return FAUX;
 }
@@ -714,7 +783,7 @@ object issymbol_t(object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: symbol?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_SYMBOL) return VRAI;
 	return FAUX;
 }
@@ -723,7 +792,7 @@ object ischar_t(object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: char?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_CHARACTER) return VRAI;
 	return FAUX;
 }
@@ -741,7 +810,7 @@ object ispair_t(object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: pair?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_PAIR) return VRAI;
 	return FAUX;
 }
@@ -830,7 +899,7 @@ object islist_t( object list ){
 }
 
 object eval_t( object list){
-	object env_temp = environment, obj;
+	object env_temp = environment;
 	int nb_env =1, compt=0;
 	if(list == nil || cdr(cdr(cdr(list))) != NULL){
 	    REPORT_MSG(";ERROR: eval: Wrong number of args given\n; expected at least one arg, max two\n");
@@ -856,8 +925,6 @@ object eval_t( object list){
 			environment=cdr(environment);
 		}
 	}
-			
-	obj=sfs_eval(car(list));
 	environment=env_temp;
-	return obj;
+	return sfs_eval((object)car(list));
 }

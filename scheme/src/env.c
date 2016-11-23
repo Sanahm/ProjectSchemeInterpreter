@@ -103,8 +103,8 @@ void inverse_list(object*list){
 	*list = objres;
 }
 
-int sizeof_stack(object stack){
-	object obj = stack; int i = 0;
+int sizeof_list(object list){
+	object obj = list; int i = 0;
 	while(obj != nil ){
 		i++;
 		obj = cdr(obj);

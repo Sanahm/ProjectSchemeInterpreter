@@ -91,9 +91,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("round"), make_primitive(round_t) );
     add_symbol_to_env( environment,make_symbol("abs"), make_primitive(abs_t) );
     add_symbol_to_env( environment,make_symbol("gcd"), make_primitive(pgcd_t) );
-    add_symbol_to_env( environment,make_symbol("lcm"), make_primitive(ppcm_t) );
-    
-    
+    add_symbol_to_env( environment,make_symbol("lcm"), make_primitive(ppcm_t) );      
     add_symbol_to_env( environment,make_symbol("<"), make_primitive(inf_t) );
     add_symbol_to_env( environment,make_symbol("<="), make_primitive(infe_t) );
     add_symbol_to_env( environment,make_symbol(">"), make_primitive(sup_t) );
@@ -123,6 +121,10 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,make_symbol("list"), make_primitive(list_t) );
     add_symbol_to_env( environment,make_symbol("list?"), make_primitive(islist_t) );
     add_symbol_to_env( environment,make_symbol("eval"), make_primitive(eval_t) );
+    add_symbol_to_env( environment,make_symbol("not"), make_primitive(not_t) );
+    add_symbol_to_env( environment,make_symbol("reverse"), make_primitive(reverse_t) );
+    add_symbol_to_env( environment,make_symbol("length"), make_primitive(length_t) );
+    add_symbol_to_env( environment,make_symbol("append"), make_primitive(append_t) );
     add_symbol_to_env( environment,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
 
 

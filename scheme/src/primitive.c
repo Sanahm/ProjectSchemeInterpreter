@@ -830,10 +830,34 @@ object islist_t( object list ){
 }
 
 object eval_t( object list){
-
-	if(cdr(list) != nil){
-	    REPORT_MSG(";ERROR: list?: Wrong number of args given\n; expected only one arg\n");
+	object env_temp = environment, obj;
+	int nb_env =1, compt=0;
+	if(list == nil || cdr(cdr(cdr(list))) != NULL){
+	    REPORT_MSG(";ERROR: eval: Wrong number of args given\n; expected at least one arg, max two\n");
     		return NULL;
-    }
-	return sfs_eval(car(list));
+	}
+	if(cdr(cdr(list)) == nil){
+		if(((object) car(cdr(list)))->this.number.numtype != NUM_INTEGER){
+			REPORT_MSG(";ERROR: eval: number of environment must be an integer\n");
+    			return NULL;
+		}
+
+		while(cdr(environment) != nil){
+			environment =cdr(environment);
+			nb_env++;
+	    	}
+		environment = env_temp;
+
+		if(nb_env < ((object) car(cdr(list)))->this.number.this.integer){
+			REPORT_MSG(";ERROR: eval: this environment doesn't exist\n");
+    			return NULL;
+		}
+		for(compt=0;compt < (nb_env - ((object) car(cdr(list)))->this.number.this.integer); compt++){
+			environment=cdr(environment);
+		}
+	}
+			
+	obj=sfs_eval(car(list));
+	environment=env_temp;
+	return obj;
 }

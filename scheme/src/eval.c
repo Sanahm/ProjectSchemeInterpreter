@@ -33,7 +33,7 @@ begin:
     	objc = obj;
 	
     	objres = get_symbol_value(environment,obj);
-    	if(!objres || !strcmp(".",obj->this.symbol)/* pour le point*/){
+    	if(!objres /*|| !strcmp(".",obj->this.symbol)*//* pour le point*/){
 			add_object_to_list(&STACK,obj);
     		REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
     		if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -265,8 +265,8 @@ begin:
 						init_stack();
 						return NULL;
 					}
-			objc=car(cdr(obj));/* pour le point*/
-			objres=car(cdr(obj));
+			/*objc=car(cdr(obj));*//* pour le point*/
+			/*objres=car(cdr(obj));
 			if(objc->type == SFS_PAIR){
 				while(cdr(objc) != nil  && strcmp(".",car(cdr(objc))->this.symbol) ){
 					objc=cdr(objc);
@@ -276,7 +276,7 @@ begin:
 					
 			}
 			if(cdr(objc) != nil && objc->type == SFS_PAIR && car(cdr(objc)) != NULL && car(cdr(objc))->type == SFS_SYMBOL && !strcmp(".",car(cdr(objc))->this.symbol) ){/* pour le point*/
-				add_object_to_list(&STACK,objc);
+				/*add_object_to_list(&STACK,objc);
 				if(cdr(cdr(cdr(objc))) == nil)	objc->this.pair.cdr = car(cdr(cdr(objc)));
 				else{
 					REPORT_MSG(";ERROR: list: missing paren ");
@@ -292,9 +292,9 @@ begin:
 						init_stack();
 						return NULL;
 				}
-			}
+			}*/
 			
-		            return objres;
+		            return car(cdr(obj));
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; quote: has been redifined.\n; in expression: ");
@@ -333,8 +333,8 @@ begin:
 
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
 		            {
-				if(!strcmp(".",car(obj)->this.symbol)){/* pour le point */
-					REPORT_MSG(";ERROR: define: \".\" cannot be set ");
+				/*if(!strcmp(".",car(obj)->this.symbol)){*//* pour le point */
+					/*REPORT_MSG(";ERROR: define: \".\" cannot be set ");
 		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
 		        		REPORT_MSG("; in expression: ");
 		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
@@ -346,7 +346,7 @@ begin:
 						}
 						init_stack();
 		                return NULL;
-				}
+				}*/
 
 		            	objres = get_symbol_value(environment, car(cdr(obj)));
 		            	if(objres && objres->type == SFS_PRIMITIVE) i = 0;
@@ -418,8 +418,8 @@ begin:
 				
 		            if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
 		            {
-				if(!strcmp(".",car(obj)->this.symbol)){/* pour le point */
-					REPORT_MSG(";ERROR: define: \".\" cannot be set ");
+				/*if(!strcmp(".",car(obj)->this.symbol)){*//* pour le point */
+					/*REPORT_MSG(";ERROR: define: \".\" cannot be set ");
 		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
 		        		REPORT_MSG("; in expression: ");
 		        		sfs_print(stderr,objc); fprintf( stderr,"\n");
@@ -431,7 +431,7 @@ begin:
 						}
 						init_stack();
 		                return NULL;
-				}
+				}*/
 		                while( env_incr != nil && (object) is_symbol_in_env( env_incr, car(obj) ) == nil )
 		                {
 		                    env_incr=cdr(env_incr);

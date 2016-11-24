@@ -14,7 +14,7 @@ GARBAGE=*~ $(SRCDIR)/*~ $(INCDIR)/*~ $(TESTDIR)/*~
 INCLUDE=-I$(INCDIR)
 
 # Pour activer les sorties INFO_MSG, ajouter -DVERBOSE aux CFLAGS 
-CFLAGS=-w -ansi $(INCLUDE) # putting -Wno-all instead of -Wall make that the compiler do not print any warning msg
+CFLAGS=-Wall -ansi $(INCLUDE) # putting -Wno-all instead of -Wall make that the compiler do not print any warning msg
 LFLAGS=-lreadline -lm
 
 CFLAGS_DBG=$(CFLAGS) -g -DDEBUG -Wall

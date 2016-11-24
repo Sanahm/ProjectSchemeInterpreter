@@ -63,6 +63,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( environment,if_t,if_t );
     add_symbol_to_env( environment,and_t,and_t );
     add_symbol_to_env( environment,or_t,or_t );
+    add_symbol_to_env( environment,make_symbol("."),make_symbol(".") );
     add_symbol_to_env( environment,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( environment,make_symbol("-inf"),make_symbol("-inf") );
     add_symbol_to_env( environment,make_symbol("pi"),make_number(pi) );

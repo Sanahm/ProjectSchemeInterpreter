@@ -31,6 +31,7 @@ begin:
         
     case SFS_SYMBOL:
     	objc = obj;
+	
     	objres = get_symbol_value(environment,obj);
     	if(!objres){
 			add_object_to_list(&STACK,obj);
@@ -48,8 +49,8 @@ begin:
     		REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
     		return NULL;
     	}
-    	
-        if( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) && objres == car(is_symbol_in_all_env(environment,obj)) ){ /*quand on tape par exemple SFS:0> (if #t define)*/
+    	if( !strcmp(".",obj->this.symbol)) add_object_to_list(&STACK,obj);
+        if( !strcmp(".",obj->this.symbol) || ( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) && objres == car(is_symbol_in_all_env(environment,obj)) )){ /*quand on tape par exemple SFS:0> (if #t define)*/
         	if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
         	else if( STACK != nil && objres->type != SFS_PRIMITIVE){
 			   	REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
@@ -262,8 +263,28 @@ begin:
 							print_stack(STACK);
 						}
 						init_stack();
+						return NULL;
 					}
-		            return car(cdr(obj));
+			objc=car(cdr(obj));
+			if(objc->type == SFS_PAIR && car(cdr(objc)) != NULL && car(cdr(objc))->type == SFS_SYMBOL && *(car(cdr(objc))->this.symbol) == '.' ){
+				add_object_to_list(&STACK,objc);
+				if(cdr(cdr(cdr(objc))) == nil)	objc->this.pair.cdr = car(cdr(cdr(objc)));
+				else{
+					REPORT_MSG(";ERROR: list: missing paren ");
+		        		sfs_print(stderr,obj); fprintf( stderr,"\n");
+		        		REPORT_MSG("; in expression: ");
+		        		sfs_print(stderr,obj); fprintf( stderr,"\n");
+						if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+						else REPORT_MSG("; in scope environment\n");
+						if(STACK != nil ){
+							inverse_list(&STACK);
+							print_stack(STACK);
+						}
+						init_stack();
+						return NULL;
+				}
+			}
+		            return objc;
 		        }
 		        else{
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; quote: has been redifined.\n; in expression: ");
@@ -281,6 +302,7 @@ begin:
 		
             if(isdefine(car(obj)->this.symbol)) {
             	objc= obj;
+	
 				add_object_to_list(&STACK,obj);
 				objres = get_symbol_value(environment,car(obj));
             	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){           
@@ -350,6 +372,7 @@ begin:
             
             if(isset(car(obj)->this.symbol)) {
             	objc= obj;
+
 				add_object_to_list(&STACK,obj);
 				objres = get_symbol_value(environment,car(obj));
             	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            

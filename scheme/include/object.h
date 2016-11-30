@@ -37,8 +37,11 @@ typedef struct object_t {
         struct object_t *nil; /*nil <--> empty_list*/
         struct object_t *boolean;
         struct object_t ** tab;
-	struct { struct object_t * (*function)(struct object_t *);} primitive; /*function est un pointeur sur fonction qui prend en paramètre un argument de type object et qui retourne un objet de type object*/
-
+		struct { struct object_t * (*function)(struct object_t *);} primitive; /*function est un pointeur sur fonction qui prend en paramètre un argument de type object et qui retourne un objet de type object*/
+		struct {struct object_t *parms;
+				struct object_t *body;
+				struct object_t *envt; } compound;
+			
     } this;
 
 } *object;
@@ -55,6 +58,7 @@ object make_symbol( string symb );
 object make_string( string str );
 object make_env(void);
 object make_primitive( object* myfunction );
+object make_lambda(object parms, object body, object env);
 
 #define SFS_NUMBER       0x00
 #define SFS_CHARACTER    0x01
@@ -64,6 +68,7 @@ object make_primitive( object* myfunction );
 #define SFS_BOOLEAN      0x05
 #define SFS_SYMBOL       0x06
 #define SFS_PRIMITIVE    0x07
+#define SFS_COMPOUND	 0x08
 #define SFS_TAB          0x20
 
 extern object nil;

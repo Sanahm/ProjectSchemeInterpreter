@@ -43,6 +43,15 @@ object make_primitive( object*myfunction ) {
     if(t) t->this.primitive.function = myfunction;
 	return t;
 }
+object make_lambda(object parms, object body, object env){
+	object t = make_object( SFS_COMPOUND );
+	if(t) {
+		t->this.compound.parms = parms;
+		t->this.compound.body = body;
+		t->this.compound.envt = env;
+	}
+	return t;
+}
 
 object make_boolean(char c) {
 

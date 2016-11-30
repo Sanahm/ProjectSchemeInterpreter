@@ -20,7 +20,7 @@ object get_symbol_value( object env, object symb);
 int hachage(char*mot,int dim_tab_hach);
 object add_symbol_to_env( object env, object symb, object value );
 object set_symbol_value_in_env( object env, object symb, object value);
-void add_new_env(object* env);
+int add_new_env(object* env);
 void add_object_to_list(object* list,object obj);
 void inverse_list(object*list);
 void print_stack(object stack);

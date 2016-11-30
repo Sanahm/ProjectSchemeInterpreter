@@ -32,9 +32,10 @@ object is_symbol_in_env( object env, object symb ) {
 }
 
 object is_symbol_in_all_env( object env, object symb ) {
-
-    if( car(env) == nil) return nil;
-    if( is_symbol_in_env( env, symb) ) return is_symbol_in_env( env, symb);
+	object obj;
+    if(env == nil || env == NULL) return nil;
+    obj = is_symbol_in_env( env,symb );
+    if( obj != nil ) return obj;
     return is_symbol_in_all_env( cdr(env),symb );
 }
 
@@ -75,13 +76,15 @@ object set_symbol_value_in_env( object env, object symb, object value) { /*renvo
 	return NULL;
 }
 
-void add_new_env(object* env) {
+int add_new_env(object* env) {
     object obj = make_env();
     if(obj) {
         
         obj->this.pair.cdr = *env;
         *env = obj;
+        return 1;
     }
+    return 0;
     /*si c'est null il faut faire un warning*/
 }
 

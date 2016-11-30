@@ -24,16 +24,17 @@ int isbegin(char*str) {
     if(!strcasecmp("begin",str)) return 1;
     return 0;
 }
+int islambda(char*str){
+	if(!strcasecmp("lambda",str)) return 1;
+	return 0;
+}
+
 int isdefine(char*str) {
     if(!strcasecmp("define",str)) return 1;
     return 0;
 }
 int isset(char*str) {
     if(!strcasecmp("set!",str)) return 1;
-    return 0;
-}
-int islet(char*str) {
-    if(!strcasecmp("let",str)) return 1;
     return 0;
 }
 

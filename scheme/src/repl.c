@@ -55,6 +55,7 @@ void init_interpreter ( void ) {
     object if_t = make_symbol("if");
     object and_t = make_symbol("and");
     object or_t = make_symbol("or");
+	object let_t=make_symbol("let");
     /*definition du top level*/
     add_symbol_to_env( environment,quote_t,quote_t );
     add_symbol_to_env( environment,define_t,define_t );

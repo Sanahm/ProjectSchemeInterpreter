@@ -24,6 +24,7 @@ int isif(char*str);
 int isquote(char*str);
 int isdefine(char*str);
 int isset(char*str);
+int islet(char*str);
 int isplus(char*str);
 int ismoins(char*str);
 int ismult(char*str);

@@ -32,6 +32,10 @@ int isset(char*str) {
     if(!strcasecmp("set!",str)) return 1;
     return 0;
 }
+int islet(char*str) {
+    if(!strcasecmp("let",str)) return 1;
+    return 0;
+}
 
 object car(object o) {
     if( o == NULL ) return NULL;

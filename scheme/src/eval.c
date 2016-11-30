@@ -334,7 +334,7 @@ begin:
                 objres = get_symbol_value(environment,car(obj));
                 if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
                     obj = cdr(obj);
-                    if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR) {
+                    /*if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR) {
                         REPORT_MSG(";ERROR: define: bad formals\n; in expression : ");
                         sfs_print(stderr,car(obj));
                         fprintf( stderr,"\n");
@@ -346,7 +346,7 @@ begin:
                         }
                         init_stack();
                         return NULL;
-                    }
+                    }*/
 
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                     {
@@ -383,9 +383,32 @@ begin:
                                 return car(add_symbol_to_env( environment, car(obj), objres ));
                             }
                         }
+			
                         return NULL;
 
                     }
+		    else if(obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
+                    {
+			object objres2=NULL;
+			
+			objres=cdr(car(obj));
+			objres2=car(cdr(obj));
+			obj->this.pair.car = car(car(obj));
+			obj=cdr(obj);
+			obj->this.pair.car=make_pair();
+			obj=car(obj);
+			obj->this.pair.car=make_symbol("lambda");
+			obj->this.pair.cdr=make_pair();
+			obj=cdr(obj);
+			obj->this.pair.car=objres;
+			obj->this.pair.cdr=make_pair();
+			obj=cdr(obj);
+			obj->this.pair.car=objres2;
+			obj->this.pair.cdr=nil;
+			
+			
+			return sfs_eval(objc);
+		    }
                     else {
                         REPORT_MSG(";ERROR: define: missing or extra expression ");
                         sfs_print(stderr,objc);

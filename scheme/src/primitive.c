@@ -152,7 +152,7 @@ object interaction_env_t( object list ){
 		REPORT_MSG(";ERROR: interaction-environment: Do not take any arg\n");
 		return NULL;
 	}
-	print_env(environment);
+	print_env(TopLevel);
 	return make_symbol("Reading environment complete");
 }
 
@@ -714,19 +714,24 @@ object length_t(object list){
 	return make_number(n);
 }
 
+
 object append_t(object list){
 	object obj,obj2, obj1=car(list);
 	if(list == nil) return nil;
-	if(obj1->type != SFS_PAIR && obj1 != nil){
-		REPORT_MSG(";ERROR: not:Wrong type in arg1 ");
+	if(obj1->type != SFS_PAIR && obj1 != nil && cdr(list) != nil){
+		REPORT_MSG(";ERROR: append: Wrong type in arg1 ");
 		sfs_print(stderr,obj1);fprintf(stderr,"\n");
 		return NULL;
+	}
+	if(obj1 == nil){
+		list = cdr(list);
+		return append_t(list);
 	}
 	obj2 = cdr(list);
 	while(obj2 != nil && obj2 != NULL){
 		obj = car(obj2);
-		if(obj->type != SFS_PAIR && obj != nil){
-			REPORT_MSG(";ERROR: not:Wrong type in arg1 ");
+		if(cdr(obj2)!= nil && obj->type != SFS_PAIR && obj != nil){
+			REPORT_MSG(";ERROR: append: Wrong type in arg1 ");
 			sfs_print(stderr,obj2);fprintf(stderr,"\n");
 			return NULL;
 		}
@@ -737,9 +742,8 @@ object append_t(object list){
 		obj->this.pair.cdr = car(obj2);
 		obj2 = cdr(obj2);
 	}
-	return obj1;	
+	return obj1;
 }
-
 
 object isboolean_t( object  list){
 	object obj=car(list);
@@ -899,7 +903,7 @@ object islist_t( object list ){
 }
 
 object eval_t( object list){
-	object env_temp = environment;
+	object env_temp = TopLevel;
 	int nb_env =1, compt=0;
 	if(list == nil || cdr(cdr(cdr(list))) != NULL){
 	    REPORT_MSG(";ERROR: eval: Wrong number of args given\n; expected at least one arg, max two\n");
@@ -911,20 +915,20 @@ object eval_t( object list){
     			return NULL;
 		}
 
-		while(cdr(environment) != nil){
-			environment =cdr(environment);
+		while(cdr(TopLevel) != nil){
+			TopLevel =cdr(TopLevel);
 			nb_env++;
 	    	}
-		environment = env_temp;
+		TopLevel = env_temp;
 
 		if(nb_env < ((object) car(cdr(list)))->this.number.this.integer){
 			REPORT_MSG(";ERROR: eval: this environment doesn't exist\n");
     			return NULL;
 		}
 		for(compt=0;compt < (nb_env - ((object) car(cdr(list)))->this.number.this.integer); compt++){
-			environment=cdr(environment);
+			TopLevel=cdr(TopLevel);
 		}
 	}
-	environment=env_temp;
-	return sfs_eval((object)car(list));
+	TopLevel=env_temp;
+	return sfs_eval((object)car(list),TopLevel);
 }

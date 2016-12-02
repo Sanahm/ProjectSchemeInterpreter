@@ -18,7 +18,7 @@ extern "C" {
 #include "number.h"
 #include "object.h"
 
-object sfs_eval( object o);
+object sfs_eval( object o, object environment );
 
 #ifdef __cplusplus
 }

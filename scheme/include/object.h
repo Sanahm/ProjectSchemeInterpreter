@@ -74,7 +74,7 @@ object make_lambda(object parms, object body, object env);
 extern object nil;
 extern object VRAI;
 extern object FAUX;
-extern object environment;
+extern object TopLevel;
 extern object STACK;
 #ifdef __cplusplus
 }

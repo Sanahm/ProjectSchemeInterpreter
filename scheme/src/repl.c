@@ -37,7 +37,7 @@ void usage_error( char *command ) {
 object nil;
 object VRAI;
 object FAUX;
-object environment;
+object TopLevel;
 object STACK;
 
 void init_interpreter ( void ) {
@@ -47,7 +47,7 @@ void init_interpreter ( void ) {
     VRAI     = make_bool();
     FAUX     = make_bool();
 	STACK    = nil;
-    environment = make_env();
+    TopLevel = make_env();
     object define_t = make_symbol("define");
     object quote_t = make_symbol("quote");
     object set_t = make_symbol("set!");
@@ -58,78 +58,78 @@ void init_interpreter ( void ) {
 	object let_t=make_symbol("let");
 	object lambda_t = make_symbol("lambda");
     /*definition du top level*/
-    add_symbol_to_env( environment,quote_t,quote_t );
-    add_symbol_to_env( environment,define_t,define_t );
-    add_symbol_to_env( environment,set_t,set_t );
-    add_symbol_to_env( environment,begin_t,begin_t );
-    add_symbol_to_env( environment,if_t,if_t );
-    add_symbol_to_env( environment,and_t,and_t );
-    add_symbol_to_env( environment,or_t,or_t );
-    add_symbol_to_env( environment,lambda_t, lambda_t );
-    add_symbol_to_env( environment,make_symbol("."),make_symbol(".") );
-    add_symbol_to_env( environment,make_symbol("+inf"),make_symbol("+inf") );
-    add_symbol_to_env( environment,make_symbol("-inf"),make_symbol("-inf") );
-    add_symbol_to_env( environment,make_symbol("pi"),make_number(pi) );
-    add_symbol_to_env( environment,make_symbol("+"), make_primitive(plus_t) );
-    add_symbol_to_env( environment,make_symbol("-"), make_primitive(minus_t) );
-    add_symbol_to_env( environment,make_symbol("*"), make_primitive(mult_t) );
-    add_symbol_to_env( environment,make_symbol("/"), make_primitive(division_t) );
-    add_symbol_to_env( environment,make_symbol("quotient"), make_primitive(quotient_t) );
-    add_symbol_to_env( environment,make_symbol("remainder"), make_primitive(remainder_t) );
+    add_symbol_to_env( TopLevel,quote_t,quote_t );
+    add_symbol_to_env( TopLevel,define_t,define_t );
+    add_symbol_to_env( TopLevel,set_t,set_t );
+    add_symbol_to_env( TopLevel,begin_t,begin_t );
+    add_symbol_to_env( TopLevel,if_t,if_t );
+    add_symbol_to_env( TopLevel,and_t,and_t );
+    add_symbol_to_env( TopLevel,or_t,or_t );
+    add_symbol_to_env( TopLevel,lambda_t, lambda_t );
+    add_symbol_to_env( TopLevel,make_symbol("."),make_symbol(".") );
+    add_symbol_to_env( TopLevel,make_symbol("+inf"),make_symbol("+inf") );
+    add_symbol_to_env( TopLevel,make_symbol("-inf"),make_symbol("-inf") );
+    add_symbol_to_env( TopLevel,make_symbol("pi"),make_number(pi) );
+    add_symbol_to_env( TopLevel,make_symbol("+"), make_primitive(plus_t) );
+    add_symbol_to_env( TopLevel,make_symbol("-"), make_primitive(minus_t) );
+    add_symbol_to_env( TopLevel,make_symbol("*"), make_primitive(mult_t) );
+    add_symbol_to_env( TopLevel,make_symbol("/"), make_primitive(division_t) );
+    add_symbol_to_env( TopLevel,make_symbol("quotient"), make_primitive(quotient_t) );
+    add_symbol_to_env( TopLevel,make_symbol("remainder"), make_primitive(remainder_t) );
     /* calcul trigono et hyperbol et fonctions diverses*/
-    add_symbol_to_env( environment,make_symbol("cos"), make_primitive(cos_t) );
-    add_symbol_to_env( environment,make_symbol("sin"), make_primitive(sin_t) );
-    add_symbol_to_env( environment,make_symbol("tan"), make_primitive(tan_t) );
-    add_symbol_to_env( environment,make_symbol("cosh"), make_primitive(cosh_t) );
-    add_symbol_to_env( environment,make_symbol("sinh"), make_primitive(sinh_t) );
-    add_symbol_to_env( environment,make_symbol("tanh"), make_primitive(tanh_t) );
-    add_symbol_to_env( environment,make_symbol("acos"), make_primitive(acos_t) );
-    add_symbol_to_env( environment,make_symbol("asin"), make_primitive(asin_t) );
-    add_symbol_to_env( environment,make_symbol("atan"), make_primitive(atan_t) );
-    add_symbol_to_env( environment,make_symbol("ceiling"), make_primitive(ceiling_t) ); /*entier le plus proche par les valeurs supérieures*/
-    add_symbol_to_env( environment,make_symbol("floor"), make_primitive(floor_t) ); /*entier le plus proche par les valeurs inférieures*/
-    add_symbol_to_env( environment,make_symbol("exp"), make_primitive(exp_t) );
-    add_symbol_to_env( environment,make_symbol("log"), make_primitive(log_t) );
-    add_symbol_to_env( environment,make_symbol("log10"), make_primitive(log10_t) );
-    add_symbol_to_env( environment,make_symbol("sqrt"), make_primitive(sqrt_t) );
-    add_symbol_to_env( environment,make_symbol("round"), make_primitive(round_t) );
-    add_symbol_to_env( environment,make_symbol("abs"), make_primitive(abs_t) );
-    add_symbol_to_env( environment,make_symbol("gcd"), make_primitive(pgcd_t) );
-    add_symbol_to_env( environment,make_symbol("lcm"), make_primitive(ppcm_t) );      
-    add_symbol_to_env( environment,make_symbol("<"), make_primitive(inf_t) );
-    add_symbol_to_env( environment,make_symbol("<="), make_primitive(infe_t) );
-    add_symbol_to_env( environment,make_symbol(">"), make_primitive(sup_t) );
-    add_symbol_to_env( environment,make_symbol(">="), make_primitive(supe_t) );
-    add_symbol_to_env( environment,make_symbol("char->integer"), make_primitive(ctoi_t) );
-    add_symbol_to_env( environment,make_symbol("integer->char"), make_primitive(itoc_t) );
-    add_symbol_to_env( environment,make_symbol("symbol->string"), make_primitive(symbtostr_t) );
-    add_symbol_to_env( environment,make_symbol("string->symbol"), make_primitive(strtosymb_t) );
-    add_symbol_to_env( environment,make_symbol("string->number"), make_primitive(strtonum_t) );
-    add_symbol_to_env( environment,make_symbol("number->string"), make_primitive(numtostr_t) );
-    add_symbol_to_env( environment,make_symbol("eqv?"), make_primitive(eqv_t) );
-    add_symbol_to_env( environment,make_symbol("eq?"), make_primitive(eq_t) );
-    add_symbol_to_env( environment,make_symbol("equal?"), make_primitive(equal_t) );
-    add_symbol_to_env( environment,make_symbol("boolean?"), make_primitive(isboolean_t) );
-    add_symbol_to_env( environment,make_symbol("integer?"), make_primitive(isinteger_t) );
-    add_symbol_to_env( environment,make_symbol("real?"), make_primitive(isreal_t) );
-    add_symbol_to_env( environment,make_symbol("null?"), make_primitive(isnull_t) );
-    add_symbol_to_env( environment,make_symbol("symbol?"), make_primitive(issymbol_t) );
-    add_symbol_to_env( environment,make_symbol("char?"), make_primitive(ischar_t) );
-    add_symbol_to_env( environment,make_symbol("string?"), make_primitive(isstring_t) );
-    add_symbol_to_env( environment,make_symbol("pair?"), make_primitive(ispair_t) );
-    add_symbol_to_env( environment,make_symbol("cons"), make_primitive(cons_t) );
-    add_symbol_to_env( environment,make_symbol("car"), make_primitive(car_t) );
-    add_symbol_to_env( environment,make_symbol("cdr"), make_primitive(cdr_t) );
-    add_symbol_to_env( environment,make_symbol("set-car!"), make_primitive(set_car_t) );
-    add_symbol_to_env( environment,make_symbol("set-cdr!"), make_primitive(set_cdr_t) );
-    add_symbol_to_env( environment,make_symbol("list"), make_primitive(list_t) );
-    add_symbol_to_env( environment,make_symbol("list?"), make_primitive(islist_t) );
-    add_symbol_to_env( environment,make_symbol("eval"), make_primitive(eval_t) );
-    add_symbol_to_env( environment,make_symbol("not"), make_primitive(not_t) );
-    add_symbol_to_env( environment,make_symbol("reverse"), make_primitive(reverse_t) );
-    add_symbol_to_env( environment,make_symbol("length"), make_primitive(length_t) );
-    add_symbol_to_env( environment,make_symbol("append"), make_primitive(append_t) );
-    add_symbol_to_env( environment,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
+    add_symbol_to_env( TopLevel,make_symbol("cos"), make_primitive(cos_t) );
+    add_symbol_to_env( TopLevel,make_symbol("sin"), make_primitive(sin_t) );
+    add_symbol_to_env( TopLevel,make_symbol("tan"), make_primitive(tan_t) );
+    add_symbol_to_env( TopLevel,make_symbol("cosh"), make_primitive(cosh_t) );
+    add_symbol_to_env( TopLevel,make_symbol("sinh"), make_primitive(sinh_t) );
+    add_symbol_to_env( TopLevel,make_symbol("tanh"), make_primitive(tanh_t) );
+    add_symbol_to_env( TopLevel,make_symbol("acos"), make_primitive(acos_t) );
+    add_symbol_to_env( TopLevel,make_symbol("asin"), make_primitive(asin_t) );
+    add_symbol_to_env( TopLevel,make_symbol("atan"), make_primitive(atan_t) );
+    add_symbol_to_env( TopLevel,make_symbol("ceiling"), make_primitive(ceiling_t) ); /*entier le plus proche par les valeurs supérieures*/
+    add_symbol_to_env( TopLevel,make_symbol("floor"), make_primitive(floor_t) ); /*entier le plus proche par les valeurs inférieures*/
+    add_symbol_to_env( TopLevel,make_symbol("exp"), make_primitive(exp_t) );
+    add_symbol_to_env( TopLevel,make_symbol("log"), make_primitive(log_t) );
+    add_symbol_to_env( TopLevel,make_symbol("log10"), make_primitive(log10_t) );
+    add_symbol_to_env( TopLevel,make_symbol("sqrt"), make_primitive(sqrt_t) );
+    add_symbol_to_env( TopLevel,make_symbol("round"), make_primitive(round_t) );
+    add_symbol_to_env( TopLevel,make_symbol("abs"), make_primitive(abs_t) );
+    add_symbol_to_env( TopLevel,make_symbol("gcd"), make_primitive(pgcd_t) );
+    add_symbol_to_env( TopLevel,make_symbol("lcm"), make_primitive(ppcm_t) );      
+    add_symbol_to_env( TopLevel,make_symbol("<"), make_primitive(inf_t) );
+    add_symbol_to_env( TopLevel,make_symbol("<="), make_primitive(infe_t) );
+    add_symbol_to_env( TopLevel,make_symbol(">"), make_primitive(sup_t) );
+    add_symbol_to_env( TopLevel,make_symbol(">="), make_primitive(supe_t) );
+    add_symbol_to_env( TopLevel,make_symbol("char->integer"), make_primitive(ctoi_t) );
+    add_symbol_to_env( TopLevel,make_symbol("integer->char"), make_primitive(itoc_t) );
+    add_symbol_to_env( TopLevel,make_symbol("symbol->string"), make_primitive(symbtostr_t) );
+    add_symbol_to_env( TopLevel,make_symbol("string->symbol"), make_primitive(strtosymb_t) );
+    add_symbol_to_env( TopLevel,make_symbol("string->number"), make_primitive(strtonum_t) );
+    add_symbol_to_env( TopLevel,make_symbol("number->string"), make_primitive(numtostr_t) );
+    add_symbol_to_env( TopLevel,make_symbol("eqv?"), make_primitive(eqv_t) );
+    add_symbol_to_env( TopLevel,make_symbol("eq?"), make_primitive(eq_t) );
+    add_symbol_to_env( TopLevel,make_symbol("equal?"), make_primitive(equal_t) );
+    add_symbol_to_env( TopLevel,make_symbol("boolean?"), make_primitive(isboolean_t) );
+    add_symbol_to_env( TopLevel,make_symbol("integer?"), make_primitive(isinteger_t) );
+    add_symbol_to_env( TopLevel,make_symbol("real?"), make_primitive(isreal_t) );
+    add_symbol_to_env( TopLevel,make_symbol("null?"), make_primitive(isnull_t) );
+    add_symbol_to_env( TopLevel,make_symbol("symbol?"), make_primitive(issymbol_t) );
+    add_symbol_to_env( TopLevel,make_symbol("char?"), make_primitive(ischar_t) );
+    add_symbol_to_env( TopLevel,make_symbol("string?"), make_primitive(isstring_t) );
+    add_symbol_to_env( TopLevel,make_symbol("pair?"), make_primitive(ispair_t) );
+    add_symbol_to_env( TopLevel,make_symbol("cons"), make_primitive(cons_t) );
+    add_symbol_to_env( TopLevel,make_symbol("car"), make_primitive(car_t) );
+    add_symbol_to_env( TopLevel,make_symbol("cdr"), make_primitive(cdr_t) );
+    add_symbol_to_env( TopLevel,make_symbol("set-car!"), make_primitive(set_car_t) );
+    add_symbol_to_env( TopLevel,make_symbol("set-cdr!"), make_primitive(set_cdr_t) );
+    add_symbol_to_env( TopLevel,make_symbol("list"), make_primitive(list_t) );
+    add_symbol_to_env( TopLevel,make_symbol("list?"), make_primitive(islist_t) );
+    add_symbol_to_env( TopLevel,make_symbol("eval"), make_primitive(eval_t) );
+    add_symbol_to_env( TopLevel,make_symbol("not"), make_primitive(not_t) );
+    add_symbol_to_env( TopLevel,make_symbol("reverse"), make_primitive(reverse_t) );
+    add_symbol_to_env( TopLevel,make_symbol("length"), make_primitive(length_t) );
+    add_symbol_to_env( TopLevel,make_symbol("append"), make_primitive(append_t) );
+    add_symbol_to_env( TopLevel,make_symbol("interaction-TopLevel"), make_primitive(interaction_env_t) );
 
 
 
@@ -235,7 +235,7 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
 		init_stack();
-        output = sfs_eval( sexpr );
+        output = sfs_eval( sexpr,TopLevel );
         if( NULL == output) {
             /* si fichier alors on sort */
             if (mode == SCRIPT) {

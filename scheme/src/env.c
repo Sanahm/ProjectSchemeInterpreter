@@ -126,7 +126,8 @@ void print_env( object env ){
 		while(obj2 != nil && obj2 != NULL){
 			REPORT_MSG(">>> %s ------------------- ",car(car(obj2))->this.symbol);
 			init_stack(); 
-			objres = sfs_eval(car(car(obj2)));
+			objres = 
+			sfs_eval(car(car(obj2)),TopLevel);
 			if(objres) REPORT_MSG("<#@ internal constant>\n");
 			fprintf(stderr,"\n");
 			obj2 = cdr(obj2);

@@ -642,7 +642,7 @@ begin:
 					init_stack();
 					return NULL;
 	    		}    	
-		    	while(parms != nil){
+		    	while(parms != nil && car(parms) != NULL){
 		    		object symb = make_pair();
 		    		if(!symb){
 			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;

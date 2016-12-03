@@ -39,6 +39,8 @@ object VRAI;
 object FAUX;
 object TopLevel;
 object STACK;
+object extend_env;
+object EXCEPT;
 
 void init_interpreter ( void ) {
 	num pi;
@@ -46,6 +48,7 @@ void init_interpreter ( void ) {
     nil      = make_nil();
     VRAI     = make_bool();
     FAUX     = make_bool();
+    EXCEPT   = make_bool();
 	STACK    = nil;
     TopLevel = make_env();
     object define_t = make_symbol("define");
@@ -129,9 +132,12 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("reverse"), make_primitive(reverse_t) );
     add_symbol_to_env( TopLevel,make_symbol("length"), make_primitive(length_t) );
     add_symbol_to_env( TopLevel,make_symbol("append"), make_primitive(append_t) );
+    add_symbol_to_env( TopLevel,make_symbol("map"), make_primitive(map_t) );
+    add_symbol_to_env( TopLevel,make_symbol("procedure?"), make_primitive(procedure_t) );
+    add_symbol_to_env( TopLevel,make_symbol("apply"), make_primitive(apply_t) );
     add_symbol_to_env( TopLevel,make_symbol("interaction-TopLevel"), make_primitive(interaction_env_t) );
 
-
+	extend_env = TopLevel;
 
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }

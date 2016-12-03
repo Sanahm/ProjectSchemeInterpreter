@@ -8,6 +8,11 @@ int isand(char*str) {
     return 0;
 }
 
+int ismap(char*str) {
+    if(!strcasecmp("map",str)) return 1;
+    return 0;
+}
+
 int isor(char*str) {
     if(!strcasecmp("or",str)) return 1;
     return 0;

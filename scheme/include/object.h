@@ -75,7 +75,9 @@ extern object nil;
 extern object VRAI;
 extern object FAUX;
 extern object TopLevel;
+extern object extend_env;
 extern object STACK;
+extern object EXCEPT;
 #ifdef __cplusplus
 }
 #endif

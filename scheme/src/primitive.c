@@ -152,7 +152,7 @@ object interaction_env_t( object list ){
 		REPORT_MSG(";ERROR: interaction-environment: Do not take any arg\n");
 		return NULL;
 	}
-	print_env(TopLevel);
+	print_env(extend_env);
 	return make_symbol("Reading environment complete");
 }
 
@@ -838,7 +838,7 @@ object car_t( object list){
     		return NULL;
     }
 	if(((object) car(list))->type != SFS_PAIR){
-		REPORT_MSG(";ERROR: car: Wrong type of args given\n; expected a pair\n");
+		REPORT_MSG(";ERROR: car: Wrong type in arg1\n; expected a pair\n");
     		return NULL;
     }
 	return car(car(list)); 
@@ -849,7 +849,7 @@ if(cdr(list) != nil){
     		return NULL;
     }
 if(((object) car(list))->type != SFS_PAIR){
-		REPORT_MSG(";ERROR: cdr: Wrong type of args given\n; expected a pair\n");
+		REPORT_MSG(";ERROR: cdr: Wrong type in arg1\n; expected a pair\n");
     		return NULL;
     }
 	return cdr(car(list)); 
@@ -860,7 +860,7 @@ if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
     		return NULL;
     }
 if(((object) car(list))->type != SFS_PAIR){
-		REPORT_MSG(";ERROR: set-car!: Wrong type of args given\n; expected a pair for the first arg\n");
+		REPORT_MSG(";ERROR: set-car!: Wrong type in arg1\n; expected a pair for the first arg\n");
     		return NULL;
     }
 	
@@ -875,7 +875,7 @@ if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
     		return NULL;
     }
 if(((object) car(list))->type != SFS_PAIR){
-		REPORT_MSG(";ERROR: set-cdr!: Wrong type of args given\n; expected a pair for the first arg\n");
+		REPORT_MSG(";ERROR: set-cdr!: Wrong type in arg1\n; expected a pair for the first arg\n");
     		return NULL;
     }
 
@@ -932,3 +932,89 @@ object eval_t( object list){
 	TopLevel=env_temp;
 	return sfs_eval((object)car(list),TopLevel);
 }
+
+
+
+object map_t( object list){
+	object obj1,obj2,obj3 = nil,obj4 = nil;int j = 0,i = 0,k = 2;
+	if(list == nil){
+	    REPORT_MSG(";ERROR: map: Wrong number of args given\n");
+    		return NULL;
+	}
+	object proc = car(list); /* on recupère la procedure dont on veut appliquer le map*/
+	if(proc->type != SFS_PRIMITIVE && proc->type != SFS_COMPOUND){
+		REPORT_MSG(";ERROR: map: Wrong type to apply: ");
+		sfs_print(stderr,proc);fprintf(stderr,"\n");
+		return NULL;
+	}
+	if(proc->type == SFS_COMPOUND) add_object_to_list(&obj3,proc);
+	obj1 = cdr(list);
+	while (obj1 != nil && obj1 != NULL){		
+		obj2 = car(obj1);
+		if(obj2 && obj2->type != SFS_PAIR){
+			REPORT_MSG(";ERROR: map: Wrong type in arg%d ",k);
+			sfs_print(stderr,obj2);fprintf(stderr,"\n");
+			return NULL;
+		}			
+		for(i = 0; i<j;i++) obj2 = cdr(obj2);
+		if(obj2 == nil || obj2 == NULL) break;
+		add_object_to_list(&obj3,car(obj2));		
+		obj1 = cdr(obj1);k++;
+		if(obj1 == nil) {
+			j++;
+			inverse_list(&obj3);
+			if(proc->type == SFS_PRIMITIVE) {
+				obj3 = proc->this.primitive.function(obj3);
+				if(!obj3) return EXCEPT;
+				add_object_to_list(&obj4,obj3);
+				obj3 = nil;
+			}
+			else {
+				obj3 = sfs_eval(obj3,extend_env);
+				if(!obj3) return EXCEPT;
+				add_object_to_list(&obj4,obj3);
+				obj3 = nil;
+				add_object_to_list(&obj3,proc);
+			}				
+			obj1 = cdr(list);			
+		}
+	}
+	inverse_list(&obj4);					
+	return obj4;
+}
+
+
+object procedure_t( object list ){	
+	if(cdr(list) != nil){
+	    REPORT_MSG(";ERROR: procedure?: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+    object obj = car(list);
+    if(obj->type != SFS_PRIMITIVE && obj->type != SFS_COMPOUND) return FAUX;
+    return VRAI;
+}
+
+object apply_t( object list){
+	object obj;
+	if(list == nil || cdr(cdr(list)) != nil){
+	    REPORT_MSG(";ERROR: apply: Wrong number of args given\n");
+    		return NULL;
+	}
+	object proc = car(list); /* on recupère la procedure dont on veut appliquer le map*/
+	if(proc->type != SFS_PRIMITIVE && proc->type != SFS_COMPOUND){
+		REPORT_MSG(";ERROR: apply: Wrong to apply: ");
+		sfs_print(stderr,proc);fprintf(stderr,"\n");
+		return NULL;
+	}	
+	obj = car(cdr(list));
+	add_object_to_list(&obj,proc);
+	obj = sfs_eval(obj,extend_env);
+	if(!obj) return EXCEPT;
+	return obj;
+}
+
+
+
+
+
+

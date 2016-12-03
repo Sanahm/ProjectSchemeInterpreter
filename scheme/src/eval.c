@@ -83,6 +83,12 @@ begin:
     case SFS_BOOLEAN:
         return obj;
         
+    case SFS_COMPOUND:
+        return obj;
+        
+    case SFS_PRIMITIVE:
+        return obj;
+           
     case SFS_PAIR:
         if(car(obj)->type == SFS_SYMBOL) {
         	
@@ -132,6 +138,7 @@ begin:
 						REPORT_MSG(">\n");
 						return NULL;
 					}
+					i = 1;
 					return make_lambda(parms,body,environment);
                                     
             	}
@@ -149,9 +156,7 @@ begin:
 			    }
 			}	            
 		    
-            
-          
-            
+                     
             
               
             if(isand(car(obj)->this.symbol)) {
@@ -235,13 +240,18 @@ begin:
 						}
 		            	return NULL;
 		            }
-					objres = sfs_eval(car(obj),environment);/*le predicat*/
+		            if(i){
+		            	i = 0; /*(if (lambda (n) (+ 1 n)) 2)*/
+						objres = sfs_eval(car(obj),environment);/*le predicat*/
+						i = 1;
+					}
+					else objres = sfs_eval(car(obj),environment);
 					if(objres == NULL) return NULL;
 		            if( objres != FAUX ) {
 		                if( car(cdr(obj)) != NULL /*&& car(cdr(obj)) != nil */) {/*consequence?*/		                
 		                    obj = car(cdr(obj));
 					    	objres = get_symbol_value(environment, obj);
-					    	if(objres && (objres->type == SFS_PRIMITIVE || objres->type == SFS_COMPOUND) && i) i = 1;				
+					    	/*if(objres && (objres->type == SFS_PRIMITIVE || objres->type == SFS_COMPOUND) && i) i = 1;*/		
 		                    goto begin;
 		                }
 		                REPORT_MSG(";ERROR: if: missing consequence.\n; in expression : "); 
@@ -326,11 +336,11 @@ begin:
 		        }
             }
             if(isquote(car(obj)->this.symbol)) {
-            	objc = obj;
-				add_object_to_list(&STACK,obj);
+            	objc = obj;				
 				objres = get_symbol_value(environment,car(obj));
             	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
 		        	if( cdr(obj) == nil ){
+		        		add_object_to_list(&STACK,objc);
 		        		REPORT_MSG(";ERROR: quote: missing or extra expression ");
 		        		sfs_print(stderr,obj); fprintf( stderr,"\n");
 		        		REPORT_MSG("; in expression: ");
@@ -376,6 +386,7 @@ begin:
 		            return car(cdr(obj));
 		        }
 		        else{
+		        	add_object_to_list(&STACK,objc);
 		       		REPORT_MSG(";ERROR: Wrong type to apply\n; quote: has been redifined.\n; in expression: ");
                 	sfs_print(stderr,objc); fprintf( stderr,"\n");
                 	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -390,10 +401,7 @@ begin:
             }
 		
             if(isdefine(car(obj)->this.symbol)) {
-                objc= obj;
-
-                add_object_to_list(&STACK,obj);
-
+                objc= obj;               
                 objres = get_symbol_value(environment,car(obj));
                 if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
                     obj = cdr(obj);
@@ -414,6 +422,7 @@ begin:
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                     {
                         if(!strcmp(".",car(obj)->this.symbol)) { /* pour le point */
+                        	add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: define: \".\" cannot be set ");
                             sfs_print(stderr,objc);
                             fprintf( stderr,"\n");
@@ -474,6 +483,7 @@ begin:
 			return sfs_eval(objc,environment);
 		    }
                     else {
+                    	add_object_to_list(&STACK,objc);
                         REPORT_MSG(";ERROR: define: missing or extra expression ");
                         sfs_print(stderr,objc);
                         fprintf( stderr,"\n");
@@ -491,6 +501,7 @@ begin:
                     }
                 }
                 else {
+                	add_object_to_list(&STACK,objc);
                     REPORT_MSG(";ERROR: Wrong type to apply\n; define: has been redifined.\n; in expression: ");
                     sfs_print(stderr,objc);
                     fprintf( stderr,"\n");
@@ -506,13 +517,12 @@ begin:
             }
             
             if(isset(car(obj)->this.symbol)) {
-            	objc= obj;
-
-				add_object_to_list(&STACK,obj);
+            	objc= obj;				
 				objres = get_symbol_value(environment,car(obj));
             	if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ){            
                 	obj = cdr(obj);
 					if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR){
+						add_object_to_list(&STACK,objc);
 			            REPORT_MSG(";ERROR: set!: bad formals\n; in expression : ");
 		            	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
 		            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -528,6 +538,7 @@ begin:
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                     {
                         if(!strcmp(".",car(obj)->this.symbol)) { /* pour le point */
+                        	add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: define: \".\" cannot be set ");
                             sfs_print(stderr,objc);
                             fprintf( stderr,"\n");
@@ -548,6 +559,7 @@ begin:
                             env_incr=cdr(env_incr);
                         }
                         if(env_incr == nil) {
+                        	add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: unbound variable: %s\n ; no previous definition.\n",car(obj)->this.symbol);
                             if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
                             else REPORT_MSG("; in scope environment\n");
@@ -567,6 +579,7 @@ begin:
                         return car(objres);
                     }
                     else {
+                    	add_object_to_list(&STACK,objc);
                         REPORT_MSG(";ERROR: set!: missing or extra expression ");
                         sfs_print(stderr,objc);
                         fprintf( stderr,"\n");
@@ -584,6 +597,7 @@ begin:
                     }
                 }
 		        else {
+		        	add_object_to_list(&STACK,objc);
 		            REPORT_MSG(";ERROR: Wrong type to apply\n; set!: has been redifined.\n; in expression: ");
 		            sfs_print(stderr,objc);
 		            fprintf( stderr,"\n");
@@ -607,12 +621,14 @@ begin:
 		    while(obj != nil){
 		    	if(car(obj)->type == SFS_SYMBOL){ /* ca c'est mis pour ce genre de cas (+ sin 4)*/
 		    		objres = get_symbol_value(environment,car(obj));
-		    		if(!objres) return sfs_eval(car(obj),environment); /*qui est NULL*/
+		    		if(!objres) return sfs_eval(car(obj),environment);
 		    		if(objres->type == SFS_PRIMITIVE) {
 		    			add_object_to_list(&list,objres);
-		    			break;
+		    			obj = cdr(obj);
+		    			continue;
 		    		}
 		    	}
+				if(car(car(obj)) && car(car(obj))->type == SFS_SYMBOL && islambda(car(car(obj))->this.symbol)) i = 0; /* a cause de ça (map (lambda (n) (expt n n)) '(1 2 3 4 5))*/
 		    	objres = sfs_eval(car(obj),environment);
 		    	if(!objres) return objres; /*qui est NULL*/
 		    	add_object_to_list(&list,objres);
@@ -630,7 +646,7 @@ begin:
 		    	}		    	
 		    	add_object_to_list(&comp,make_symbol("begin"));/*(begin ...*/
 		    	object parms = objres->this.compound.parms;
-	    		if(sizeof_list(list) != sizeof_list(parms)){
+	    		if(parms->type == SFS_PAIR && sizeof_list(list) != sizeof_list(parms)){
 					REPORT_MSG(";ERROR: lambda: Wrong number of args given\n; in expression: ");
 			    	sfs_print(stderr,objc); fprintf( stderr,"\n");
 			    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -641,8 +657,8 @@ begin:
 					}
 					init_stack();
 					return NULL;
-	    		}    	
-		    	while(parms != nil && car(parms) != NULL){
+	    		}
+		    	while(parms != nil && parms != NULL){
 		    		object symb = make_pair();
 		    		if(!symb){
 			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
@@ -652,14 +668,28 @@ begin:
 		    		if(!symb->this.pair.cdr){
 			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    		}
-		    		symb->this.pair.cdr->this.pair.car = car(parms);/*(define symb ..*/
+		    		if( parms->type == SFS_PAIR ) symb->this.pair.cdr->this.pair.car = car(parms);/*(define symb ..*/
+		    		else symb->this.pair.cdr->this.pair.car = parms;
 		    		symb->this.pair.cdr->this.pair.cdr = make_pair();
 		    		if(!symb->this.pair.cdr->this.pair.cdr){
 			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    		}
-		    		symb->this.pair.cdr->this.pair.cdr->this.pair.car = car(list);/*(define symb value .*/
+		    		if( parms->type == SFS_PAIR ) symb->this.pair.cdr->this.pair.cdr->this.pair.car = car(list);/*(define symb value .*/
+		    		else {
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car = make_pair();
+		    			if(!symb->this.pair.cdr->this.pair.cdr->this.pair.car){
+		    				REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    			}
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.car = make_symbol("quote");
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr = make_pair();
+		    			if(!symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr){
+		    				REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    			}
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr->this.pair.car = list;
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr->this.pair.cdr = nil;
+		    		}
 		    		symb->this.pair.cdr->this.pair.cdr->this.pair.cdr = nil;		/*(define symb value )*/
-		    		add_object_to_list(&comp,symb);
+		    		add_object_to_list(&comp,symb);/*sfs_print(stderr,comp); fprintf(stderr,"\n");*/
 		    		parms = cdr(parms);
 		    		list = cdr(list);
 		    	}
@@ -670,11 +700,12 @@ begin:
 		    		body = cdr(body);
 		    	}		    			    	
 		    	inverse_list(&comp);/*(begin (define symb1 val1) (define symb2 val2) ... body)*/
-		    	object extend_env = objres->this.compound.envt;	    	
+		    	extend_env = objres->this.compound.envt;	    	
 		    	if(!add_new_env(&extend_env)){
 		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    	}
 		    	objres = sfs_eval(comp,extend_env);
+		    	extend_env = TopLevel; /*on réinitilaise*/
 		    	return objres;		    			    	
 		    		    
 		    }
@@ -707,6 +738,7 @@ begin:
 				init_stack();
 			}
 			if(objres != NULL && objres->type == SFS_PRIMITIVE) return sfs_eval(objres,environment);
+			if(objres == EXCEPT) return NULL;
 			return objres;
        }
        
@@ -714,8 +746,21 @@ begin:
 	   		i = 0;
 	   		goto primi;
 	   }
+	   else if(car(obj)->type == SFS_COMPOUND) goto primi;
+	   else if(car(obj)->type == SFS_PRIMITIVE) goto primi;
        else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
-            WARNING_MSG("Invalid S-expression for evaluation --- Aborts");
+	    	add_object_to_list(&STACK,car(obj));
+       		REPORT_MSG(";ERROR: Wrong type to apply ");
+        	sfs_print(stderr,car(obj)); fprintf( stderr,"\n");
+       		REPORT_MSG("; in expression: ");
+        	sfs_print(stderr,obj); fprintf( stderr,"\n");            	
+        	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+			else REPORT_MSG("; in scope environment.\n");
+			if(STACK != nil ){
+				inverse_list(&STACK);
+				print_stack(STACK);
+			}
+			init_stack();
 			return NULL;
        }
 

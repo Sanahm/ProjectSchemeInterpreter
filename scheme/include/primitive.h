@@ -51,6 +51,7 @@ object ppcm_t(object list);
 
 
 
+
 /************************/
 /*comparaison*/
 object cmp_t( object list, char*op);
@@ -90,5 +91,8 @@ object not_t(object list);
 object reverse_t(object list);
 object length_t(object list);
 object append_t(object list);
+object map_t( object list);
+object procedure_t( object list );
+object apply_t( object list);
 #endif
 

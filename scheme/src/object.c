@@ -41,16 +41,16 @@ object make_bool( void ) {
 object make_primitive( object*myfunction ) {
     object t = make_object( SFS_PRIMITIVE );
     if(t) t->this.primitive.function = myfunction;
-	return t;
+    return t;
 }
-object make_lambda(object parms, object body, object env){
-	object t = make_object( SFS_COMPOUND );
-	if(t) {
-		t->this.compound.parms = parms;
-		t->this.compound.body = body;
-		t->this.compound.envt = env;
-	}
-	return t;
+object make_lambda(object parms, object body, object env) {
+    object t = make_object( SFS_COMPOUND );
+    if(t) {
+        t->this.compound.parms = parms;
+        t->this.compound.body = body;
+        t->this.compound.envt = env;
+    }
+    return t;
 }
 
 object make_boolean(char c) {
@@ -118,12 +118,12 @@ object make_pair( void ) {
 object make_env(void) {
     object t = make_pair();
     if(t) {
-	
+
         t->this.pair.car = make_object(SFS_TAB);
         t->this.pair.cdr = nil;
         t->this.pair.car->this.tab = (object) calloc(SFS_TAB,sizeof(*t->this.pair.car->this.tab));
     }
-	
+
     return t;
 }
 

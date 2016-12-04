@@ -33,6 +33,7 @@ int isinfe(char*str);
 int issup(char*str);
 int issupe(char*str);
 int islambda(char*str);
+int islet(char*str);
 object car(object o);
 object cdr(object o);
 object operation( object obj1,object obj2, char*op );

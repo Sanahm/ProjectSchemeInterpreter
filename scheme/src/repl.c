@@ -70,6 +70,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,and_t,and_t );
     add_symbol_to_env( TopLevel,or_t,or_t );
     add_symbol_to_env( TopLevel,lambda_t, lambda_t );
+    add_symbol_to_env( TopLevel,let_t, let_t );
     add_symbol_to_env( TopLevel,make_symbol("."),make_symbol(".") );
     add_symbol_to_env( TopLevel,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( TopLevel,make_symbol("-inf"),make_symbol("-inf") );
@@ -136,7 +137,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("map"), make_primitive(map_t) );
     add_symbol_to_env( TopLevel,make_symbol("procedure?"), make_primitive(procedure_t) );
     add_symbol_to_env( TopLevel,make_symbol("apply"), make_primitive(apply_t) );
-    add_symbol_to_env( TopLevel,make_symbol("interaction-TopLevel"), make_primitive(interaction_env_t) );
+    add_symbol_to_env( TopLevel,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
 
     extend_env = TopLevel;
 

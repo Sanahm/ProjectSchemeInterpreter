@@ -964,33 +964,15 @@ object islist_t( object list ) {
 
 object eval_t( object list) {
     object env_temp = TopLevel;
-    int nb_env =1, compt=0;
     if(list == nil || cdr(cdr(cdr(list))) != NULL) {
         REPORT_MSG(";ERROR: eval: Wrong number of args given\n; expected at least one arg, max two\n");
         return NULL;
     }
     if(cdr(cdr(list)) == nil) {
-        if(((object) car(cdr(list)))->this.number.numtype != NUM_INTEGER) {
-            REPORT_MSG(";ERROR: eval: number of environment must be an integer\n");
-            return NULL;
-        }
-
-        while(cdr(TopLevel) != nil) {
-            TopLevel =cdr(TopLevel);
-            nb_env++;
-        }
-        TopLevel = env_temp;
-
-        if(nb_env < ((object) car(cdr(list)))->this.number.this.integer) {
-            REPORT_MSG(";ERROR: eval: this environment doesn't exist\n");
-            return NULL;
-        }
-        for(compt=0; compt < (nb_env - ((object) car(cdr(list)))->this.number.this.integer); compt++) {
-            TopLevel=cdr(TopLevel);
-        }
+        env_temp=car(cdr(list));
     }
-    TopLevel=env_temp;
-    return sfs_eval((object)car(list),TopLevel);
+    
+    return sfs_eval((object)car(list), env_temp);
 }
 
 

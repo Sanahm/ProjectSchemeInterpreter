@@ -165,6 +165,115 @@ error:
             }
 
 
+            if(islet(car(obj)->this.symbol)) {
+                objc = obj;
+                object objres1 = car(cdr(obj)),objres2=NULL, objres3=NULL;
+
+                add_object_to_list(&STACK,obj);
+                objres = get_symbol_value(environment,car(obj));
+                if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
+		    if(objres1==NULL){
+			REPORT_MSG(";ERROR:  let: bad formal\n;in expression: ");
+                        sfs_print(stderr,objc);
+                        fprintf( stderr,"\n");
+                        if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+                        else REPORT_MSG("; in scope environment.\n");
+                        if(STACK != nil ) {
+                            inverse_list(&STACK);
+                            print_stack(STACK);
+                        }
+                        init_stack();
+                        return NULL;
+                    }
+                    if(objres1->type != SFS_PAIR && objres1 != nil ) {
+                        REPORT_MSG(";ERROR:  let: bad bindings ");
+                        sfs_print(stderr,car(cdr(objc)));
+                        REPORT_MSG("\n;in expression: ");
+                        sfs_print(stderr,objc);
+                        fprintf( stderr,"\n");
+                        if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+                        else REPORT_MSG("; in scope environment.\n");
+                        if(STACK != nil ) {
+                            inverse_list(&STACK);
+                            print_stack(STACK);
+                        }
+                        init_stack();
+                        return NULL;
+                    }
+			obj=cdr(cdr(obj));
+			objres=make_pair();
+			objres3=objres;
+			objres2 = objres;
+                    objres->this.pair.car=make_pair();
+                    objres=car(objres);
+                    objres->this.pair.car=make_symbol("lambda");
+                    objres->this.pair.cdr=make_pair();
+                    objres=cdr(objres);
+                    objres->this.pair.cdr=obj;
+
+                    if(objres1 == nil) {
+                        objres->this.pair.car=nil;
+
+                    }
+                    else {
+                        objres->this.pair.car=make_pair();
+                        objres=car(objres);
+                        while(objres1 != nil) {
+
+                            if( car(car(objres1)) == NULL ||  car(objres1)->type != SFS_PAIR || car(car(objres1))->type != SFS_SYMBOL || cdr(cdr(car(objres1))) != nil ) {
+                                REPORT_MSG(";ERROR:  let: bad bindings ");
+                                sfs_print(stderr,car(objres1));
+                                REPORT_MSG("\n;in expression: ");
+                                sfs_print(stderr,objc);
+                                fprintf( stderr,"\n");
+                                if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+                                else REPORT_MSG("; in scope environment.\n");
+                                if(STACK != nil ) {
+                                    inverse_list(&STACK);
+                                    print_stack(STACK);
+                                }
+                                init_stack();
+                                return NULL;
+                            }
+
+                            objres->this.pair.car=car(car(objres1));
+                            objres2->this.pair.cdr=make_pair();
+                            objres2=cdr(objres2);
+                            objres2->this.pair.car=car(cdr(car(objres1)));
+                            objres1=cdr(objres1);
+                            if(objres1 != nil) {
+                                objres->this.pair.cdr=make_pair();
+                                objres=cdr(objres);
+                            }
+
+                        }
+                        objres->this.pair.cdr=nil;
+
+
+
+
+
+
+
+                    }
+			                        objres2->this.pair.cdr=nil;
+
+                        return sfs_eval(objres3,environment);
+                }
+                else {
+                    REPORT_MSG(";ERROR: Wrong type to apply\n; let: has been redifined.\n; in expression: ");
+                    sfs_print(stderr,objc);
+                    fprintf( stderr,"\n");
+                    if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+                    else REPORT_MSG("; in scope environment.\n");
+                    if(STACK != nil ) {
+                        inverse_list(&STACK);
+                        print_stack(STACK);
+                    }
+                    init_stack();
+                    return NULL;
+                }
+            }
 
 
             if(isand(car(obj)->this.symbol)) {
@@ -487,17 +596,17 @@ error:
                         objres=cdr(car(obj));
                         objres2=cdr(obj);
                         obj->this.pair.car = car(car(obj));
-			obj->this.pair.cdr=make_pair();
+                        obj->this.pair.cdr=make_pair();
                         obj=cdr(obj);
                         obj->this.pair.car=make_pair();
-			obj->this.pair.cdr=nil;
+                        obj->this.pair.cdr=nil;
                         obj=car(obj);
                         obj->this.pair.car=make_symbol("lambda");
                         obj->this.pair.cdr=make_pair();
                         obj=cdr(obj);
                         obj->this.pair.car=objres;
                         obj->this.pair.cdr=objres2;
-			
+
 
                         return sfs_eval(objc,environment);
                     }

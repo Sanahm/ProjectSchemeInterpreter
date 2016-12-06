@@ -32,7 +32,7 @@ object is_symbol_in_env( object env, object symb ) {
 }
 
 object is_symbol_in_all_env( object env, object symb ) {
-	object obj;
+    object obj;
     if(env == nil || env == NULL) return nil;
     obj = is_symbol_in_env( env,symb );
     if( obj != nil ) return obj;
@@ -62,24 +62,24 @@ object add_symbol_to_env( object env, object symb, object value ) {
         obj->this.pair.car->this.pair.cdr = value;
         obj->this.pair.cdr = car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)];
         car(env)->this.tab[hachage(symb->this.symbol,car(env)->type)]= obj;
-	return obj->this.pair.car;
+        return obj->this.pair.car;
     }
     return nil;
 }
 object set_symbol_value_in_env( object env, object symb, object value) { /*renvoyer un objet plutot qu'un int*/
 
     if(!is_symbol_in_env( env,symb )) return nil;
-    if(value != NULL){
-		is_symbol_in_env( env,symb )->this.pair.cdr = value;
-		return is_symbol_in_env( env,symb );
-	}
-	return NULL;
+    if(value != NULL) {
+        is_symbol_in_env( env,symb )->this.pair.cdr = value;
+        return is_symbol_in_env( env,symb );
+    }
+    return NULL;
 }
 
 int add_new_env(object* env) {
     object obj = make_env();
     if(obj) {
-        
+
         obj->this.pair.cdr = *env;
         *env = obj;
         return 1;
@@ -88,22 +88,22 @@ int add_new_env(object* env) {
     /*si c'est null il faut faire un warning*/
 }
 
-void add_object_to_list(object* list,object obj){
-	object objc = make_pair();
+void add_object_to_list(object* list,object obj) {
+    object objc = make_pair();
     if(obj) {
-		objc->this.pair.car = obj;
-		objc->this.pair.cdr = *list;
-		*list = objc;
-	}
+        objc->this.pair.car = obj;
+        objc->this.pair.cdr = *list;
+        *list = objc;
+    }
 }
-void inverse_list(object*list){
-	object obj,objres = nil;
-	obj = *list;
-	while(obj != nil){
-		add_object_to_list(&objres,car(obj));
-		obj = cdr(obj);
-	}
-	*list = objres;
+void inverse_list(object*list) {
+    object obj,objres = nil;
+    obj = *list;
+    while(obj != nil) {
+        add_object_to_list(&objres,car(obj));
+        obj = cdr(obj);
+    }
+    *list = objres;
 }
 
 int sizeof_list(object list){
@@ -136,23 +136,25 @@ void print_env( object env ){
 	}
 	print_env( cdr(obj1) );
 }
-	
-	
-	
-	
-void print_stack(object stack){
-	object obj = stack; int i = 1;
-	REPORT_MSG(";STACK TRACE\n");
-	while(obj != nil ){
-		REPORT_MSG("%d; ",i);
-		sfs_print(stderr,car(obj));fprintf(stderr,"\n");
-		obj = cdr(obj);
-		i++;
-	}
+
+
+
+
+void print_stack(object stack) {
+    object obj = stack;
+    int i = 1;
+    REPORT_MSG(";STACK TRACE\n");
+    while(obj != nil ) {
+        REPORT_MSG("%d; ",i);
+        sfs_print(stderr,car(obj));
+        fprintf(stderr,"\n");
+        obj = cdr(obj);
+        i++;
+    }
 }
 
-void init_stack(void){
-	STACK 	= nil;
+void init_stack(void) {
+    STACK 	= nil;
 }
 
 

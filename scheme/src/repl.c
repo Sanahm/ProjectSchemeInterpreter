@@ -43,13 +43,14 @@ object extend_env;
 object EXCEPT;
 
 void init_interpreter ( void ) {
-	num pi;
-	pi.numtype = NUM_REAL; pi.this.real = M_PI;
+    num pi;
+    pi.numtype = NUM_REAL;
+    pi.this.real = M_PI;
     nil      = make_nil();
     VRAI     = make_bool();
     FAUX     = make_bool();
     EXCEPT   = make_bool();
-	STACK    = nil;
+    STACK    = nil;
     TopLevel = make_env();
     object define_t = make_symbol("define");
     object quote_t = make_symbol("quote");
@@ -58,8 +59,8 @@ void init_interpreter ( void ) {
     object if_t = make_symbol("if");
     object and_t = make_symbol("and");
     object or_t = make_symbol("or");
-	object let_t=make_symbol("let");
-	object lambda_t = make_symbol("lambda");
+    object let_t=make_symbol("let");
+    object lambda_t = make_symbol("lambda");
     /*definition du top level*/
     add_symbol_to_env( TopLevel,quote_t,quote_t );
     add_symbol_to_env( TopLevel,define_t,define_t );
@@ -69,6 +70,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,and_t,and_t );
     add_symbol_to_env( TopLevel,or_t,or_t );
     add_symbol_to_env( TopLevel,lambda_t, lambda_t );
+    add_symbol_to_env( TopLevel,let_t, let_t );
     add_symbol_to_env( TopLevel,make_symbol("."),make_symbol(".") );
     add_symbol_to_env( TopLevel,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( TopLevel,make_symbol("-inf"),make_symbol("-inf") );
@@ -98,7 +100,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("round"), make_primitive(round_t) );
     add_symbol_to_env( TopLevel,make_symbol("abs"), make_primitive(abs_t) );
     add_symbol_to_env( TopLevel,make_symbol("gcd"), make_primitive(pgcd_t) );
-    add_symbol_to_env( TopLevel,make_symbol("lcm"), make_primitive(ppcm_t) );      
+    add_symbol_to_env( TopLevel,make_symbol("lcm"), make_primitive(ppcm_t) );
     add_symbol_to_env( TopLevel,make_symbol("<"), make_primitive(inf_t) );
     add_symbol_to_env( TopLevel,make_symbol("<="), make_primitive(infe_t) );
     add_symbol_to_env( TopLevel,make_symbol(">"), make_primitive(sup_t) );
@@ -136,9 +138,9 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("map"), make_primitive(map_t) );
     add_symbol_to_env( TopLevel,make_symbol("procedure?"), make_primitive(procedure_t) );
     add_symbol_to_env( TopLevel,make_symbol("apply"), make_primitive(apply_t) );
-    add_symbol_to_env( TopLevel,make_symbol("interaction-TopLevel"), make_primitive(interaction_env_t) );
+    add_symbol_to_env( TopLevel,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
 
-	extend_env = TopLevel;
+    extend_env = TopLevel;
 
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }
@@ -176,7 +178,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     init_interpreter();
-	
+
     /*par defaut : mode shell interactif */
     fp = stdin;
     mode = INTERACTIF;
@@ -241,7 +243,7 @@ int main ( int argc, char *argv[] ) {
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
-		init_stack();
+        init_stack();
         output = sfs_eval( sexpr,TopLevel );
         if( NULL == output) {
             /* si fichier alors on sort */

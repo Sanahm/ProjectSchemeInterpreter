@@ -29,9 +29,9 @@ int isbegin(char*str) {
     if(!strcasecmp("begin",str)) return 1;
     return 0;
 }
-int islambda(char*str){
-	if(!strcasecmp("lambda",str)) return 1;
-	return 0;
+int islambda(char*str) {
+    if(!strcasecmp("lambda",str)) return 1;
+    return 0;
 }
 
 int isdefine(char*str) {
@@ -40,6 +40,11 @@ int isdefine(char*str) {
 }
 int isset(char*str) {
     if(!strcasecmp("set!",str)) return 1;
+    return 0;
+}
+
+int islet(char*str) {
+    if(!strcasecmp("let",str)) return 1;
     return 0;
 }
 
@@ -59,10 +64,10 @@ object operation( object obj1,object obj2, char*op ) {
     if(obj1 == NULL || obj2 == NULL) return NULL;
     switch(op[0]) {
     case '+':
-        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))){
-        	if(obj2->type != SFS_SYMBOL) return obj1;
-        	if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return obj1;
-        	return make_symbol("nan");
+        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))) {
+            if(obj2->type != SFS_SYMBOL) return obj1;
+            if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return obj1;
+            return make_symbol("nan");
         }
         if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ) return obj2;
         if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
@@ -86,14 +91,14 @@ object operation( object obj1,object obj2, char*op ) {
             return make_number(n);
         }
     case '-':
-        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))){
-        	if(obj2->type != SFS_SYMBOL) return obj1;
-        	if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return make_symbol("nan");
-        	return obj1;
+        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf"))) {
+            if(obj2->type != SFS_SYMBOL) return obj1;
+            if(!strcasecmp(obj1->this.symbol,obj2->this.symbol)) return make_symbol("nan");
+            return obj1;
         }
-        if(obj2->type == SFS_SYMBOL){
-        	if (!strcasecmp(obj2->this.symbol,"+inf") ) return make_symbol("-inf");
-        	else if(!strcasecmp(obj2->this.symbol,"-inf")) return make_symbol("+inf");
+        if(obj2->type == SFS_SYMBOL) {
+            if (!strcasecmp(obj2->this.symbol,"+inf") ) return make_symbol("-inf");
+            else if(!strcasecmp(obj2->this.symbol,"-inf")) return make_symbol("+inf");
         }
         if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
             n.numtype = NUM_REAL;
@@ -116,21 +121,21 @@ object operation( object obj1,object obj2, char*op ) {
             return make_number(n);
         }
     case '*':
-        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ){
+        if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) {
             if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer > 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real > 0))
                 return obj1;
-            if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer < 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real < 0)){
-            	if( obj1->this.symbol[0] == '+' ) return make_symbol("-inf");
-            	if( obj1->this.symbol[0] == '-' ) return make_symbol("+inf");
+            if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer < 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real < 0)) {
+                if( obj1->this.symbol[0] == '+' ) return make_symbol("-inf");
+                if( obj1->this.symbol[0] == '-' ) return make_symbol("+inf");
             }
             return make_symbol("nan");
         }
-        if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ){
+        if(obj2->type == SFS_SYMBOL && (!strcasecmp(obj2->this.symbol,"+inf") || !strcasecmp(obj2->this.symbol,"-inf")) ) {
             if((obj1->this.number.numtype == NUM_INTEGER && obj1->this.number.this.integer > 0) || (obj1->this.number.numtype == NUM_REAL && obj1->this.number.this.real > 0))
                 return obj2;
-            if((obj1->this.number.numtype == NUM_INTEGER && obj1->this.number.this.integer < 0) || (obj1->this.number.numtype == NUM_REAL && obj1->this.number.this.real < 0)){
-            	if( obj2->this.symbol[0] == '+' ) return make_symbol("-inf");
-            	if( obj2->this.symbol[0] == '-' ) return make_symbol("+inf");
+            if((obj1->this.number.numtype == NUM_INTEGER && obj1->this.number.this.integer < 0) || (obj1->this.number.numtype == NUM_REAL && obj1->this.number.this.real < 0)) {
+                if( obj2->this.symbol[0] == '+' ) return make_symbol("-inf");
+                if( obj2->this.symbol[0] == '-' ) return make_symbol("+inf");
             }
             return make_symbol("nan");
         }
@@ -166,9 +171,9 @@ object operation( object obj1,object obj2, char*op ) {
         if(obj1->type == SFS_SYMBOL && (!strcasecmp(obj1->this.symbol,"+inf") || !strcasecmp(obj1->this.symbol,"-inf")) ) {
             if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer > 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real > 0))
                 return obj1;
-            if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer < 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real < 0)){
-            	if( obj1->this.symbol[0] == '+' ) return make_symbol("-inf");
-            	if( obj1->this.symbol[0] == '-' ) return make_symbol("+inf");
+            if((obj2->this.number.numtype == NUM_INTEGER && obj2->this.number.this.integer < 0) || (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real < 0)) {
+                if( obj1->this.symbol[0] == '+' ) return make_symbol("-inf");
+                if( obj1->this.symbol[0] == '-' ) return make_symbol("+inf");
             }
         }
         if( obj1->this.number.numtype == NUM_REAL && (obj2->this.number.numtype == NUM_REAL && obj2->this.number.this.real != 0)) {
@@ -200,126 +205,126 @@ object operation( object obj1,object obj2, char*op ) {
         }
 
     case '<':
-		if(obj1->type == SFS_SYMBOL){
-			if(obj2->type != SFS_SYMBOL) {
-				if(!strcasecmp(obj1->this.symbol,"-inf")) return VRAI;
-				if(!strcasecmp(obj1->this.symbol,"+inf")) return FAUX;
-			}
-			else{
-				if(!strcasecmp(obj1->this.symbol,"+inf") && !strcasecmp(obj2->this.symbol,"-inf") ) return FAUX;
-				if(!strcasecmp(obj1->this.symbol,"-inf") && !strcasecmp(obj2->this.symbol,"+inf") ) return VRAI;
-				if(!strcasecmp(obj1->this.symbol,obj2->this.symbol) && op[1] =='=') return VRAI;
-			}
-		}
-		if(obj2->type == SFS_SYMBOL){
-			if(obj1->type != SFS_SYMBOL) {
-				if(!strcasecmp(obj2->this.symbol,"+inf")) return VRAI;
-				if(!strcasecmp(obj2->this.symbol,"-inf")) return FAUX;
-			}
-			else{
-				if(!strcasecmp(obj2->this.symbol,"-inf") && !strcasecmp(obj1->this.symbol,"+inf") ) return FAUX;
-				if(!strcasecmp(obj2->this.symbol,"+inf") && !strcasecmp(obj1->this.symbol,"-inf") ) return VRAI;
-				if(!strcasecmp(obj2->this.symbol,obj1->this.symbol) && op[1] =='=') return VRAI;
-			}
-		}
-    	switch(op[1]){
-    		 case '=':
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL){
-					if( obj1->this.number.this.real <= obj2->this.number.this.real ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER){
-					if( obj1->this.number.this.real <= (double)obj2->this.number.this.integer ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL){
-					if( (double)obj1->this.number.this.integer <= obj2->this.number.this.real ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ){
-					if( obj1->this.number.this.integer <= obj2->this.number.this.integer ) return VRAI;
-					return FAUX;
-				}
-			default:
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
-				    if( obj1->this.number.this.real < obj2->this.number.this.real ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
-				    if( obj1->this.number.this.real < (double)obj2->this.number.this.integer ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
-				    if( (double)obj1->this.number.this.integer < obj2->this.number.this.real ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
-				    if( obj1->this.number.this.integer < obj2->this.number.this.integer ) return VRAI;
-				    return FAUX;
-				}
-			}
+        if(obj1->type == SFS_SYMBOL) {
+            if(obj2->type != SFS_SYMBOL) {
+                if(!strcasecmp(obj1->this.symbol,"-inf")) return VRAI;
+                if(!strcasecmp(obj1->this.symbol,"+inf")) return FAUX;
+            }
+            else {
+                if(!strcasecmp(obj1->this.symbol,"+inf") && !strcasecmp(obj2->this.symbol,"-inf") ) return FAUX;
+                if(!strcasecmp(obj1->this.symbol,"-inf") && !strcasecmp(obj2->this.symbol,"+inf") ) return VRAI;
+                if(!strcasecmp(obj1->this.symbol,obj2->this.symbol) && op[1] =='=') return VRAI;
+            }
+        }
+        if(obj2->type == SFS_SYMBOL) {
+            if(obj1->type != SFS_SYMBOL) {
+                if(!strcasecmp(obj2->this.symbol,"+inf")) return VRAI;
+                if(!strcasecmp(obj2->this.symbol,"-inf")) return FAUX;
+            }
+            else {
+                if(!strcasecmp(obj2->this.symbol,"-inf") && !strcasecmp(obj1->this.symbol,"+inf") ) return FAUX;
+                if(!strcasecmp(obj2->this.symbol,"+inf") && !strcasecmp(obj1->this.symbol,"-inf") ) return VRAI;
+                if(!strcasecmp(obj2->this.symbol,obj1->this.symbol) && op[1] =='=') return VRAI;
+            }
+        }
+        switch(op[1]) {
+        case '=':
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
+                if( obj1->this.number.this.real <= obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
+                if( obj1->this.number.this.real <= (double)obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
+                if( (double)obj1->this.number.this.integer <= obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
+                if( obj1->this.number.this.integer <= obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+        default:
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
+                if( obj1->this.number.this.real < obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
+                if( obj1->this.number.this.real < (double)obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
+                if( (double)obj1->this.number.this.integer < obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
+                if( obj1->this.number.this.integer < obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+        }
 
     case '>':
-		if(obj1->type == SFS_SYMBOL){
-			if(obj2->type != SFS_SYMBOL) {
-				if(!strcasecmp(obj1->this.symbol,"+inf")) return VRAI;
-				if(!strcasecmp(obj1->this.symbol,"-inf")) return FAUX;
-			}
-			else{
-				if(!strcasecmp(obj1->this.symbol,"-inf") && !strcasecmp(obj2->this.symbol,"+inf") ) return FAUX;
-				if(!strcasecmp(obj1->this.symbol,"+inf") && !strcasecmp(obj2->this.symbol,"-inf") ) return VRAI;
-				if(!strcasecmp(obj1->this.symbol,obj2->this.symbol) && op[1] =='=') return VRAI;
-				return FAUX;
-			}
-		}
-		if(obj2->type == SFS_SYMBOL){
-			if(obj1->type != SFS_SYMBOL) {
-				if(!strcasecmp(obj2->this.symbol,"-inf")) return VRAI;
-				if(!strcasecmp(obj2->this.symbol,"+inf")) return FAUX;
-			}
-			else{
-				if(!strcasecmp(obj2->this.symbol,"+inf") && !strcasecmp(obj1->this.symbol,"-inf") ) return FAUX;
-				if(!strcasecmp(obj2->this.symbol,"-inf") && !strcasecmp(obj1->this.symbol,"+inf") ) return VRAI;
-				if(!strcasecmp(obj2->this.symbol,obj1->this.symbol) && op[1] =='=') return VRAI;
-				return FAUX;
-			}
-		}
-    	switch(op[1]){
-   			case '=':
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL){
-					if( obj1->this.number.this.real >= obj2->this.number.this.real ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER){
-					if( obj1->this.number.this.real >= (double)obj2->this.number.this.integer ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL){
-					if( (double)obj1->this.number.this.integer >= obj2->this.number.this.real ) return VRAI;
-					return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ){
-					if( obj1->this.number.this.integer >= obj2->this.number.this.integer ) return VRAI;
-					return FAUX;
-				}
-			default:
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
-				    if( obj1->this.number.this.real > obj2->this.number.this.real ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
-				    if( obj1->this.number.this.real > (double)obj2->this.number.this.integer ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
-				    if( (double)obj1->this.number.this.integer > obj2->this.number.this.real ) return VRAI;
-				    return FAUX;
-				}
-				if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
-				    if( obj1->this.number.this.integer > obj2->this.number.this.integer ) return VRAI;
-				    return FAUX;
-				}
-			}
+        if(obj1->type == SFS_SYMBOL) {
+            if(obj2->type != SFS_SYMBOL) {
+                if(!strcasecmp(obj1->this.symbol,"+inf")) return VRAI;
+                if(!strcasecmp(obj1->this.symbol,"-inf")) return FAUX;
+            }
+            else {
+                if(!strcasecmp(obj1->this.symbol,"-inf") && !strcasecmp(obj2->this.symbol,"+inf") ) return FAUX;
+                if(!strcasecmp(obj1->this.symbol,"+inf") && !strcasecmp(obj2->this.symbol,"-inf") ) return VRAI;
+                if(!strcasecmp(obj1->this.symbol,obj2->this.symbol) && op[1] =='=') return VRAI;
+                return FAUX;
+            }
+        }
+        if(obj2->type == SFS_SYMBOL) {
+            if(obj1->type != SFS_SYMBOL) {
+                if(!strcasecmp(obj2->this.symbol,"-inf")) return VRAI;
+                if(!strcasecmp(obj2->this.symbol,"+inf")) return FAUX;
+            }
+            else {
+                if(!strcasecmp(obj2->this.symbol,"+inf") && !strcasecmp(obj1->this.symbol,"-inf") ) return FAUX;
+                if(!strcasecmp(obj2->this.symbol,"-inf") && !strcasecmp(obj1->this.symbol,"+inf") ) return VRAI;
+                if(!strcasecmp(obj2->this.symbol,obj1->this.symbol) && op[1] =='=') return VRAI;
+                return FAUX;
+            }
+        }
+        switch(op[1]) {
+        case '=':
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
+                if( obj1->this.number.this.real >= obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
+                if( obj1->this.number.this.real >= (double)obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
+                if( (double)obj1->this.number.this.integer >= obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
+                if( obj1->this.number.this.integer >= obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+        default:
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
+                if( obj1->this.number.this.real > obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
+                if( obj1->this.number.this.real > (double)obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
+                if( (double)obj1->this.number.this.integer > obj2->this.number.this.real ) return VRAI;
+                return FAUX;
+            }
+            if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
+                if( obj1->this.number.this.integer > obj2->this.number.this.integer ) return VRAI;
+                return FAUX;
+            }
+        }
 
     default:
         break;

@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 void sfs_print_atom(FILE *p, object o ) {
-	
+
     switch(o->type) {
 
     case SFS_NUMBER:
@@ -26,11 +26,12 @@ void sfs_print_atom(FILE *p, object o ) {
         case NUM_INTEGER:
             /*if(o->this.number.this.integer == LONG_MAX) fprintf(p,"+inf");
             else if(o->this.number.this.integer == LONG_MIN)  fprintf(p,"-inf");
-            else*/ fprintf(p,"%lli",o->this.number.this.integer);
+            else*/
+            fprintf(p,"%lli",o->this.number.this.integer);
             break;
 
         case NUM_REAL:
-         	fprintf( p,"%.15G",o->this.number.this.real); /*%.16G = on affiche au maximum 16 chiffres significatifs*/
+            fprintf( p,"%.15G",o->this.number.this.real); /*%.16G = on affiche au maximum 16 chiffres significatifs*/
             break;
 
         default:
@@ -77,14 +78,14 @@ void sfs_print_pair(FILE *p, object o) {
 
     if((o->this.pair.car)->type == SFS_PAIR) fprintf( p,"(");
     sfs_printf(p,o->this.pair.car);
-	
+
     if((o->this.pair.cdr)->type != SFS_NIL) {
         fprintf( p," ");
-	if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,". ");
+        if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,". ");
         sfs_printf(p,o->this.pair.cdr);
-	if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,")");
+        if((o->this.pair.cdr)->type != SFS_PAIR) fprintf( p,")");
     }
-	
+
     else fprintf( p,")");
 }
 

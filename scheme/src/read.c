@@ -224,11 +224,11 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                     if ( i<2 || chunk[i-1] != '\\') {
                         if ( in_string == FALSE ) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
-                            	if( chunk[i-1] == '\'' || gui){
-                            		typeOfExpressionFound = STRING_ATOME;
-                            		in_string = TRUE;
-                            		break;
-                            	}
+                                if( chunk[i-1] == '\'' || gui) {
+                                    typeOfExpressionFound = STRING_ATOME;
+                                    in_string = TRUE;
+                                    break;
+                                }
                                 WARNING_MSG("Parse error: invalid string after atom : '%s'", chunk+i);
                                 return S_KO;
                             }
@@ -247,7 +247,7 @@ uint  sfs_get_sexpr( char *input, FILE *fp ) {
                     break;
                 default:
                     if(in_string == FALSE) {
-                    	if(chunk[i] == '\'') gui = 1;
+                        if(chunk[i] == '\'') gui = 1;
                         if(isspace(chunk[i]) && !gui) {
                             if(typeOfExpressionFound == BASIC_ATOME) {
                                 typeOfExpressionFound = FINISHED;
@@ -325,7 +325,9 @@ object sfs_read( char *input, uint *here ) { /*here permet de se positionner au 
 object sfs_read_atom( char *input, uint *here ) {
 
     object atom = NULL;
-    string str,strs; char*endptr; int herec = *here; /*une copie du here*/
+    string str,strs;
+    char*endptr;
+    int herec = *here; /*une copie du here*/
     int j = 0,i = 0,h = 0;
     num u;
     /*Est ce une chaine de charactere?*/
@@ -367,52 +369,53 @@ object sfs_read_atom( char *input, uint *here ) {
         }
         /*sinon on prend tous les digits apres le signe*/
         while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
-			str[i] = input[*here];
+            str[i] = input[*here];
             (*here)++;
             i++;
         }
         /*Est ce un nombre reel a virgule?*/
         if ( str[0] == '.' || input[*here] == '.' || input[*here] == 'e' || input[*here] == 'E' || input[*here] == '#' ) { /*on est en train de lire un float*/
-            if(*here < strlen(input) && str[0] != '.' ){ /*voir ça m'a fait souffrir*/
-            	str[i] = input[*here];
-            	(*here)++;
-            	i++;
+            if(*here < strlen(input) && str[0] != '.' ) { /*voir ça m'a fait souffrir*/
+                str[i] = input[*here];
+                (*here)++;
+                i++;
             }
             while( *here < strlen(input) && (isdigit(input[*here]) || input[*here] == '#' || input[*here] == 'e'|| input[*here] == 'E' || input[*here] == '.')) { /*on prend tous les digits*/
-            	if( input[*here] == 'e' || input[*here] == 'E' ) j = i;
-            	if(input[*here] =='.') h = i;
-				str[i] = input[*here];
+                if( input[*here] == 'e' || input[*here] == 'E' ) j = i;
+                if(input[*here] =='.') h = i;
+                str[i] = input[*here];
                 (*here)++;
                 i++;
             }
             str[i] = '\0';
             if(!j) i = strlen(str)-1;
             else i = j-1;
-			while(i > 0 && str[i] =='#'){ /*"15.2##" => 15.200*/
-				str[i] = '0';
-				i--;
-			}
-			if(h) i = h-1;
-			while(i > 0 && str[i] =='#'){ /*"15##.2" => 1500.200*/
-				str[i] = '0';
-				i--;
-			}
-			
-            if( *here >= strlen(input) || isspace(input[*here]) || input[*here]==')'|| input[*here]=='(') {               
+            while(i > 0 && str[i] =='#') { /*"15.2##" => 15.200*/
+                str[i] = '0';
+                i--;
+            }
+            if(h) i = h-1;
+            while(i > 0 && str[i] =='#') { /*"15##.2" => 1500.200*/
+                str[i] = '0';
+                i--;
+            }
+
+            if( *here >= strlen(input) || isspace(input[*here]) || input[*here]==')'|| input[*here]=='(') {
                 u.numtype = NUM_REAL;/*et on lit un reel*/
                 u.this.real = strtod(str,&endptr);
-                if(!(endptr[0] != '\0' || (u.this.real == 0 && endptr == str))){
-                	atom = make_number(u);
-                	return atom;
+                if(!(endptr[0] != '\0' || (u.this.real == 0 && endptr == str))) {
+                    atom = make_number(u);
+                    return atom;
                 }
             }
-            *here = herec; i=0;
+            *here = herec;
+            i=0;
             strcpy(str,""); /*on réinitialise et on laisse continuer*/
             goto read_symbol;
         }
         /*on est en train de lire un rationnel*/
         if ( input[*here] == '/' ) {
-        	str[i] = '\0';
+            str[i] = '\0';
             (*here)++;
             i = 0;
             while( *here < strlen(input) && isdigit(input[*here]) ) { /*on prend tous les digits*/
@@ -424,12 +427,13 @@ object sfs_read_atom( char *input, uint *here ) {
                 strs[i] = '\0';
                 u.numtype = NUM_REAL;/*et on lit un reel*/
                 u.this.real = strtod(str,NULL)/strtod(strs,&endptr);
-                if(!(endptr[0] != '\0' || (strtod(strs,&endptr) == 0 && endptr == strs))){
-                	atom = make_number(u);
-                	return atom;
+                if(!(endptr[0] != '\0' || (strtod(strs,&endptr) == 0 && endptr == strs))) {
+                    atom = make_number(u);
+                    return atom;
                 }
             }
-            *here = herec; i=0;
+            *here = herec;
+            i=0;
             strcpy(str,""); /*on réinitialise et on laisse continuer*/
             goto read_symbol;
         }
@@ -443,14 +447,15 @@ object sfs_read_atom( char *input, uint *here ) {
             else atom = make_number(u);
             return atom;
         }
-        *here = herec; i =0;
+        *here = herec;
+        i =0;
         strcpy(str,""); /*on réinitialise et on laisse continuer*/
         goto read_symbol;
     }
 
     /*lire les symboles:
     un symb peut etre un define, quote, a ,b ,A, fnj, !vf, etc*/
-    read_symbol:
+read_symbol:
     if(isalpha(input[*here]) || isspecial(input[*here]) || isdigit(input[*here])) { /* isspecial() définie plus haut, retourne 1 si (! % etc)*/
         str[0] = input[*here];
         (*here)++;
@@ -510,15 +515,15 @@ object sfs_read_atom( char *input, uint *here ) {
         i=0;
 
         cpt=1;
-	    while( isspace(input[*here]) && *here < strlen(input)){
-	    	(*here)++;
-	    	j++;
-	    }
+        while( isspace(input[*here]) && *here < strlen(input)) {
+            (*here)++;
+            j++;
+        }
         while(*here < strlen(input) && cpt!=0 ) {
-        	if( input[*here] == '\"' ){
-        	 	if (input[*here-j-1] == '\'') gui = 1;
-        	 	if (input[*here-1] != '\\') gui--;
-        	}
+            if( input[*here] == '\"' ) {
+                if (input[*here-j-1] == '\'') gui = 1;
+                if (input[*here-1] != '\\') gui--;
+            }
             if( input[*here]=='(' && input[*here-j-1]=='\'' && par==0) {
                 par=1;
                 cpt--;
@@ -533,22 +538,22 @@ object sfs_read_atom( char *input, uint *here ) {
 
                     break;
                 }
-            }          
+            }
             str[i] = input[*here];
             (*here)++;
-            if(input[*here-1] =='\''){
-		   	    while( isspace(input[*here]) && *here < strlen(input)){
-					(*here)++;
-					j++;
-				}
-			}
+            if(input[*here-1] =='\'') {
+                while( isspace(input[*here]) && *here < strlen(input)) {
+                    (*here)++;
+                    j++;
+                }
+            }
             i++;
         }
 
         str[i] = ')';
         str[i+1] = '\0';
         strcat(strs,str);
-		j = 0;
+        j = 0;
         return sfs_read(strs, &j);;
     }
 
@@ -558,7 +563,7 @@ object sfs_read_atom( char *input, uint *here ) {
 object sfs_read_pair( char *stream, uint *i ) {
 
     object pr = make_pair();
-	if(stream[*i] < 0) return NULL;
+    if(stream[*i] < 0) return NULL;
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
     pr->this.pair.car = sfs_read(stream,i);
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/

@@ -119,6 +119,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("symbol?"), make_primitive(issymbol_t) );
     add_symbol_to_env( TopLevel,make_symbol("char?"), make_primitive(ischar_t) );
     add_symbol_to_env( TopLevel,make_symbol("string?"), make_primitive(isstring_t) );
+    add_symbol_to_env( TopLevel,make_symbol("make-string"), make_primitive(make_string_t) );
     add_symbol_to_env( TopLevel,make_symbol("pair?"), make_primitive(ispair_t) );
     add_symbol_to_env( TopLevel,make_symbol("cons"), make_primitive(cons_t) );
     add_symbol_to_env( TopLevel,make_symbol("car"), make_primitive(car_t) );

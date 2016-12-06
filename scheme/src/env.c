@@ -108,7 +108,7 @@ void inverse_list(object*list){
 
 int sizeof_list(object list){
 	object obj = list; int i = 0;
-	if(list->type != SFS_PAIR) return 1;
+	if(list->type != SFS_PAIR && list->type != SFS_NIL) return 1;
 	while(obj != nil ){
 		i++;
 		obj = cdr(obj);

@@ -805,10 +805,40 @@ object isstring_t(object list){
 	if(cdr(list) != nil){
 		REPORT_MSG(";ERROR: string?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
-    	}
+    }
 	if(obj->type == SFS_STRING) return VRAI;
 	return FAUX;
 }
+
+object make_string_t(object list){
+	object obj=car(list);int i;
+	if(list == nil || (cdr(cdr(list)) != nil && cdr(cdr(list)) != NULL)){
+		REPORT_MSG(";ERROR: make-string: Wrong number of args given\n; expected only one arg\n");
+    		return NULL;
+    }
+	if(obj->type == SFS_NUMBER && obj->this.number.numtype != NUM_INTEGER){
+		REPORT_MSG(";ERROR: make-string: Wrong type in arg1\n");
+    	return NULL;
+    }
+    if(cdr(list) != nil && ((object)car(cdr(list)))->type != SFS_CHARACTER ){
+		REPORT_MSG(";ERROR: make-string: Wrong type in arg2\n");
+    	return NULL;
+    }
+    char str[obj->this.number.this.integer];
+    if(cdr(list) != nil){
+    	for(i = 0; i< obj->this.number.this.integer ; i++){
+    		str[i] = ((object)car(cdr(list)))->this.character;
+    	}
+    }
+    str[obj->this.number.this.integer] = '\0';
+	return make_string(str);
+}
+    
+    
+    
+
+
+
 object ispair_t(object list){
 	object obj=car(list);
 	if(cdr(list) != nil){

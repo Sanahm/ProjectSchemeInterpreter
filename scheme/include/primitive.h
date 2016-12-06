@@ -78,6 +78,7 @@ object isnull_t(object list);
 object issymbol_t(object list);
 object ischar_t(object list);
 object isstring_t(object list);
+object make_string_t(object list);
 object ispair_t(object list);
 object cons_t( object list);
 object car_t( object list);

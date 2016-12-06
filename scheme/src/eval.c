@@ -114,7 +114,7 @@ begin:
 					}
 					objres = car(objres);
 					if( objres->type != SFS_SYMBOL ){
-						if (objres->type == SFS_PAIR ){
+						if (objres->type == SFS_PAIR || objres->type == SFS_NIL ){
 							while( objres != nil ){ /*ici je verifie que les param sont bien de type symbol sinon j'arrete tout*/
 								if(car(objres)->type != SFS_SYMBOL && car(objres)->type != SFS_PAIR){ /*si cest une paire la prochaine il rentrera dans la paire*/
 									REPORT_MSG(";ERROR: lambda: bad formals ");
@@ -646,7 +646,7 @@ begin:
 		    	}		    	
 		    	add_object_to_list(&comp,make_symbol("begin"));/*(begin ...*/
 		    	object parms = objres->this.compound.parms;
-	    		if(parms->type == SFS_PAIR && sizeof_list(list) != sizeof_list(parms)){
+	    		if((parms->type == SFS_PAIR || parms->type == SFS_NIL) && sizeof_list(list) != sizeof_list(parms)){
 					REPORT_MSG(";ERROR: lambda: Wrong number of args given\n; in expression: ");
 			    	sfs_print(stderr,objc); fprintf( stderr,"\n");
 			    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");

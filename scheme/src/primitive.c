@@ -284,6 +284,9 @@ object abs_t( object list ) {
 object sqrt_t( object list ) {
     return trigo_t(list,sqrt,"sqrt");
 }
+object expt_t( object list ) {
+    return trigo_t(list,pow,"expt");
+}
 object round_t( object list ) {
 
     if(((object) car(list))->type != SFS_NUMBER) return trigo_t(list,floor,"round");
@@ -1075,7 +1078,6 @@ object map_t( object list) {
         		obj->this.pair.cdr->this.pair.cdr = nil;
         	}else return NULL;
         	add_object_to_list(&obj3,obj);
-        	sfs_print(stdout,obj); fprintf(stdout,"\n");
         }      
         else add_object_to_list(&obj3,car(obj2));
         obj1 = cdr(obj1);

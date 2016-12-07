@@ -97,6 +97,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("log"), make_primitive(log_t) );
     add_symbol_to_env( TopLevel,make_symbol("log10"), make_primitive(log10_t) );
     add_symbol_to_env( TopLevel,make_symbol("sqrt"), make_primitive(sqrt_t) );
+    add_symbol_to_env( TopLevel,make_symbol("expt"), make_primitive(expt_t) );
     add_symbol_to_env( TopLevel,make_symbol("round"), make_primitive(round_t) );
     add_symbol_to_env( TopLevel,make_symbol("abs"), make_primitive(abs_t) );
     add_symbol_to_env( TopLevel,make_symbol("gcd"), make_primitive(pgcd_t) );

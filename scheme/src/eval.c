@@ -18,7 +18,7 @@
 
 
 object sfs_eval( object o, object environment ) {
-    object list,objres,objc = NULL, obj = o , env_incr = environment;
+    object list,objres,prim,objc = NULL, obj = o , env_incr = environment;
     static int i = 1;
 begin:
     switch(obj->type) {
@@ -741,9 +741,14 @@ begin:
 			add_object_to_list(&STACK,obj);
 		    objc = obj; list = nil;
 		    obj = cdr(obj);
+		    if(i) i = 0;
+		    prim = sfs_eval(car(objc),environment);i = 1;
+		    if(!prim) return prim;
+		    
 		    while(obj != nil){
 		    	if(car(obj)->type == SFS_SYMBOL){ /* ca c'est mis pour ce genre de cas (+ sin 4)*/
 		    		objres = get_symbol_value(environment,car(obj));
+		    		if(objres && objres->type == SFS_COMPOUND) i = 0;
 		    		if(!objres) return sfs_eval(car(obj),environment);
 		    		if(objres->type == SFS_PRIMITIVE) {
 		    			add_object_to_list(&list,objres);
@@ -758,9 +763,7 @@ begin:
 		    	obj = cdr(obj);
 		    }
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-		    if(i) i = 0;
-		    objres = sfs_eval(car(objc),environment);i = 1;
-		    if(!objres) return objres;
+			objres = prim;			
 		     
 		    if(objres->type == SFS_COMPOUND) {
 		    	object comp = nil; list = cdr(objc);

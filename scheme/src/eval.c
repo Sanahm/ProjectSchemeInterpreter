@@ -760,7 +760,78 @@ begin:
 		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
 		    if(i) i = 0;
 		    objres = sfs_eval(car(objc),environment);i = 1;
-		    if(!objres) return objres;		     
+		    if(!objres) return objres;
+		     
+		    if(objres->type == SFS_COMPOUND) {
+		    	object comp = nil; list = cdr(objc);
+		    	if(!comp) {
+		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    	}		    	
+		    	add_object_to_list(&comp,make_symbol("begin"));/*(begin ...*/
+		    	object parms = objres->this.compound.parms;
+	    		if((parms->type == SFS_PAIR || parms->type == SFS_NIL) && sizeof_list(list) != sizeof_list(parms)){
+					REPORT_MSG(";ERROR: lambda: Wrong number of args given\n; in expression: ");
+			    	sfs_print(stderr,objc); fprintf( stderr,"\n");
+			    	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
+					return NULL;
+	    		}
+		    	while(parms != nil && parms != NULL){
+		    		object symb = make_pair();
+		    		if(!symb){
+			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    		}
+		    		symb->this.pair.car = make_symbol("define"); /*(define ...*/
+		    		symb->this.pair.cdr = make_pair();
+		    		if(!symb->this.pair.cdr){
+			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    		}
+		    		if( parms->type == SFS_PAIR ) symb->this.pair.cdr->this.pair.car = car(parms);/*(define symb ..*/
+		    		else symb->this.pair.cdr->this.pair.car = parms;
+		    		symb->this.pair.cdr->this.pair.cdr = make_pair();
+		    		if(!symb->this.pair.cdr->this.pair.cdr){
+			    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    		}
+		    		if( parms->type == SFS_PAIR ) symb->this.pair.cdr->this.pair.cdr->this.pair.car = car(list);/*(define symb value .*/
+		    		else {
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car = make_pair();
+		    			if(!symb->this.pair.cdr->this.pair.cdr->this.pair.car){
+		    				REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    			}
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.car = make_symbol("quote");
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr = make_pair();
+		    			if(!symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr){
+		    				REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    			}
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr->this.pair.car = list;
+		    			symb->this.pair.cdr->this.pair.cdr->this.pair.car->this.pair.cdr->this.pair.cdr = nil;
+		    		}
+		    		symb->this.pair.cdr->this.pair.cdr->this.pair.cdr = nil;		/*(define symb value )*/
+		    		add_object_to_list(&comp,symb);/*sfs_print(stderr,comp); fprintf(stderr,"\n");*/
+		    		parms = cdr(parms);
+		    		list = cdr(list);
+		    	}
+		    	object body = objres->this.compound.body;
+		    	while(body != nil){
+		    		add_object_to_list(&comp,car(body));
+		    		if(car(body)->type == SFS_SYMBOL && islambda(car(body))) i = 0;
+		    		body = cdr(body);
+		    	}		    			    	
+		    	inverse_list(&comp);/*(begin (define symb1 val1) (define symb2 val2) ... body)*/
+		    	extend_env = objres->this.compound.envt;	    	
+		    	if(!add_new_env(&extend_env)){
+		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
+		    	}
+		    	objres = sfs_eval(comp,extend_env);
+		    	extend_env = TopLevel; /*on réinitilaise*/
+		    	return objres;		    			    	
+		    		    
+		    }
 		    
 		    if(objres->type != SFS_PRIMITIVE) {
 		    	add_object_to_list(&STACK,car(objc));
@@ -777,7 +848,7 @@ begin:
 				init_stack();
 				return NULL;
 			}		    
-		    	
+		    i = 0;	
 		    objres = objres->this.primitive.function(list);
 		    if(!objres){
 		    	REPORT_MSG("; in expression: ");sfs_print(stderr,objc);fprintf( stderr,"\n");
@@ -798,8 +869,14 @@ begin:
 	   		i = 0;
 	   		goto primi;
 	   }
-	   else if(car(obj)->type == SFS_COMPOUND) goto primi;
-	   else if(car(obj)->type == SFS_PRIMITIVE) goto primi;
+	   else if(car(obj)->type == SFS_COMPOUND){
+	   		i = 0;
+	   		goto primi;
+	   }
+	   else if(car(obj)->type == SFS_PRIMITIVE){
+	   		i = 0;
+	   		goto primi;
+	   }
        else { /*le car d'un debut d'arbre ne peut pas autre chose qu'un symbol ou une paire*/
 	    	add_object_to_list(&STACK,car(obj));
        		REPORT_MSG(";ERROR: Wrong type to apply ");

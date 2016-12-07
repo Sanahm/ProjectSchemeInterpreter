@@ -1041,7 +1041,7 @@ object eval_t( object list) {
 
 
 object map_t( object list) {
-    object obj1,obj2,obj3 = nil,obj4 = nil;
+    object obj,obj1,obj2,obj3 = nil,obj4 = nil;
     int j = 0,i = 0,k = 2;
     if(list == nil) {
         REPORT_MSG(";ERROR: map: Wrong number of args given\n");
@@ -1066,7 +1066,18 @@ object map_t( object list) {
         }
         for(i = 0; i<j; i++) obj2 = cdr(obj2);
         if(obj2 == nil || obj2 == NULL) break;
-        add_object_to_list(&obj3,car(obj2));
+        obj = make_pair();
+        if( obj && proc->type == SFS_COMPOUND ){
+        	obj->this.pair.car = make_symbol("quote");
+        	obj->this.pair.cdr = make_pair();
+        	if( obj->this.pair.cdr ){
+        		obj->this.pair.cdr->this.pair.car = car(obj2);
+        		obj->this.pair.cdr->this.pair.cdr = nil;
+        	}else return NULL;
+        	add_object_to_list(&obj3,obj);
+        	sfs_print(stdout,obj); fprintf(stdout,"\n");
+        }      
+        else add_object_to_list(&obj3,car(obj2));
         obj1 = cdr(obj1);
         k++;
         if(obj1 == nil) {

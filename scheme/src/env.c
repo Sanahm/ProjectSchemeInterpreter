@@ -19,6 +19,7 @@
 
 object research_symbol_in_obj( object o, object symb ) {
     object obj = o;
+    if(obj && obj->type != SFS_PAIR) return nil;
     while( obj != nil && obj != NULL ) {
         if( !strcasecmp(car(car(obj))->this.symbol,symb->this.symbol) ) return car(obj);
         obj = cdr(obj);
@@ -120,20 +121,22 @@ void print_env( object env ){
 	object objres,obj2,obj1 = env;int i;
 	if(env == nil){
 		
-		return 1;
+		return ;
 	}
+	fprintf(stderr,"*************begin************\n");
 	for( i = 0; i< SFS_TAB; i++ ){
 		obj2 = car(obj1)->this.tab[i];
 		while(obj2 != nil && obj2 != NULL){
 			REPORT_MSG(">>> %s ------------------- ",car(car(obj2))->this.symbol);
 			init_stack(); 
 			objres = 
-			sfs_eval(car(car(obj2)),TopLevel);
+			sfs_eval(car(car(obj2)),extend_env);
 			if(objres) REPORT_MSG("<#@ internal constant>\n");
 			fprintf(stderr,"\n");
 			obj2 = cdr(obj2);
 		}
 	}
+	if(cdr(obj1) != nil )fprintf(stderr,"*************scope environment************\n");
 	print_env( cdr(obj1) );
 }
 

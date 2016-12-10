@@ -218,7 +218,7 @@ object trigo_t( object list, double (*pfunct)(double),char*name ) { /* symbol to
     if( obj->type != SFS_NUMBER && obj->type != SFS_SYMBOL || (obj->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,"nan") )) {
         REPORT_MSG(";ERROR: %s: Wrong type in arg1 ",name);
         sfs_print(stderr,obj);
-        sprintf(stderr,"\n");
+        fprintf(stderr,"\n");
         return NULL;
     }
     n.numtype = NUM_REAL;
@@ -284,9 +284,21 @@ object abs_t( object list ) {
 object sqrt_t( object list ) {
     return trigo_t(list,sqrt,"sqrt");
 }
-object expt_t( object list ) {
+/*object expt_t( object list ) {
+    if(cdr(list) == nil || cdr(cdr(list)) != nil) {
+        REPORT_MSG(";ERROR: Wrong number of args given\n; expected only 2 args\n");
+        return NULL;
+    }
+    object obj1 = car(list); object obj2 = car(cdr(list));
+    if( obj1->type != SFS_NUMBER || obj2->type != SFS_NUMBER ){
+        REPORT_MSG(";ERROR: Wrong type to apply\n");
+        return NULL;    
+    }
+    return pow(obj1->this.
+    
+	
     return trigo_t(list,pow,"expt");
-}
+}*/
 object round_t( object list ) {
 
     if(((object) car(list))->type != SFS_NUMBER) return trigo_t(list,floor,"round");

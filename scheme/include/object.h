@@ -78,6 +78,7 @@ extern object TopLevel;
 extern object extend_env;
 extern object STACK;
 extern object EXCEPT;
+extern object null;
 #ifdef __cplusplus
 }
 #endif

@@ -41,6 +41,7 @@ object TopLevel;
 object STACK;
 object extend_env;
 object EXCEPT;
+object null;
 
 void init_interpreter ( void ) {
     num pi;
@@ -49,7 +50,8 @@ void init_interpreter ( void ) {
     nil      = make_nil();
     VRAI     = make_bool();
     FAUX     = make_bool();
-    EXCEPT   = make_bool();
+    EXCEPT   = make_object(900);
+    null     = make_object(901);
     STACK    = nil;
     TopLevel = make_env();
     object define_t = make_symbol("define");
@@ -97,7 +99,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("log"), make_primitive(log_t) );
     add_symbol_to_env( TopLevel,make_symbol("log10"), make_primitive(log10_t) );
     add_symbol_to_env( TopLevel,make_symbol("sqrt"), make_primitive(sqrt_t) );
-    add_symbol_to_env( TopLevel,make_symbol("expt"), make_primitive(expt_t) );
+    /*add_symbol_to_env( TopLevel,make_symbol("expt"), make_primitive(expt_t) );*/
     add_symbol_to_env( TopLevel,make_symbol("round"), make_primitive(round_t) );
     add_symbol_to_env( TopLevel,make_symbol("abs"), make_primitive(abs_t) );
     add_symbol_to_env( TopLevel,make_symbol("gcd"), make_primitive(pgcd_t) );
@@ -257,6 +259,7 @@ int main ( int argc, char *argv[] ) {
             /*sinon on rend la main à l'utilisateur*/
             continue ;
         }
+        if( null == output ) continue;
 
         printf( "==> " );
         /*sfs_print(stdout,sexpr);*/

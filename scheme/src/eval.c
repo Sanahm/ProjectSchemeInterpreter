@@ -18,8 +18,8 @@
 
 
 object sfs_eval( object o, object environment ) {
-    object list,objres,prim,objc = NULL, obj = o , env_incr = environment;
-    static int i = 1;
+    object list,objres,procedure,objc = NULL, obj = o , env_incr = environment;
+    static int i = 1;static int j = 1;
 begin:
     switch(obj->type) {
 
@@ -33,11 +33,10 @@ begin:
         return obj;
 
     case SFS_SYMBOL:
-        objc = obj;
-
+        objc = obj;		
         objres = get_symbol_value(environment,obj);
         if(!objres /*|| !strcmp(".",obj->this.symbol)*//* pour le point*/) {
-            add_object_to_list(&STACK,obj);
+        	add_object_to_list(&STACK,obj);           
             REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
             if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
             else REPORT_MSG("; in scope environment.\n");
@@ -65,12 +64,12 @@ begin:
         if(  ( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) && objres == car(is_symbol_in_all_env(environment,obj)) )) { /*quand on tape par exemple SFS:0> (if #t define)*/
             if( !strcasecmp("+inf",objres->this.symbol) || !strcasecmp("-inf",objres->this.symbol) ) return objres;
             else if( STACK != nil && objres->type != SFS_PRIMITIVE) {
+            	add_object_to_list(&STACK,obj);
                 REPORT_MSG(";ERROR: Use of keyword as variable %s\n; in expression: ",obj->this.symbol);
                 sfs_print(stderr,car(STACK));
                 fprintf( stderr,"\n");
                 if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
                 else REPORT_MSG("; in scope environment.\n");
-                add_object_to_list(&STACK,obj);
                 inverse_list(&STACK);
                 print_stack(STACK);
             }
@@ -365,7 +364,7 @@ begin:
                     if( objres != FAUX ) {
                         if( car(cdr(obj)) != NULL /*&& car(cdr(obj)) != nil */) {/*consequence?*/
                             obj = car(cdr(obj));
-                            objres = get_symbol_value(environment, obj);
+                            /*objres = get_symbol_value(environment, obj);
                             /*if(objres && (objres->type == SFS_PRIMITIVE || objres->type == SFS_COMPOUND) && i) i = 1;*/
                             goto begin;
                         }
@@ -382,11 +381,11 @@ begin:
                     }
 
                     else {
-                        if( car(cdr(cdr(obj))) != nil && car(cdr(cdr(obj))) != NULL ) { /*on teste pour savoir si y'a la conséquence ou pas*/
+                        if( car(cdr(cdr(obj))) != nil && car(cdr(cdr(obj))) != NULL ) { /*on teste pour savoir si y'a l'alternative ou pas*/
                             obj = car(cdr(cdr(obj)));
-                            objres = sfs_eval(obj,environment);
-                            if( obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ) { /*(if #f 1 define) ne doit pas passer*/
-                                REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
+                            /*objres = get_symbol_value(obj,environment);
+                            if(objres && obj->type == SFS_SYMBOL && objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) ) { /*(if #f 1 define) ne doit pas passer*/
+                                /*REPORT_MSG(";ERROR: Wrong type to apply\n; in expression: ");
                                 sfs_print(stderr,objc);
                                 fprintf( stderr,"\n");
                                 if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -397,7 +396,7 @@ begin:
                                 }
                                 init_stack();
                                 return NULL;
-                            }
+                            }*/
                             /*objres = get_symbol_value(environment, obj);
                             if(objres && objres->type == SFS_PRIMITIVE && i) i = 1;*/
                             goto begin;
@@ -458,9 +457,9 @@ begin:
             if(isquote(car(obj)->this.symbol)) {
                 objc = obj;
                 objres = get_symbol_value(environment,car(obj));
+                add_object_to_list(&STACK,objc);
                 if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
                     if( cdr(obj) == nil ) {
-                        add_object_to_list(&STACK,objc);
                         REPORT_MSG(";ERROR: quote: missing or extra expression ");
                         sfs_print(stderr,obj);
                         fprintf( stderr,"\n");
@@ -507,8 +506,7 @@ begin:
 
                     return car(cdr(obj));
                 }
-                else {
-                    add_object_to_list(&STACK,objc);
+                else {                    
                     REPORT_MSG(";ERROR: Wrong type to apply\n; quote: has been redifined.\n; in expression: ");
                     sfs_print(stderr,objc);
                     fprintf( stderr,"\n");
@@ -526,6 +524,7 @@ begin:
             if(isdefine(car(obj)->this.symbol)) {
                 objc= obj;
                 objres = get_symbol_value(environment,car(obj));
+                add_object_to_list(&STACK,objc);
                 if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
                     obj = cdr(obj);
                     /*if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR) {
@@ -545,7 +544,6 @@ begin:
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du define correcte*/
                     {
                         if(!strcmp(".",car(obj)->this.symbol)) { /* pour le point */
-                            add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: define: \".\" cannot be set ");
                             sfs_print(stderr,objc);
                             fprintf( stderr,"\n");
@@ -565,21 +563,22 @@ begin:
                         objres = get_symbol_value(environment, car(cdr(obj)));
                         if(car(car(cdr(obj))) && car(car(cdr(obj)))->type == SFS_SYMBOL && islambda(car(car(cdr(obj)))->this.symbol)) i = 0;
                         if(objres && (objres->type == SFS_PRIMITIVE || objres->type == SFS_COMPOUND )) i = 0;
-                        objres = sfs_eval(car(cdr(obj)),environment);
+                        objres = sfs_eval(car(cdr(obj)),environment);/*if(!objres) return FAUX;*/
                         i =1;
-                        if(objres != NULL && objres !=nil) {
+                        if(objres != NULL) {
                             if( is_symbol_in_env( environment, car(obj) ) != nil) {
                                 objc = get_symbol_value(environment,car(obj));
-                                if( !strcasecmp(car(obj)->this.symbol,objc->this.symbol) || car(obj)->type == SFS_PRIMITIVE ) {
-                                    REPORT_MSG(";WARNING: redefining built-in syntax\n", car(obj)->this.symbol );
+                                if( !strcasecmp(car(obj)->this.symbol,objc->this.symbol) || objc->type == SFS_PRIMITIVE ) {
+                                    REPORT_MSG(";WARNING: redefining built-in syntax %s\n", car(obj)->this.symbol );
                                 }
-                                return car(set_symbol_value_in_env( environment, car(obj), objres ));
+                                set_symbol_value_in_env( environment, car(obj), objres );
+                                return null;
                             }
                             else {
-                                return car(add_symbol_to_env( environment, car(obj), objres ));
+                                add_symbol_to_env( environment, car(obj), objres );
+                                return null;
                             }
                         }
-
                         return NULL;
 
                     }
@@ -605,7 +604,6 @@ begin:
                         return sfs_eval(objc,environment);
                     }
                     else {
-                        add_object_to_list(&STACK,objc);
                         REPORT_MSG(";ERROR: define: missing or extra expression ");
                         sfs_print(stderr,objc);
                         fprintf( stderr,"\n");
@@ -622,8 +620,7 @@ begin:
                         return NULL;
                     }
                 }
-                else {
-                    add_object_to_list(&STACK,objc);
+                else {                    
                     REPORT_MSG(";ERROR: Wrong type to apply\n; define: has been redifined.\n; in expression: ");
                     sfs_print(stderr,objc);
                     fprintf( stderr,"\n");
@@ -641,10 +638,10 @@ begin:
             if(isset(car(obj)->this.symbol)) {
                 objc= obj;
                 objres = get_symbol_value(environment,car(obj));
+                add_object_to_list(&STACK,objc);
                 if( (objres->type == SFS_SYMBOL) && !strcasecmp(car(obj)->this.symbol,objres->this.symbol) ) {
                     obj = cdr(obj);
-                    if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR) {
-                        add_object_to_list(&STACK,objc);
+                    if(	obj->type == SFS_PAIR && car(obj)->type == SFS_PAIR) {                       
                         REPORT_MSG(";ERROR: set!: bad formals\n; in expression : ");
                         sfs_print(stderr,car(obj));
                         fprintf( stderr,"\n");
@@ -661,7 +658,6 @@ begin:
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                     {
                         if(!strcmp(".",car(obj)->this.symbol)) { /* pour le point */
-                            add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: define: \".\" cannot be set ");
                             sfs_print(stderr,objc);
                             fprintf( stderr,"\n");
@@ -682,7 +678,6 @@ begin:
                             env_incr=cdr(env_incr);
                         }
                         if(env_incr == nil) {
-                            add_object_to_list(&STACK,objc);
                             REPORT_MSG(";ERROR: unbound variable: %s\n ; no previous definition.\n",car(obj)->this.symbol);
                             if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
                             else REPORT_MSG("; in scope environment\n");
@@ -699,10 +694,10 @@ begin:
                         if(objres == nil || objres == NULL) return NULL;
                         objres = set_symbol_value_in_env( env_incr, car(obj), objres);
 
-                        return car(objres);
+                        /*return car(objres);*/
+                        return null;
                     }
                     else {
-                        add_object_to_list(&STACK,objc);
                         REPORT_MSG(";ERROR: set!: missing or extra expression ");
                         sfs_print(stderr,objc);
                         fprintf( stderr,"\n");
@@ -720,7 +715,6 @@ begin:
                     }
                 }
                 else {
-                    add_object_to_list(&STACK,objc);
                     REPORT_MSG(";ERROR: Wrong type to apply\n; set!: has been redifined.\n; in expression: ");
                     sfs_print(stderr,objc);
                     fprintf( stderr,"\n");
@@ -739,39 +733,17 @@ begin:
             primi:
 		    /*les primitives*/
 			add_object_to_list(&STACK,obj);
-		    objc = obj; list = nil;
-		    obj = cdr(obj);
+		    objc = obj;  		    
 		    if(i) i = 0;
-		    prim = sfs_eval(car(objc),environment);i = 1;
-		    if(!prim) return prim;
-		    
-		    while(obj != nil){
-		    	if(car(obj)->type == SFS_SYMBOL){ /* ca c'est mis pour ce genre de cas (+ sin 4)*/
-		    		objres = get_symbol_value(environment,car(obj));
-		    		if(objres && objres->type == SFS_COMPOUND) i = 0;
-		    		if(!objres) return sfs_eval(car(obj),environment);
-		    		if(objres->type == SFS_PRIMITIVE) {
-		    			add_object_to_list(&list,objres);
-		    			obj = cdr(obj);
-		    			continue;
-		    		}
-		    	}
-				if(car(car(obj)) && car(car(obj))->type == SFS_SYMBOL && islambda(car(car(obj))->this.symbol)) i = 0; /* a cause de ça (map (lambda (n) (expt n n)) '(1 2 3 4 5))*/
-		    	objres = sfs_eval(car(obj),environment);
-		    	if(!objres) return objres; /*qui est NULL*/
-		    	add_object_to_list(&list,objres);
-		    	obj = cdr(obj);
-		    }
-		    inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-			objres = prim;			
-		     
-		    if(objres->type == SFS_COMPOUND) {
+		    procedure = sfs_eval(car(objc),environment);i = 1;
+		    if(!objres) return NULL;
+	     
+		    if(procedure->type == SFS_COMPOUND) {
 		    	object comp = nil; list = cdr(objc);
-		    	if(!comp) {
-		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
-		    	}		    	
+		    			    	
 		    	add_object_to_list(&comp,make_symbol("begin"));/*(begin ...*/
-		    	object parms = objres->this.compound.parms;
+		    	object parms = procedure->this.compound.parms;
+		    	
 	    		if((parms->type == SFS_PAIR || parms->type == SFS_NIL) && sizeof_list(list) != sizeof_list(parms)){
 					REPORT_MSG(";ERROR: lambda: Wrong number of args given\n; in expression: ");
 			    	sfs_print(stderr,objc); fprintf( stderr,"\n");
@@ -819,27 +791,32 @@ begin:
 		    		parms = cdr(parms);
 		    		list = cdr(list);
 		    	}
-		    	object body = objres->this.compound.body;
+		    	object body = procedure->this.compound.body;
 		    	while(body != nil){
 		    		add_object_to_list(&comp,car(body));
 		    		if(car(body)->type == SFS_SYMBOL && islambda(car(body))) i = 0;
 		    		body = cdr(body);
-		    	}		    			    	
+		    	}
+	    			    			    	
 		    	inverse_list(&comp);/*(begin (define symb1 val1) (define symb2 val2) ... body)*/
-		    	extend_env = objres->this.compound.envt;	    	
+		    	extend_env = procedure->this.compound.envt;
+		    	j++; 	
 		    	if(!add_new_env(&extend_env)){
 		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    	}
-		    	objres = sfs_eval(comp,extend_env);
-		    	extend_env = TopLevel; /*on réinitilaise*/
+		    	init_stack();
+		    	procedure->this.compound.envt = extend_env;    	
+		    	objres = sfs_eval(comp,extend_env);/*extend env a été rajouté parce que dans certaine primives
+		    	font appel à sfs_eval et on donc besoin de savoir dans quel environment courant on est*/
+		    	
+		    	extend_env = cdr(extend_env); /*on réinitilaise*/    	
 		    	return objres;		    			    	
 		    		    
 		    }
 		    
-		    if(objres->type != SFS_PRIMITIVE) {
-		    	add_object_to_list(&STACK,car(objc));
+		    else if(procedure->type != SFS_PRIMITIVE) {
 	       		REPORT_MSG(";ERROR: Wrong type to apply ");
-            	sfs_print(stderr,objres); fprintf( stderr,"\n");
+            	sfs_print(stderr,procedure); fprintf( stderr,"\n");
 	       		REPORT_MSG("; in expression: ");
             	sfs_print(stderr,objc); fprintf( stderr,"\n");            	
             	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -850,22 +827,44 @@ begin:
 				}
 				init_stack();
 				return NULL;
-			}		    
-		    i = 0;	
-		    objres = objres->this.primitive.function(list);
-		    if(!objres){
-		    	REPORT_MSG("; in expression: ");sfs_print(stderr,objc);fprintf( stderr,"\n");
-            	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
-				else REPORT_MSG("; in scope environment.\n");
-				if(STACK != nil ){
-					inverse_list(&STACK);
-					print_stack(STACK);
-				}
-				init_stack();
 			}
-			if(objres != NULL && objres->type == SFS_PRIMITIVE) return sfs_eval(objres,environment);
-			if(objres == EXCEPT) return NULL;
-			return objres;
+			else {
+				list = nil;
+				obj = cdr(obj);
+				while(obj != nil){
+					if(car(obj)->type == SFS_SYMBOL){ /* ca c'est mis pour ce genre de cas (+ sin 4)*/
+						objres = get_symbol_value(environment,car(obj));
+						if(objres && objres->type == SFS_COMPOUND) i = 0;
+						if(!objres) return sfs_eval(car(obj),environment);
+						if(objres->type == SFS_PRIMITIVE) {
+							add_object_to_list(&list,objres);
+							obj = cdr(obj);
+							continue;
+						}
+					}
+					if(car(car(obj)) && car(car(obj))->type == SFS_SYMBOL && islambda(car(car(obj))->this.symbol)) i = 0; /* a cause de ça (map (lambda (n) (expt n n)) '(1 2 3 4 5))*/
+					objres = sfs_eval(car(obj),environment);
+					if(!objres) return objres; /*qui est NULL*/
+					add_object_to_list(&list,objres);
+					obj = cdr(obj);
+				}
+				inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
+				i = 0;
+				objres = procedure->this.primitive.function(list);
+				if(!objres || objres == EXCEPT){
+					REPORT_MSG("; in expression: ");sfs_print(stderr,objc);fprintf( stderr,"\n");
+		        	if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+					else REPORT_MSG("; in scope environment.\n");
+					if(STACK != nil ){
+						inverse_list(&STACK);
+						print_stack(STACK);
+					}
+					init_stack();
+					if(objres == EXCEPT) return NULL;
+				}
+				if(objres != NULL && objres->type == SFS_PRIMITIVE) return sfs_eval(objres,environment);
+				return objres;
+			}
        }
        
 	   if(car(obj)->type == SFS_PAIR){

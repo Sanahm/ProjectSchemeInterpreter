@@ -143,7 +143,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("apply"), make_primitive(apply_t) );
     add_symbol_to_env( TopLevel,make_symbol("interaction-environment"), make_primitive(interaction_env_t) );
 
-    extend_env = TopLevel;
+    extend_env = TopLevel;/*environment de portée*/
 
     /*toutes ces formes doivent être disponible au lancement de scheme, dans l'interpreteur*/
 }

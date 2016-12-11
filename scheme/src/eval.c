@@ -736,7 +736,7 @@ begin:
 		    objc = obj;  		    
 		    if(i) i = 0;
 		    procedure = sfs_eval(car(objc),environment);i = 1;
-		    if(!objres) return NULL;
+		    if(!procedure) return NULL;
 	     
 		    if(procedure->type == SFS_COMPOUND) {
 		    	object comp = nil; list = cdr(objc);

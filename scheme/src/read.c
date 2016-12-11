@@ -470,6 +470,7 @@ read_symbol:
             atom = make_symbol(str);
             return atom;
         }
+        REPORT_MSG(";ERROR: unsupported: strange character detected '%c'\n",input[*here]);
         return atom;
 
     }
@@ -566,13 +567,14 @@ object sfs_read_pair( char *stream, uint *i ) {
     if(stream[*i] < 0) return NULL;
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
     pr->this.pair.car = sfs_read(stream,i);
+    if( pr->this.pair.car == NULL ) return NULL;
     while(isspace(stream[*i]) && *i < strlen(stream)) (*i)++; /*pour gerer les espaces*/
     if( stream[*i] != ')') pr->this.pair.cdr = sfs_read_pair(stream,i);
     else {
         pr->this.pair.cdr = nil;
         (*i)++;
     }
-    if( pr->this.pair.car == NULL || pr->this.pair.cdr == NULL) return NULL;
+    if( pr->this.pair.cdr == NULL) return NULL;
     return pr;
 }
 

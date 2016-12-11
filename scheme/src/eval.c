@@ -19,7 +19,7 @@
 
 object sfs_eval( object o, object environment ) {
     object list,objres,procedure,objc = NULL, obj = o , env_incr = environment;
-    static int i = 1;static int j = 1;
+    static int i = 1;
 begin:
     switch(obj->type) {
 
@@ -799,13 +799,12 @@ begin:
 		    	}
 	    			    			    	
 		    	inverse_list(&comp);/*(begin (define symb1 val1) (define symb2 val2) ... body)*/
-		    	extend_env = procedure->this.compound.envt;
-		    	j++; 	
+		    	if(procedure->this.compound.envt != TopLevel) extend_env = procedure->this.compound.envt;
 		    	if(!add_new_env(&extend_env)){
 		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    	}
 		    	init_stack();
-		    	procedure->this.compound.envt = extend_env;    	
+		    	if(procedure->this.compound.envt != TopLevel) procedure->this.compound.envt = extend_env;    	
 		    	objres = sfs_eval(comp,extend_env);/*extend env a été rajouté parce que dans certaine primives
 		    	font appel à sfs_eval et on donc besoin de savoir dans quel environment courant on est*/
 		    	

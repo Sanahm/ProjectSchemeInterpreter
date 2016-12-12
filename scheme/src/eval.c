@@ -739,10 +739,36 @@ begin:
 		    if(!procedure) return NULL;
 	     
 		    if(procedure->type == SFS_COMPOUND) {
-		    	object comp = nil; list = cdr(objc);
+		    	object comp = nil; list = nil;
 		    			    	
 		    	add_object_to_list(&comp,make_symbol("begin"));/*(begin ...*/
 		    	object parms = procedure->this.compound.parms;
+
+				obj = cdr(objc);
+				while(obj != nil){
+					objres = make_pair();
+					if(!objres) return NULL;
+					objres->this.pair.car = make_symbol("quote");
+					objres->this.pair.cdr = make_pair();
+					if(!objres->this.pair.cdr) return NULL;
+					objres->this.pair.cdr->this.pair.cdr = nil;
+					if(car(obj)->type == SFS_SYMBOL){  /*ca c'est mis pour ce genre de cas (+ sin 4)*/
+						objres->this.pair.cdr->this.pair.car = get_symbol_value(environment,car(obj));
+						if(objres->this.pair.cdr->this.pair.car && objres->this.pair.cdr->this.pair.car->type == SFS_COMPOUND) i = 0;
+						if(!objres->this.pair.cdr->this.pair.car) return sfs_eval(car(obj),environment);
+						if(objres->this.pair.cdr->this.pair.car->type == SFS_PRIMITIVE) {
+							add_object_to_list(&list,objres);
+							obj = cdr(obj);
+							continue;
+						}
+					}
+					if(car(car(obj)) && car(car(obj))->type == SFS_SYMBOL && islambda(car(car(obj))->this.symbol)) i = 0; /* a cause de ça (map (lambda (n) (expt n n)) '(1 2 3 4 5))*/
+					objres->this.pair.cdr->this.pair.car = sfs_eval(car(obj),environment);
+					if(!objres->this.pair.cdr->this.pair.car) return NULL;
+					add_object_to_list(&list,objres);
+					obj = cdr(obj);
+				}
+				inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
 		    	
 	    		if((parms->type == SFS_PAIR || parms->type == SFS_NIL) && sizeof_list(list) != sizeof_list(parms)){
 					REPORT_MSG(";ERROR: lambda: Wrong number of args given\n; in expression: ");
@@ -799,12 +825,12 @@ begin:
 		    	}
 	    			    			    	
 		    	inverse_list(&comp);/*(begin (define symb1 val1) (define symb2 val2) ... body)*/
-		    	if(procedure->this.compound.envt != TopLevel) extend_env = procedure->this.compound.envt;
+		    	/*if(procedure->this.compound.envt != TopLevel)*/ extend_env = procedure->this.compound.envt;
 		    	if(!add_new_env(&extend_env)){
 		    		REPORT_MSG(";ERROR: memory: unable to allocate memory! try rebooting\n"); return NULL;
 		    	}
 		    	init_stack();
-		    	if(procedure->this.compound.envt != TopLevel) procedure->this.compound.envt = extend_env;    	
+		    	/*if(procedure->this.compound.envt != TopLevel)*/ procedure->this.compound.envt = extend_env;    	
 		    	objres = sfs_eval(comp,extend_env);/*extend env a été rajouté parce que dans certaine primives
 		    	font appel à sfs_eval et on donc besoin de savoir dans quel environment courant on est*/
 		    	

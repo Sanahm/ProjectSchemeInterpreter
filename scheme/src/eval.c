@@ -49,7 +49,7 @@ begin:
         }
         if( objres->type == SFS_PRIMITIVE && (STACK == nil || i)) {
             REPORT_MSG("#<primitive-procedure %s>\n",obj->this.symbol);
-            return NULL;
+            return make_symbol("#<procedure>");
         }
         if( objres->type == SFS_COMPOUND && (STACK == nil || i)) {
             REPORT_MSG("#<CLOSURE %s ",obj->this.symbol);

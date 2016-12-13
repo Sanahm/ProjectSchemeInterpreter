@@ -169,8 +169,7 @@ object interaction_env_t( object list ) {
         REPORT_MSG(";ERROR: interaction-environment: Do not take any arg\n");
         return NULL;
     }
-    print_env(extend_env);
-    return make_symbol("Reading environment complete");
+    return extend_env;
 }
 
 

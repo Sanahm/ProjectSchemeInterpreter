@@ -58,7 +58,7 @@ begin:
             if(cdr(objres->this.compound.body) != nil) sfs_print(stderr,objres->this.compound.body);
             else sfs_print(stderr,car(objres->this.compound.body));
             REPORT_MSG(">\n");
-            return NULL;
+            return make_symbol("#<procedure>");
         }
 
         if(  ( objres->type == SFS_SYMBOL && !strcasecmp(obj->this.symbol,objres->this.symbol) && objres == car(is_symbol_in_all_env(environment,obj)) )) { /*quand on tape par exemple SFS:0> (if #t define)*/
@@ -572,7 +572,22 @@ begin:
                     		return NULL;
                     }
                     }*/
-
+					if(cdr(cdr(obj)) != nil) {
+                        REPORT_MSG(";ERROR: define: missing or extra expression ");
+                        sfs_print(stderr,objc);
+                        fprintf( stderr,"\n");
+                        REPORT_MSG("; in expression: ");
+                        sfs_print(stderr,objc);
+                        fprintf( stderr,"\n");
+                        if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
+                        else REPORT_MSG("; in scope environment\n");
+                        if(STACK != nil ) {
+                            inverse_list(&STACK);
+                            print_stack(STACK);
+                        }
+                        init_stack();
+                        return NULL;
+                    }
                     return car(cdr(obj));
                 }
                 else {                    
@@ -943,7 +958,7 @@ begin:
 					obj = cdr(obj);
 				}
 				inverse_list(&list); /*il faut réinverser la liste pour qu'elle devienne comme avant*/
-				i = 0;
+				/*i = 0;*/
 				objres = procedure->this.primitive.function(list);
 				if(!objres || objres == EXCEPT){
 					REPORT_MSG("; in expression: ");sfs_print(stderr,objc);fprintf( stderr,"\n");
@@ -955,6 +970,12 @@ begin:
 					}
 					init_stack();
 					if(objres == EXCEPT) return NULL;
+				}
+				if( objres == extend_env){
+						if(i){
+							print_env(objres);
+							return NULL;
+						} else return objres;
 				}
 				if(objres != NULL && objres->type == SFS_PRIMITIVE) return sfs_eval(objres,environment);
 				return objres;

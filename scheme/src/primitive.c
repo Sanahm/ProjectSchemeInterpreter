@@ -948,52 +948,51 @@ if(((object) car(list))->type != SFS_PAIR){
 		REPORT_MSG(";ERROR: cdr: Wrong type in arg1\n; expected a pair\n");
     		return NULL;
     }
+    if(car(cdr(car(list))) && ((object) car(cdr(car(list))))->type == SFS_SYMBOL && !strcasecmp(".",((object) car(cdr(car(list))))->this.symbol)) return car(cdr(cdr(car(list))));
 	return cdr(car(list)); 
 }
 object set_car_t( object list){
-if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
+	if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
 	    REPORT_MSG(";ERROR: set-car!: Wrong number of args given\n; expected only two args\n");
     		return NULL;
     }
-if(((object) car(list))->type != SFS_PAIR){
+	if(((object) car(list))->type != SFS_PAIR){
 		REPORT_MSG(";ERROR: set-car!: Wrong type in arg1\n; expected a pair for the first arg\n");
-    		return NULL;
-    }
-	
+    	return NULL;
+    }	
 	((object) car(list))->this.pair.car=car(cdr(list));
 	return make_symbol("#<unspecified>");
-
-
 }
-object set_cdr_t( object list){
-if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
-	    REPORT_MSG(";ERROR: set-cdr!: Wrong number of args given\n; expected only two args\n");
-    		return NULL;
-    }
-if(((object) car(list))->type != SFS_PAIR){
-		REPORT_MSG(";ERROR: set-cdr!: Wrong type in arg1\n; expected a pair for the first arg\n");
-    		return NULL;
-    }
 
+object set_cdr_t( object list){
+	if(list == nil || cdr(list) == nil || cdr(cdr(list)) != nil){
+	    REPORT_MSG(";ERROR: set-cdr!: Wrong number of args given\n; expected only two args\n");
+    	return NULL;
+    }
+	if(((object) car(list))->type != SFS_PAIR){
+		REPORT_MSG(";ERROR: set-cdr!: Wrong type in arg1\n; expected a pair for the first arg\n");
+    	return NULL;
+    }
 	((object) car(list))->this.pair.cdr=car(cdr(list));
 	return make_symbol("#<unspecified>");
-
 }
-object list_t( object list){
-	
+
+
+object list_t( object list){	
 	return list;
 }
+
+
 object islist_t( object list ){
 	object obj=car(list);
 	if(cdr(list) != nil){
 	    REPORT_MSG(";ERROR: list?: Wrong number of args given\n; expected only one arg\n");
     		return NULL;
     }
-
 	while(cdr(obj) != NULL){
 		obj=cdr(obj);
-		
-}
+		 if(car(obj) && ((object) car(obj))->type == SFS_SYMBOL && !strcasecmp(".",((object) car(obj))->this.symbol)) return FAUX;		
+	}
 	if(obj == nil) return VRAI;
 	return FAUX;
 }

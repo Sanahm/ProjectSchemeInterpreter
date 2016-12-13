@@ -139,7 +139,7 @@ begin:
 						if(cdr(body) != nil ) sfs_print(stderr,body);
 						else sfs_print(stderr,car(body));
 						REPORT_MSG(">\n");
-						return NULL;
+						return make_symbol("#<procedure>");
 					}
 					i = 1;
 					return make_lambda(parms,body,environment);

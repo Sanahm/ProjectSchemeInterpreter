@@ -1,4 +1,3 @@
-==> x
 ==> #<unspecified>
 ==> ("string" 5 6 9)
 ==> #<unspecified>

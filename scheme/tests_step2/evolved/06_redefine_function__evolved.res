@@ -1,16 +1,8 @@
-==> quote
 ==> 8
-==> if
 ==> "string"
-==> and
 ==> 8
-==> or
 ==> #\i
-==> begin
 ==> #t
-==> begin
 ==> "salut"
-==> set!
 ==> 77
-==> define
 ==> 42

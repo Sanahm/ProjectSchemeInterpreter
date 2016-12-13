@@ -1,5 +1,4 @@
 ==> #t
-==> x
 ==> 5
 ==> salut
 ==> (quote salut)

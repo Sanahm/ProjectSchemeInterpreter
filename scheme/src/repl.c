@@ -62,6 +62,7 @@ void init_interpreter ( void ) {
     object and_t = make_symbol("and");
     object or_t = make_symbol("or");
     object let_t=make_symbol("let");
+    object letetoi_t=make_symbol("let*");
     object lambda_t = make_symbol("lambda");
     /*definition du top level*/
     add_symbol_to_env( TopLevel,quote_t,quote_t );
@@ -73,6 +74,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,or_t,or_t );
     add_symbol_to_env( TopLevel,lambda_t, lambda_t );
     add_symbol_to_env( TopLevel,let_t, let_t );
+    add_symbol_to_env( TopLevel,letetoi_t, letetoi_t );
     add_symbol_to_env( TopLevel,make_symbol("."),make_symbol(".") );
     add_symbol_to_env( TopLevel,make_symbol("+inf"),make_symbol("+inf") );
     add_symbol_to_env( TopLevel,make_symbol("-inf"),make_symbol("-inf") );

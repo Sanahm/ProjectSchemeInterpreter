@@ -34,6 +34,7 @@ int issup(char*str);
 int issupe(char*str);
 int islambda(char*str);
 int islet(char*str);
+int isletetoi(char*str);
 object car(object o);
 object cdr(object o);
 object operation( object obj1,object obj2, char*op );

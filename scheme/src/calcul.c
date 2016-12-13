@@ -48,6 +48,11 @@ int islet(char*str) {
     return 0;
 }
 
+int isletetoi(char*str) {
+    if(!strcasecmp("let*",str)) return 1;
+    return 0;
+}
+
 object car(object o) {
     if( o == NULL ) return NULL;
     if( o->type == SFS_PAIR ) return o->this.pair.car;

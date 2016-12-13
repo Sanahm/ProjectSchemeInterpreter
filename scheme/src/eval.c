@@ -35,7 +35,7 @@ begin:
     case SFS_SYMBOL:
         objc = obj;		
         objres = get_symbol_value(environment,obj);
-        if(!objres /*|| !strcmp(".",obj->this.symbol)*//* pour le point*/) {
+        if(!objres || !strcmp(".",obj->this.symbol)/* pour le point*/) {
         	add_object_to_list(&STACK,obj);           
             REPORT_MSG(";ERROR: unbound variable: %s\n; no previous definition.\n",obj->this.symbol);
             if(cdr(environment) == nil) REPORT_MSG("; in top level environment.\n");
@@ -658,7 +658,7 @@ begin:
                     if(obj->type == SFS_PAIR && car(obj)->type == SFS_SYMBOL && cdr(obj)->type == SFS_PAIR && cdr(cdr(obj)) == nil) /*formulation du set correcte*/
                     {
                         if(!strcmp(".",car(obj)->this.symbol)) { /* pour le point */
-                            REPORT_MSG(";ERROR: define: \".\" cannot be set ");
+                            REPORT_MSG(";ERROR: set!: \".\" cannot be set ");
                             sfs_print(stderr,objc);
                             fprintf( stderr,"\n");
                             REPORT_MSG("; in expression: ");

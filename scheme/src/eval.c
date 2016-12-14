@@ -645,7 +645,7 @@ begin:
                         }
 
                         objres = get_symbol_value(environment, car(cdr(obj)));
-                        if(car(car(cdr(obj))) && car(car(cdr(obj)))->type == SFS_SYMBOL && islambda(car(car(cdr(obj)))->this.symbol)) i = 0;
+                        if(car(car(cdr(obj))) && car(car(cdr(obj)))->type == SFS_SYMBOL && (islambda(car(car(cdr(obj)))->this.symbol)|| !strcasecmp("interaction-environment",car(car(cdr(obj)))->this.symbol))) i = 0;
                         if(objres && (objres->type == SFS_PRIMITIVE || objres->type == SFS_COMPOUND )) i = 0;
                         objres = sfs_eval(car(cdr(obj)),environment);/*if(!objres) return FAUX;*/
                         i =1;
@@ -818,8 +818,9 @@ begin:
 		    /*les primitives*/
 			add_object_to_list(&STACK,obj);
 		    objc = obj;  		    
-		    if(i) i = 0;
-		    procedure = sfs_eval(car(objc),environment);i = 1;
+		    if(i){ i = 0;
+		    	procedure = sfs_eval(car(objc),environment);i = 1;
+		    } else procedure = sfs_eval(car(objc),environment);
 		    if(!procedure) return NULL;
 	     
 		    if(procedure->type == SFS_COMPOUND) {
@@ -972,10 +973,7 @@ begin:
 					if(objres == EXCEPT) return NULL;
 				}
 				if( objres == extend_env){
-						if(i){
-							print_env(objres);
-							return NULL;
-						} else return objres;
+					return objres;
 				}
 				if(objres != NULL && objres->type == SFS_PRIMITIVE) return sfs_eval(objres,environment);
 				return objres;

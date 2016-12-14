@@ -334,7 +334,7 @@ object sfs_read_atom( char *input, uint *here ) {
     if( input[*here] == '"') {
         (*here)++;
         while( *here < strlen(input) && input[*here] != '"' ) {
-            if(input[*here] =='\\' && input[*here+1] =='"' && !isspace(input[*here+2])) {
+            if(input[*here] =='\\' && input[*here+1] =='"') {
                 str[i] = '\\';
                 str[i+1] = '"';
                 *here += 2;

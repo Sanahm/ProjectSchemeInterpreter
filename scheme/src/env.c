@@ -119,19 +119,22 @@ int sizeof_list(object list){
 
 void print_env( object env ){
 	object objres,obj2,obj1 = env;int i;
-	if(env == nil){
+	if(env == nil || env == NULL){
 		
 		return ;
 	}
-	fprintf(stderr,"*************begin************\n");
+	fprintf(stderr,"**************begin***************\n");
 	for( i = 0; i< SFS_TAB; i++ ){
 		obj2 = car(obj1)->this.tab[i];
 		while(obj2 != nil && obj2 != NULL){
+			if(!strcasecmp(".",car(car(obj2))->this.symbol)){
+				obj2 = cdr(obj2);
+				continue;
+			}
 			REPORT_MSG(">>> %s ------------------- ",car(car(obj2))->this.symbol);
-			init_stack(); 
-			objres = 
-			sfs_eval(car(car(obj2)),extend_env);
-			if(objres) REPORT_MSG("<#@ internal constant>\n");
+			init_stack();
+			objres = sfs_eval(car(car(obj2)),extend_env);
+			if(objres && !(objres->type == SFS_SYMBOL && !strcasecmp(objres->this.symbol,"#<procedure>"))) REPORT_MSG("<#@ internal constant>\n");
 			fprintf(stderr,"\n");
 			obj2 = cdr(obj2);
 		}

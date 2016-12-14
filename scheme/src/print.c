@@ -13,7 +13,7 @@
 #include <limits.h>
 #include <math.h>
 #include "print.h"
-
+#include "env.h"
 #include <stdio.h>
 
 void sfs_print_atom(FILE *p, object o ) {
@@ -100,12 +100,13 @@ void sfs_printf(FILE *p, object o ) {
 
 }
 void sfs_print(FILE *p, object o ) {
-
     if( o->type == SFS_PAIR ) {
-        fprintf( p,"(");
+    	if(car(o) && ((object) car(o))->type == SFS_TAB) print_env(o);
+    	else{
+		    fprintf( p,"(");
 
-        sfs_printf(p,o);
-
+		    sfs_printf(p,o);
+		}
     }
     else sfs_printf(p,o);
 }

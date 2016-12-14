@@ -110,6 +110,7 @@ void init_interpreter ( void ) {
     add_symbol_to_env( TopLevel,make_symbol("<="), make_primitive(infe_t) );
     add_symbol_to_env( TopLevel,make_symbol(">"), make_primitive(sup_t) );
     add_symbol_to_env( TopLevel,make_symbol(">="), make_primitive(supe_t) );
+    add_symbol_to_env( TopLevel,make_symbol("="), make_primitive(supe_t) );
     add_symbol_to_env( TopLevel,make_symbol("char->integer"), make_primitive(ctoi_t) );
     add_symbol_to_env( TopLevel,make_symbol("integer->char"), make_primitive(itoc_t) );
     add_symbol_to_env( TopLevel,make_symbol("symbol->string"), make_primitive(symbtostr_t) );
@@ -262,9 +263,8 @@ int main ( int argc, char *argv[] ) {
             continue ;
         }
         if( null == output ) continue;
-
+		if( output == extend_env ){ sfs_print(stdout, output ); continue; }
         printf( "==> " );
-        /*sfs_print(stdout,sexpr);*/
         sfs_print(stdout, output );
         printf( "\n" );
     }

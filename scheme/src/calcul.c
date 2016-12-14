@@ -208,6 +208,24 @@ object operation( object obj1,object obj2, char*op ) {
                 return make_symbol("-inf");
             return make_symbol("nan");
         }
+        
+    case '=':
+        if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_REAL) {
+            if( obj1->this.number.this.real == obj2->this.number.this.real ) return VRAI;
+            return FAUX;
+        }
+        if( obj1->this.number.numtype == NUM_REAL && obj2->this.number.numtype == NUM_INTEGER) {
+            if( obj1->this.number.this.real == (double)obj2->this.number.this.integer ) return VRAI;
+            return FAUX;
+        }
+        if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_REAL) {
+            if( (double)obj1->this.number.this.integer == obj2->this.number.this.real ) return VRAI;
+            return FAUX;
+        }
+        if( obj1->this.number.numtype == NUM_INTEGER && obj2->this.number.numtype == NUM_INTEGER ) {
+            if( obj1->this.number.this.integer == obj2->this.number.this.integer ) return VRAI;
+            return FAUX;
+        }
 
     case '<':
         if(obj1->type == SFS_SYMBOL) {

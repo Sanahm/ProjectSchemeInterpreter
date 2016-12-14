@@ -1005,51 +1005,13 @@ object eval_t( object list) {
     if(cdr(cdr(list)) == nil) {
         env_temp=car(cdr(list));
     }
-	obj1 = car(list); obj = cdr(list);
-	while( obj != nil ){
-		obj2 = car(obj);
-		if( obj1->type != obj2->type) return FAUX;
-		 
-		if( obj1->type == SFS_NUMBER ){
-			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
-			if( obj1->this.number.numtype != obj1->this.number.numtype ) return FAUX; 
-			if( obj1->this.number.numtype == NUM_INTEGER && (obj1->this.number.this.integer != obj2->this.number.this.integer)) return FAUX;
-			if( obj1->this.number.numtype == NUM_REAL && (obj1->this.number.this.real != obj2->this.number.this.real)) return FAUX;
-		}
-		if( obj1->type == SFS_CHARACTER ){
-			if( obj1->this.character != obj2->this.character ) return FAUX;
-		}
-		if( obj1->type == SFS_SYMBOL ){
-			if( strcasecmp(obj1->this.symbol,obj2->this.symbol) ) return FAUX;
-		}
-		if( obj1->type == SFS_STRING ){
-			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
-			if( strcasecmp(obj1->this.string,obj2->this.string) ) return FAUX;
-		}
-		if( obj1->type == SFS_BOOLEAN ){
-			if( obj1->this.boolean != obj2->this.boolean ) return FAUX;
-		}
-		if( obj1->type == SFS_PAIR ){
-			if(&obj1 != &obj2) return make_symbol("#<unspecified>");
-			while(obj1 != nil && obj1 != NULL && obj2 != nil && obj2 != NULL){
-				if(car(obj1) != car(obj2)) return make_symbol("#<unspecified>");
-				add_object_to_list(&t,car(obj2));
-				add_object_to_list(&t,car(obj1));
-				if(t){
-					if(equal_t(t) == FAUX) return FAUX;
-					t = nil; /* on réinitialise*/
-				}
-				obj1 = cdr(obj1);
-				obj2 = cdr(obj2);
-			}
-			if((obj1 == nil && obj2 != nil) || (obj2 == nil && obj1 != nil)) return FAUX;
-			if((obj1 == NULL && obj2 != NULL) || (obj2 == NULL && obj1 != NULL)) return FAUX;
-			
-		}
-		obj1 = car(list);		
-		obj = cdr(obj);
-	}
-	return VRAI;
+    if( !car(env_temp) || (car(env_temp) && ((object)car(env_temp))->type != SFS_TAB )){
+    	REPORT_MSG(";ERROR: eval: Wrong environment given\n");
+    	return NULL;
+    }
+	object objres = sfs_eval(car(list),env_temp);
+	if(!objres) return null;
+	return objres;
 }
 
 

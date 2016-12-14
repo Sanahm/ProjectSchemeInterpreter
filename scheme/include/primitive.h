@@ -59,6 +59,7 @@ object inf_t( object list);
 object infe_t( object list);
 object sup_t( object list);
 object supe_t( object list);
+object egal_t( object list);
 /************************/
 /*conversion de type*/
 object ctoi_t( object list );

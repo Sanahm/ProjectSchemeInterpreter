@@ -398,6 +398,10 @@ object supe_t( object list) {
     return cmp_t(list,">=");
 }
 
+object egal_t( object list) {
+    return cmp_t(list,"=");
+}
+
 object ctoi_t( object list ) { /* char to int(ctoi): retourne le caractere ascii*/
 
     num n;

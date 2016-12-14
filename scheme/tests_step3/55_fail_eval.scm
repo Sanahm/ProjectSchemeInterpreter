@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (eval 4)
-(eval 4 2)
-(eval )
-(eval 4 4 4)
-(eval 4 1.2)
+(define envt (interaction-environment))
+(eval 4 87)
+(eval 4 envt envt)
+

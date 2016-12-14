@@ -4,5 +4,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (eval 4)
-(eval 4 1)
-(eval '(+ 4 5) 1)
+(define envt (interaction-environment))
+(eval 4 envt)
+(eval '(+ 4 5) envt)
